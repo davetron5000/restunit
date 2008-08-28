@@ -1,0 +1,26 @@
+<project name="restunit" default="compile" basedir=".">
+
+    <property environment="env" />
+
+    <property name="src.dir" value="${basedir}/src"/>
+    <property name="lib.dir" value="${basedir}/lib"/>
+    <property name="java.src.dir" value="${src.dir}/java"/>
+    <property name="build.dir" value="${basedir}/build"/>
+    <property name="jar" value="${build.dir}/${ant.project.name}.jar"/>
+    <property name="doc.dir" value="${basedir}/doc" />
+
+    <path id="compile.classpath">
+        <fileset dir="${lib.dir}"> <include name="*.jar"/> </fileset>
+    </path>
+
+    <target name="compile" 
+        description="Compiles all code">
+        <mkdir dir="${build.dir}"/>
+        <mkdir dir="${build.dir}/classes"/>
+        <javac destdir="${build.dir}/classes"
+            classpathref="compile.classpath"
+            debug="on">
+            <src path="${java.src.dir}"/>
+        </javac>
+    </target>
+</project>
