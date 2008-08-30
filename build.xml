@@ -18,6 +18,7 @@
     <property name="test.classes.dir" value="${build.dir}/test-classes" />
 
     <property name="test.output.dir" value="${build.dir}/test-output"/>
+    <property name="testng.failed.xml" value="${test.output.dir}/testng-failed.xml"/>
 
     <property name="doc.dir" value="${basedir}/doc" />
 
@@ -42,12 +43,23 @@
 
 
     <target name="test" depends="compile,compile.test">
+        <delete file="${testng.failed.xml}" />
         <testng
             sourcedir="${test.java.src.dir}"
             classpathref="test.classpath"
             outputdir="${test.output.dir}"
             >
             <classfileset dir="${test.classes.dir}" />
+        </testng>
+    </target>
+
+    <target name="test.failed" depends="compile,compile.test">
+        <testng
+            sourcedir="${test.java.src.dir}"
+            classpathref="test.classpath"
+            outputdir="${test.output.dir}"
+            >
+            <xmlfileset dir="${test.output.dir}" includes="testng-failed.xml"/>
         </testng>
     </target>
 

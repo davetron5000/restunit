@@ -29,7 +29,7 @@ public class TestClone
             assert clone.getResponse() != t.getResponse() : "Expected the responses to be different references";
     }
 
-    @Test
+    @Test(dependsOnMethods = { "testRestTest" })
     public void testGetTest()
     {
         GetTest t = TestFactory.getRandomGetTest();
