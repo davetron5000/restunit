@@ -24,6 +24,8 @@ public enum RestTestResult
                 return "generated exception";
             case SKIP :
                 return "skipped";
+            default :
+                return null;
         }
         return null;
     }

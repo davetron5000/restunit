@@ -21,6 +21,9 @@
     <property name="testng.failed.xml" value="${test.output.dir}/testng-failed.xml"/>
 
     <property name="doc.dir" value="${basedir}/doc" />
+    <property name="conf.dir" value="${basedir}/conf" />
+
+    <!-- PATHS -->
 
     <path id="compile.classpath">
         <fileset dir="${rt.lib.dir}"> <include name="*.jar"/> </fileset>
@@ -37,10 +40,16 @@
         <pathelement location="${test.classes.dir}" />
     </path>
 
+    <!-- TASKDEFS -->
+
+    <taskdef resource="checkstyletask.properties"
+        classpath="${test.lib.dir}/checkstyle-all-4.4.jar" />
+
     <taskdef name="testng" 
         classpathref="compile.classpath"
         classname="org.testng.TestNGAntTask" />
 
+    <!-- TARGETRS -->
 
     <target name="test" depends="compile,compile.test"
         description="Runs tests">
@@ -76,15 +85,6 @@
         </javac>
     </target>
 
-    <target name="compile.test">
-        <mkdir dir="${test.classes.dir}" />
-        <javac destdir="${test.classes.dir}"
-            classpathref="test.compile.classpath"
-            debug="on">
-            <src path="${test.java.src.dir}"/>
-        </javac>
-    </target>
-
     <target name="javadoc"
         description="Generates Javadoc"
         >
@@ -96,4 +96,28 @@
             <link href="http://logging.apache.org/log4j/1.2/apidocs/" />
         </javadoc>
     </target>
+
+    <!-- SUB TARGETS -->
+
+    <!-- compiles test code -->
+    <target name="compile.test">
+        <mkdir dir="${test.classes.dir}" />
+        <javac destdir="${test.classes.dir}"
+            classpathref="test.compile.classpath"
+            debug="on">
+            <src path="${test.java.src.dir}"/>
+        </javac>
+    </target>
+
+    <target name="checkstyle"
+        >
+        <checkstyle 
+            config="${conf.dir}/checkstyle.xml"
+            classpathref="compile.classpath"
+            >
+            <fileset dir="${java.src.dir}" includes="**/*.java" />
+        </checkstyle>
+    </target>
+    
+
 </project>

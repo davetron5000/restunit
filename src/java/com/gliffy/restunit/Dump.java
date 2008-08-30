@@ -5,6 +5,7 @@ import java.io.*;
 
 import org.ho.yaml.*;
 
+/** Utility prog that will go away someday */
 public class Dump
 {
     public static void main(String args[])
