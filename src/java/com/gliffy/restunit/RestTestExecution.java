@@ -22,4 +22,8 @@ public class RestTestExecution implements Serializable
     public RestTest getTest() { return itsTest; }
     public void setTest(RestTest i) { itsTest = i; }
 
+    public String toString()
+    {
+        return getTest().getName() + " " + getResult().getPastTense();
+    }
 }

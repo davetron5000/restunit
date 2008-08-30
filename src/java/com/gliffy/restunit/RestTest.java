@@ -49,6 +49,11 @@ public class RestTest implements Serializable, Cloneable
 
     private Set<RestTest> itsDependentTests;
     /** Any tests that are dependent on this one */
-    public Set<RestTest> getDependentTests() { return itsDependentTests; }
+    public Set<RestTest> getDependentTests() 
+    { 
+        if (itsDependentTests == null) 
+            itsDependentTests = new HashSet<RestTest>(); 
+        return itsDependentTests; 
+    }
     public void setDependentTests(Set<RestTest> i) { itsDependentTests = i; }
 }

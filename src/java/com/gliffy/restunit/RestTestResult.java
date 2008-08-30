@@ -4,11 +4,27 @@ package com.gliffy.restunit;
 public enum RestTestResult
 {
     /** The test succeeded */
-    SUCCESS,
+    PASS,
     /** The test failed */
-    FAILURE,
+    FAIL,
     /** There was an exception unrelated to the test while executing the test */
     EXCEPTION,
     /** The test was not run */
-    SKIPPED
+    SKIP;
+
+    public String getPastTense()
+    {
+        switch (this)
+        {
+            case PASS :
+                return "passed";
+            case FAIL : 
+                return "failed";
+            case EXCEPTION :
+                return "generated exception";
+            case SKIP :
+                return "skipped";
+        }
+        return null;
+    }
 };
