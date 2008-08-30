@@ -42,7 +42,8 @@
         classname="org.testng.TestNGAntTask" />
 
 
-    <target name="test" depends="compile,compile.test">
+    <target name="test" depends="compile,compile.test"
+        description="Runs tests">
         <delete file="${testng.failed.xml}" />
         <testng
             sourcedir="${test.java.src.dir}"
@@ -53,7 +54,9 @@
         </testng>
     </target>
 
-    <target name="test.failed" depends="compile,compile.test">
+    <target name="test.failed" 
+        description="Runs Failed Tests"
+        depends="compile,compile.test">
         <testng
             sourcedir="${test.java.src.dir}"
             classpathref="test.classpath"
@@ -82,7 +85,9 @@
         </javac>
     </target>
 
-    <target name="javadoc">
+    <target name="javadoc"
+        description="Generates Javadoc"
+        >
         <javadoc sourcepath="${java.src.dir}"
             destdir="${build.dir}/doc/javadoc" 
             classpathref="compile.classpath">
