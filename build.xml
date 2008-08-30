@@ -23,4 +23,14 @@
             <src path="${java.src.dir}"/>
         </javac>
     </target>
+
+    <target name="javadoc">
+        <javadoc sourcepath="${java.src.dir}"
+            destdir="${build.dir}/doc/javadoc" 
+            classpathref="compile.classpath">
+            <link href="http://java.sun.com/j2se/1.4.2/docs/api/" />
+            <link href="http://java.sun.com/javaee/5/docs/api/" />
+            <link href="http://logging.apache.org/log4j/1.2/apidocs/" />
+        </javadoc>
+    </target>
 </project>
