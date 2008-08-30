@@ -4,7 +4,7 @@ import java.io.*;
 import java.util.*;
 
 /** An test of a GET request */
-public class GetTest extends RestTest
+public class GetTest extends RestTest 
 {
     private boolean itsRespondsToHead;
     /** If true, A HEAD request for this resource should act as HEAD is supposed to */
@@ -23,5 +23,4 @@ public class GetTest extends RestTest
     /** If true, this resource respondes to conditional gets based on eTags */
     public boolean getRespondsToIfNoneMatch() { return itsRespondsToIfNoneMatch; }
     public void setRespondsToIfNoneMatch(boolean i) { itsRespondsToIfNoneMatch = i; }
-
 }

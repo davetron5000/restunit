@@ -3,24 +3,70 @@
     <property environment="env" />
 
     <property name="src.dir" value="${basedir}/src"/>
+    <property name="test.src.dir" value="${basedir}/test/src"/>
+
     <property name="lib.dir" value="${basedir}/lib"/>
+    <property name="rt.lib.dir" value="${lib.dir}/rt"/>
+    <property name="test.lib.dir" value="${lib.dir}/test"/>
+
     <property name="java.src.dir" value="${src.dir}/java"/>
+    <property name="test.java.src.dir" value="${test.src.dir}/java"/>
+
     <property name="build.dir" value="${basedir}/build"/>
-    <property name="jar" value="${build.dir}/${ant.project.name}.jar"/>
+
+    <property name="classes.dir" value="${build.dir}/classes" />
+    <property name="test.classes.dir" value="${build.dir}/test-classes" />
+
+    <property name="test.output.dir" value="${build.dir}/test-output"/>
+
     <property name="doc.dir" value="${basedir}/doc" />
 
     <path id="compile.classpath">
-        <fileset dir="${lib.dir}"> <include name="*.jar"/> </fileset>
+        <fileset dir="${rt.lib.dir}"> <include name="*.jar"/> </fileset>
+        <fileset dir="${test.lib.dir}"> <include name="*.jar"/> </fileset>
     </path>
+
+    <path id="test.compile.classpath">
+        <path refid="compile.classpath" />
+        <pathelement location="${classes.dir}" />
+    </path>
+
+    <path id="test.classpath">
+        <path refid="test.compile.classpath" />
+        <pathelement location="${test.classes.dir}" />
+    </path>
+
+    <taskdef name="testng" 
+        classpathref="compile.classpath"
+        classname="org.testng.TestNGAntTask" />
+
+
+    <target name="test" depends="compile,compile.test">
+        <testng
+            sourcedir="${test.java.src.dir}"
+            classpathref="test.classpath"
+            outputdir="${test.output.dir}"
+            >
+            <classfileset dir="${test.classes.dir}" />
+        </testng>
+    </target>
 
     <target name="compile" 
         description="Compiles all code">
-        <mkdir dir="${build.dir}"/>
-        <mkdir dir="${build.dir}/classes"/>
-        <javac destdir="${build.dir}/classes"
+        <mkdir dir="${classes.dir}" />
+        <javac destdir="${classes.dir}"
             classpathref="compile.classpath"
             debug="on">
             <src path="${java.src.dir}"/>
+        </javac>
+    </target>
+
+    <target name="compile.test">
+        <mkdir dir="${test.classes.dir}" />
+        <javac destdir="${test.classes.dir}"
+            classpathref="test.compile.classpath"
+            debug="on">
+            <src path="${test.java.src.dir}"/>
         </javac>
     </target>
 
