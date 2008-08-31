@@ -2,13 +2,14 @@ package com.gliffy.restunit;
 
 import java.util.*;
 
-/** This class executes {@link RestTest} instances */
+/** This class executes {@link RestTest} instances. */
 public class RestUnit
 {
     private Set<RestTestExecution> itsExecutionResults;
     private Set<Derivable> itsDerivers;
     private RestTestExecutor itsExecutor;
 
+    /** Create a new RestUnit. */
     public RestUnit()
     {
         itsExecutionResults = new HashSet<RestTestExecution>();
@@ -16,24 +17,32 @@ public class RestUnit
         itsExecutor = new RestTestExecutor();
     }
 
-    /** Adds derivers to be used on all tests */
+    /** Adds derivers to be used on all tests.
+     * @param d the Derivable that will be used to derive new tests.
+     */
     public void addDeriver(Derivable d)
     {
         itsDerivers.add(d);
     }
-    public RestTestExecutor getExecutor() { return itsExecutor; }
-    public void setExecutor(RestTestExecutor i) { itsExecutor = i; }
 
+    public RestTestExecutor getExecutor() 
+    {
+        return itsExecutor; 
+    }
+    public void setExecutor(RestTestExecutor i) 
+    {
+        itsExecutor = i; 
+    }
 
     /** This executes a rest test, and possibly derived tests.
      * This will run as follows (a failure, skip, or exception at any step, stops the process):
      * <ol>
      * <li>The test itself.  
-     * <li>Any tests derived from the derivers add via {@link #addDeriver(Derivable)}</li>
+     * <li>Any tests derived from the derivers add via 
+     {@link #addDeriver(Derivable)}</li>
      * <li>Any dependent tests.</li>
      * </ol>
      * @param test the test to run.  
-     * @throws TestFailedException if a test fails.
      */
     public void runTest(RestTest test)
     {

@@ -51,7 +51,7 @@
 
     <!-- TARGETRS -->
 
-    <target name="test" depends="compile,compile.test"
+    <target name="test" depends="compile,checkstyle,compile.test"
         description="Runs tests">
         <delete file="${testng.failed.xml}" />
         <testng

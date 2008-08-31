@@ -1,18 +1,28 @@
 package com.gliffy.restunit;
 
-import java.util.*;
 import java.io.*;
+import java.util.*;
 
 import org.ho.yaml.*;
 
-/** Utility prog that will go away someday */
+/** Utility prog that will go away someday. */
 public class Dump
 {
+    private static final int OK = 200;
+    private Dump() {}
+
+    /** main method. 
+     * @param args cli arguments.
+     * @throws Exception for anything that goes wrong.
+     * */
     public static void main(String args[])
         throws Exception
     {
+
         if (args.length == 0)
+
         {
+
             RestTest test = new RestTest();
             test.setURL("/rest/this/is/a/request");
             test.setMethod("GET");
@@ -30,7 +40,7 @@ public class Dump
             test.getHeaders().put("X-HTTP-Method-Override","PUT");
 
             RestTestResponse response = new RestTestResponse();
-            response.setStatusCode(200);
+            response.setStatusCode(OK);
 
             test.setResponse(response);
             test.setName("Dummy Test");
@@ -39,14 +49,20 @@ public class Dump
 
             String yaml = Yaml.dump(test,true);
             System.out.println(yaml);
+
         }
         else
+
         {
+
             File f = new File(args[0]);
             Object o = Yaml.load(f);
             System.out.println(o.getClass().getName().toString());
             System.out.println(o.toString());
             System.out.println(Yaml.dump(o,true));
+
         }
+
     }
+
 }

@@ -1,7 +1,7 @@
 package com.gliffy.restunit;
 
-/** Handles the nuts and bolts of executing the rest test
- */
+/** Handles the nuts and bolts of executing the rest test.
+*/
 public class RestTestExecutor
 {
     /** Executes a rest test.  No derived or dependent tests are executed
