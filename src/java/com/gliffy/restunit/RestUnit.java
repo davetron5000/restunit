@@ -5,16 +5,16 @@ import java.util.*;
 /** This class executes {@link RestTest} instances. */
 public class RestUnit
 {
-    private Set<RestTestExecution> itsExecutionResults;
+    private Set<ExecutionResult> itsExecutionResults;
     private Set<Derivable> itsDerivers;
-    private RestTestExecutor itsExecutor;
+    private Executor itsExecutor;
 
     /** Create a new RestUnit. */
     public RestUnit()
     {
-        itsExecutionResults = new HashSet<RestTestExecution>();
+        itsExecutionResults = new HashSet<ExecutionResult>();
         itsDerivers = new HashSet<Derivable>();
-        itsExecutor = new RestTestExecutor();
+        itsExecutor = new Executor();
     }
 
     /** Adds derivers to be used on all tests.
@@ -25,11 +25,11 @@ public class RestUnit
         itsDerivers.add(d);
     }
 
-    public RestTestExecutor getExecutor() 
+    public Executor getExecutor() 
     {
         return itsExecutor; 
     }
-    public void setExecutor(RestTestExecutor i) 
+    public void setExecutor(Executor i) 
     {
         itsExecutor = i; 
     }
@@ -46,9 +46,9 @@ public class RestUnit
      */
     public void runTest(RestTest test)
     {
-        RestTestExecution result = getExecutor().execute(test);
+        ExecutionResult result = getExecutor().execute(test);
         itsExecutionResults.add(result);
-        if (result.getResult() == RestTestResult.PASS)
+        if (result.getResult() == Result.PASS)
         {
             for (Derivable d: itsDerivers)
             {

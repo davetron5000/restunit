@@ -4,9 +4,9 @@ import java.io.*;
 import java.util.*;
 
 /** The results of a RestTest having been executed. */
-public class RestTestExecution implements Serializable
+public class ExecutionResult implements Serializable
 {
-    private RestTestResult itsResult;
+    private Result itsResult;
     private Date itsExecutionDate;
     private long itsExecutionTime;
     private RestTest itsTest;
@@ -14,11 +14,11 @@ public class RestTestExecution implements Serializable
     /** Results of the test execution.
      * @return the results of the test execution
      */
-    public RestTestResult getResult() 
+    public Result getResult() 
     {
         return itsResult; 
     }
-    public void setResult(RestTestResult i) 
+    public void setResult(Result i) 
     {
         itsResult = i; 
     }

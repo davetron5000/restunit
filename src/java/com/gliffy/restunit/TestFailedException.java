@@ -3,12 +3,12 @@ package com.gliffy.restunit;
 /** Indicates that an executed test did not succeed. */
 public class TestFailedException extends RuntimeException
 {
-    private final RestTestExecution itsExecution;
+    private final ExecutionResult itsExecution;
 
     /** Create an exception based on the given result.
      * @param execution the test execution that triggered this exception.
      */
-    public TestFailedException(RestTestExecution execution)
+    public TestFailedException(ExecutionResult execution)
     {
         super(execution.toString());
         itsExecution = execution;
@@ -17,7 +17,7 @@ public class TestFailedException extends RuntimeException
     /** Gets the test execution that triggered this exception.
      * @return a RestTestExecution.
      */
-    public RestTestExecution getExecution() 
+    public ExecutionResult getExecution() 
     {
         return itsExecution; 
     }

@@ -1,8 +1,7 @@
 package com.gliffy.restunit;
 
 /** The results of running a test. */
-public enum RestTestResult
-
+public enum Result
 {
 
     /** The test succeeded. */

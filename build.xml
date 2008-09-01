@@ -85,6 +85,11 @@
         </javac>
     </target>
 
+    <target name="clean"
+        description="Remove all generated targets">
+        <delete dir="${build.dir}" />
+    </target>
+
     <target name="javadoc"
         description="Generates Javadoc"
         >
