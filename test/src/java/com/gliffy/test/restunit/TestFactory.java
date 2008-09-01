@@ -19,6 +19,15 @@ public class TestFactory
         "garlic",
     };
 
+    private static final String CONTENT_TYPES[] = 
+    {
+        "text/xml",
+        "text/plain",
+        "text/html",
+        "image/png",
+        "image/jpeg",
+    };
+
     private static final String BASIC_METHODS[] = 
     {
         "GET",
@@ -86,6 +95,7 @@ public class TestFactory
         GetTest t = new GetTest();
         populateWithDependents(t);
         popualteGet(t);
+        t.setResponse(getRandomBodyResponse());
         return t;
     }
 
@@ -142,6 +152,19 @@ public class TestFactory
     {
         RestTestResponse r = new RestTestResponse();
         populate(r);
+        return r;
+    }
+
+    public static BodyResponse getRandomBodyResponse()
+    {
+        BodyResponse r = new BodyResponse();
+        populate(r);
+        r.setContentType(random(CONTENT_TYPES));
+        byte bytes[] = new byte[RANDOM.nextInt(256)];
+
+        RANDOM.nextBytes(bytes);
+
+        r.setBody(bytes);
         return r;
     }
 

@@ -28,7 +28,6 @@ public class RestTestResponse implements Serializable, Cloneable
      * @return a set of headers that must be included in the response for this test to pass.
      */
     public Set<String> getRequiredHeaders() 
-
     {
 
         if (itsRequiredHeaders == null)

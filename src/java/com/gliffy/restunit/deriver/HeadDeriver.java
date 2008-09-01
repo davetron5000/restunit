@@ -24,6 +24,12 @@ public class HeadDeriver implements Derivable
             {
                 GetTest head = (GetTest)test.clone();
                 head.setRespondsToHead(false);
+                head.setMethod("HEAD");
+                if (head.getResponse() instanceof BodyResponse)
+                {
+                    BodyResponse r = (BodyResponse)head.getResponse();
+                    r.setBody(null);
+                }
                 return head;
             }
             else
