@@ -145,6 +145,17 @@ public class TestFactory
         return r;
     }
 
+    public static ExecutionResult getSuccessfulResult(RestTest test)
+    {
+        ExecutionResult success = new ExecutionResult();
+        success.setResult(Result.PASS);
+        success.setTest(test);
+        success.setExecutionTime(1L);
+        success.setExecutionDate(new java.util.Date());
+
+        return success;
+    }
+
     private static void populate(RestTestResponse r)
     {
         r.setStatusCode( ( (RANDOM.nextInt(4) + 1) * 100) + RANDOM.nextInt(2) );
