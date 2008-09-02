@@ -14,12 +14,12 @@ public class TestRunTest
     @Test
     public void testRunTest()
     {
-        RestTest mockTest = createMock(RestTest.class);
-        RestTest mockDerivedTest = createMock(RestTest.class);
-        RestTest mockDependentTest = createMock(RestTest.class);
+        RestTest mockTest = createMock("mockTest", RestTest.class);
+        RestTest mockDerivedTest = createMock("mockDerivedTest", RestTest.class);
+        RestTest mockDependentTest = createMock("mockDependentTest", RestTest.class);
         Executor mockExecutor = createMock(Executor.class);
-        Derivable mockDerivable1 = createMock(Derivable.class);
-        Derivable mockDerivable2 = createMock(Derivable.class);
+        Derivable mockDerivable1 = createMock("mockDerivable1",Derivable.class);
+        Derivable mockDerivable2 = createMock("mockDerivable2",Derivable.class);
         Set<RestTest> oneTest = new HashSet<RestTest>();
         oneTest.add(mockDependentTest);
 
@@ -31,12 +31,13 @@ public class TestRunTest
         expect(mockExecutor.execute(mockDerivedTest)).andReturn(TestFactory.getSuccessfulResult(mockDerivedTest));
         expect(mockDerivable1.derive(mockDerivedTest)).andReturn(null);
         expect(mockDerivable2.derive(mockDerivedTest)).andReturn(null);
-        expect(mockDerivedTest.getDependentTests()).andReturn(Collections.EMPTY_SET);
+        Set<RestTest> emptySet = Collections.emptySet();
+        expect(mockDerivedTest.getDependentTests()).andReturn(emptySet);
 
         expect(mockExecutor.execute(mockDependentTest)).andReturn(TestFactory.getSuccessfulResult(mockDerivedTest));
         expect(mockDerivable1.derive(mockDependentTest)).andReturn(null);
         expect(mockDerivable2.derive(mockDependentTest)).andReturn(null);
-        expect(mockDependentTest.getDependentTests()).andReturn(Collections.EMPTY_SET);
+        expect(mockDependentTest.getDependentTests()).andReturn(emptySet);
 
         RestUnit unit = new RestUnit();
         unit.setExecutor(mockExecutor);

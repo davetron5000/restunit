@@ -82,6 +82,7 @@
             classpathref="compile.classpath"
             debug="on">
             <src path="${java.src.dir}"/>
+            <compilerarg line="-Xlint -Xlint:-serial -Xlint:-path" />
         </javac>
     </target>
 
@@ -111,6 +112,7 @@
             classpathref="test.compile.classpath"
             debug="on">
             <src path="${test.java.src.dir}"/>
+            <compilerarg line="-Xlint -Xlint:-serial -Xlint:-path" />
         </javac>
     </target>
 
