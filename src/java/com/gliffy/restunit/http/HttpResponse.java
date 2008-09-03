@@ -27,8 +27,13 @@ public class HttpResponse
         itsBody = i; 
     }
 
+    /** Gets the headers returned, ensuring that an empty map is not returned.
+     * @return a map of header name to value, that is never null
+     */
     public Map<String,String> getHeaders() 
     { 
+        if (itsHeaders == null)
+            itsHeaders = new HashMap<String,String>();
         return itsHeaders; 
     }
     public void setHeaders(Map<String,String> i) 

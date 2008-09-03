@@ -42,11 +42,35 @@ public class Executor
     {
         if (getHttp() == null)
             throw new IllegalStateException();
+        HttpRequest request = createRequest(test);
+
+        HttpResponse response = null;
+
+        long testStartTime = System.currentTimeMillis();
+
+        if (test.getMethod().equalsIgnoreCase("get"))
+            response = getHttp().get(request);
+        else if (test.getMethod().equalsIgnoreCase("head"))
+            response = getHttp().head(request);
+        else if (test.getMethod().equalsIgnoreCase("put"))
+            response = getHttp().put(request);
+        else if (test.getMethod().equalsIgnoreCase("post"))
+            response = getHttp().post(request);
+        else if (test.getMethod().equalsIgnoreCase("delete"))
+            response = getHttp().delete(request);
+        else
+            throw new IllegalArgumentException(test.getMethod() + " is not a supported HTTP method");
+
         ExecutionResult ex = new ExecutionResult();
         ex.setTest(test);
         ex.setExecutionDate(new java.util.Date());
-        ex.setExecutionTime(0L);
+        ex.setExecutionTime(System.currentTimeMillis() - testStartTime);
         ex.setResult(Result.SKIP);
         return ex;
+    }
+
+    private HttpRequest createRequest(RestTest test)
+    {
+        return new HttpRequest();
     }
 }

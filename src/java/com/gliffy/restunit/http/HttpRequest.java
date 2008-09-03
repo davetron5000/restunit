@@ -7,7 +7,6 @@ import java.util.*;
 public class HttpRequest
 {
     private URL itsURL;
-    private String itsMethod;
     private Map<String,String> itsHeaders;
     private byte[] itsBody;
 
@@ -22,14 +21,6 @@ public class HttpRequest
     public Map<String,String> getHeaders() 
     {
         return itsHeaders; 
-    }
-    public String getMethod() 
-    {
-        return itsMethod; 
-    }
-    public void setMethod(String i) 
-    {
-        itsMethod = i; 
     }
     public void setHeaders(Map<String,String> i) 
     {
