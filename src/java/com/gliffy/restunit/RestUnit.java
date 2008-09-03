@@ -9,12 +9,21 @@ public class RestUnit
     private Set<Derivable> itsDerivers;
     private Executor itsExecutor;
 
-    /** Create a new RestUnit. */
+    /** Creates a new RestUnit, deferring the setting of the executor to later.
+     */
     public RestUnit()
+    {
+        this(null);
+    }
+
+    /** Create a new RestUnit. 
+     * @param executor the test executor to use
+     */
+    public RestUnit(Executor executor)
     {
         itsExecutionResults = new HashSet<ExecutionResult>();
         itsDerivers = new HashSet<Derivable>();
-        itsExecutor = new Executor();
+        itsExecutor = executor;
     }
 
     /** Adds derivers to be used on all tests.
@@ -46,6 +55,9 @@ public class RestUnit
      */
     public void runTest(RestTest test)
     {
+        if (getExecutor() == null)
+            throw new IllegalStateException("You may not run tests without a configured executor either via the constructor or setExecutor");
+
         ExecutionResult result = getExecutor().execute(test);
         itsExecutionResults.add(result);
         if (result.getResult() == Result.PASS)

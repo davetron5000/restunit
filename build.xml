@@ -78,6 +78,10 @@
     <target name="compile" 
         description="Compiles all code">
         <mkdir dir="${classes.dir}" />
+        <depend srcdir="${java.src.dir}"
+            destdir="${classes.dir}"
+            cache="${build.dir}/depcache"
+            closure="yes"/>
         <javac destdir="${classes.dir}"
             classpathref="compile.classpath"
             debug="on">
@@ -108,6 +112,10 @@
     <!-- compiles test code -->
     <target name="compile.test">
         <mkdir dir="${test.classes.dir}" />
+        <depend srcdir="${test.java.src.dir}"
+            destdir="${test.classes.dir}"
+            cache="${build.dir}/depcache"
+            closure="yes"/>
         <javac destdir="${test.classes.dir}"
             classpathref="test.compile.classpath"
             debug="on">
