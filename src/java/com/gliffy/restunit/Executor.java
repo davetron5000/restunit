@@ -12,11 +12,14 @@ public class Executor
 {
     private Http itsHttp;
     private String itsBaseURL;
+    private HttpRequestFactory itsRequestFactory;
+
     /** Creates an executor, deferring setting of the Http imlementation until later.
      */
     public Executor()
     {
         this(null);
+        itsRequestFactory = new HttpRequestFactory("");
     }
 
     /** Creates an executor with the given HTTP implementation.
@@ -52,10 +55,8 @@ public class Executor
     public void setBaseURL(String i) 
     {
         itsBaseURL = i; 
+        itsRequestFactory = new HttpRequestFactory(itsBaseURL);
     }
-
-
-
 
     /** Executes a rest test.  No derived or dependent tests are executed.  If the http implementation has not been set, this will
      * throw an {@link java.lang.IllegalStateException}.
@@ -74,7 +75,7 @@ public class Executor
 
         try
         {
-            HttpRequest request = createRequest(test);
+            HttpRequest request = itsRequestFactory.createRequest(test);
             HttpResponse response = null;
 
             if (test.getMethod().equalsIgnoreCase("get"))
@@ -111,52 +112,4 @@ public class Executor
             result.setResult(Result.FAIL);
     }
 
-    private HttpRequest createRequest(RestTest test)
-        throws MalformedURLException
-    {
-        HttpRequest request = new HttpRequest();
-        String url = createURL(test);
-        request.setURL(new URL(url));
-        request.setHeaders(test.getHeaders());
-        request.setBody(null);
-        return request;
-    }
-
-    private String createURL(RestTest test)
-    {
-        String queryString = createQueryString(test.getParameters());
-        if (queryString.length() > 0)
-            return getBaseURL() + test.getURL() + "?" + queryString;
-        else
-            return getBaseURL() + test.getURL();
-    }
-
-    private String createQueryString(Map<String,List<String>> params)
-    {
-        if (params == null)
-            return "";
-        StringBuilder b = new StringBuilder("");
-        for (String param: params.keySet())
-        {
-            for (String value: params.get(param))
-            {
-                b.append(param);
-                b.append("=");
-                try
-                {
-                    b.append(URLEncoder.encode(value,"UTF-8"));
-                }
-                catch (UnsupportedEncodingException e)
-                {
-                    // UTF-8 is supported; this is stupid to have to catch, thanks for
-                    // deprecating the easy method 
-                }
-                b.append("&");
-            }
-        }
-        if (b.length() > 0)
-            b.setLength(b.length() - 1);
-
-        return b.toString();
-    }
 }

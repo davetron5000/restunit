@@ -75,6 +75,9 @@ public class TestExecutor
         verify(mockHttp);
     }
 
+    /** This tests that the HttpRequest created by the Executor to give to Http was done using the actual
+     * test information; the Executor must interrogate the test to find out what to request
+     */
     @Test(dependsOnMethods = { "testGet" } )
     public void testRequestCreation()
     {
