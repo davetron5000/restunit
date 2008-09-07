@@ -39,7 +39,7 @@
         <module name="MissingSwitchDefault"/>
         <module name="ModifiedControlVariable"/>
         <module name="ModifierOrder" />
-        <module name="MultipleStringLiterals"/>
+        <module name="MultipleStringLiterals"><property name="ignoreStringsRegexp" value='^(("")|(", ")|(" "))$'/></module>
         <module name="MultipleVariableDeclarations"/>
         <module name="MultipleVariableDeclarations"/>
         <module name="MutableException"/>
