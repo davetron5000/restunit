@@ -40,6 +40,7 @@ public class TestExecutor
     public void testBadSetup()
     {
         Executor executor = new Executor();
+        executor.setBaseURL("http://www.google.com/");
 
         try
         {
@@ -63,10 +64,39 @@ public class TestExecutor
 
         RestTest test = TestFactory.getRandomTest();
         test.setMethod(method.toUpperCase());
+        test.getResponse().setStatusCode(200);
+
         Executor executor = new Executor(mockHttp);
-        executor.execute(test);
+        executor.setBaseURL("http://www.google.com/");
+        ExecutionResult result = executor.execute(test);
+
+        assert result.getResult() == Result.PASS : "Got " + result.getResult() + " for " + result.toString() + " instead of " + Result.PASS.toString();
 
         verify(mockHttp);
+    }
+
+    @Test(dependsOnMethods = { "testGet" } )
+    public void testRequestCreation()
+    {
+        RestTest mockTest = createMock(RestTest.class);
+        RestTest randomTest = TestFactory.getRandomGetTest();
+
+        expect(mockTest.getMethod()).andReturn("GET");
+        expect(mockTest.getURL()).andReturn(randomTest.getURL());
+        expect(mockTest.getParameters()).andReturn(randomTest.getParameters());
+        expect(mockTest.getHeaders()).andReturn(randomTest.getHeaders());
+        expect(mockTest.getResponse()).andReturn(randomTest.getResponse());
+
+        Http mockHttp = getMockHttp("GET");
+        replay (mockHttp);
+        replay (mockTest);
+
+        Executor executor =  new Executor(mockHttp);
+        executor.setBaseURL("http://www.google.com/");
+        executor.execute(mockTest);
+
+        verify(mockHttp);
+        verify(mockTest);
     }
 
 

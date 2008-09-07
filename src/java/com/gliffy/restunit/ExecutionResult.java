@@ -10,6 +10,7 @@ public class ExecutionResult implements Serializable
     private Date itsExecutionDate;
     private long itsExecutionTime;
     private RestTest itsTest;
+    private Throwable itsThrowable;
 
     /** Results of the test execution.
      * @return the results of the test execution
@@ -56,15 +57,25 @@ public class ExecutionResult implements Serializable
         itsTest = i; 
     }
 
+    public Throwable getThrowable() 
+    { 
+        return itsThrowable; 
+    }
+
+    public void setThrowable(Throwable i) 
+    { 
+        itsThrowable = i; 
+    }
+
+
     /** Returns a simple description of what happened when the test ran.
      * @return a string with the description of this execution.
      */
     public String toString()
-
     {
-
-        return getTest().getName() + " " + getResult().getPastTense();
-
+        if (getResult() == Result.EXCEPTION)
+            return getTest().getName() + " " + getResult().getPastTense() + " (Throwable was: " + (getThrowable() == null ? "null" : getThrowable().getMessage()) + ")";
+        else
+            return getTest().getName() + " " + getResult().getPastTense();
     }
-
 }

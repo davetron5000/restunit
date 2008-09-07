@@ -1,5 +1,9 @@
 package com.gliffy.restunit;
 
+import java.io.*;
+import java.net.*;
+import java.util.*;
+
 import com.gliffy.restunit.http.*;
 
 /** Handles the nuts and bolts of executing the rest test.
@@ -7,7 +11,7 @@ import com.gliffy.restunit.http.*;
 public class Executor
 {
     private Http itsHttp;
-
+    private String itsBaseURL;
     /** Creates an executor, deferring setting of the Http imlementation until later.
      */
     public Executor()
@@ -33,6 +37,26 @@ public class Executor
         itsHttp = i; 
     }
 
+    /** Returns the base URL for all requests, or the empty string if not configured.
+     * @return a non-null string representing the base URL for all requests.
+     */
+    public String getBaseURL() 
+    {
+        return itsBaseURL == null ? "" : itsBaseURL; 
+    }
+
+    /** Sets the base URL against which test urls are appended.
+     * This allows test urls to be relative to some externalized server, if needed
+     * @param i the url
+     */
+    public void setBaseURL(String i) 
+    {
+        itsBaseURL = i; 
+    }
+
+
+
+
     /** Executes a rest test.  No derived or dependent tests are executed.  If the http implementation has not been set, this will
      * throw an {@link java.lang.IllegalStateException}.
      * @param test the test to execute.
@@ -42,35 +66,97 @@ public class Executor
     {
         if (getHttp() == null)
             throw new IllegalStateException();
-        HttpRequest request = createRequest(test);
-
-        HttpResponse response = null;
 
         long testStartTime = System.currentTimeMillis();
-
-        if (test.getMethod().equalsIgnoreCase("get"))
-            response = getHttp().get(request);
-        else if (test.getMethod().equalsIgnoreCase("head"))
-            response = getHttp().head(request);
-        else if (test.getMethod().equalsIgnoreCase("put"))
-            response = getHttp().put(request);
-        else if (test.getMethod().equalsIgnoreCase("post"))
-            response = getHttp().post(request);
-        else if (test.getMethod().equalsIgnoreCase("delete"))
-            response = getHttp().delete(request);
-        else
-            throw new IllegalArgumentException(test.getMethod() + " is not a supported HTTP method");
-
         ExecutionResult ex = new ExecutionResult();
         ex.setTest(test);
         ex.setExecutionDate(new java.util.Date());
+
+        try
+        {
+            HttpRequest request = createRequest(test);
+            HttpResponse response = null;
+
+            if (test.getMethod().equalsIgnoreCase("get"))
+                response = getHttp().get(request);
+            else if (test.getMethod().equalsIgnoreCase("head"))
+                response = getHttp().head(request);
+            else if (test.getMethod().equalsIgnoreCase("put"))
+                response = getHttp().put(request);
+            else if (test.getMethod().equalsIgnoreCase("post"))
+                response = getHttp().post(request);
+            else if (test.getMethod().equalsIgnoreCase("delete"))
+                response = getHttp().delete(request);
+            else
+                throw new IllegalArgumentException(test.getMethod() + " is not a supported HTTP method");
+
+            populateResult(test,ex,response);
+            return ex;
+        }
+        catch (MalformedURLException e)
+        {
+            ex.setResult(Result.EXCEPTION);
+            ex.setThrowable(e);
+        }
         ex.setExecutionTime(System.currentTimeMillis() - testStartTime);
-        ex.setResult(Result.SKIP);
         return ex;
     }
 
-    private HttpRequest createRequest(RestTest test)
+    private void populateResult(RestTest test, ExecutionResult result, HttpResponse response)
     {
-        return new HttpRequest();
+        RestTestResponse expectedResponse = test.getResponse();
+        if (expectedResponse.getStatusCode() == response.getStatusCode())
+            result.setResult(Result.PASS);
+        else
+            result.setResult(Result.FAIL);
+    }
+
+    private HttpRequest createRequest(RestTest test)
+        throws MalformedURLException
+    {
+        HttpRequest request = new HttpRequest();
+        String url = createURL(test);
+        request.setURL(new URL(url));
+        request.setHeaders(test.getHeaders());
+        request.setBody(null);
+        return request;
+    }
+
+    private String createURL(RestTest test)
+    {
+        String queryString = createQueryString(test.getParameters());
+        if (queryString.length() > 0)
+            return getBaseURL() + test.getURL() + "?" + queryString;
+        else
+            return getBaseURL() + test.getURL();
+    }
+
+    private String createQueryString(Map<String,List<String>> params)
+    {
+        if (params == null)
+            return "";
+        StringBuilder b = new StringBuilder("");
+        for (String param: params.keySet())
+        {
+            for (String value: params.get(param))
+            {
+                b.append(param);
+                b.append("=");
+                try
+                {
+                    b.append(URLEncoder.encode(value,"UTF-8"));
+                }
+                catch (UnsupportedEncodingException e)
+                {
+                    // UTF-8 is supported; this is stupid to have to catch, thanks for
+                    // deprecating the easy method 
+                }
+                b.append("&");
+            }
+        }
+        if (b.length() > 0)
+            b.setLength(b.length() - 1);
+
+        return b.toString();
     }
 }
