@@ -119,11 +119,55 @@ public class Executor
 
         if (headersOK(expectedResponse,result,response))
         {
-            result.setResult(Result.PASS);
+            if (bodyMatches(expectedResponse,result,response))
+                result.setResult(Result.PASS);
+            else
+                result.setResult(Result.FAIL);
         }
         else
         {
             result.setResult(Result.FAIL);
+        }
+    }
+
+    private boolean bodyMatches(RestTestResponse expectedResponse, ExecutionResult result, HttpResponse response)
+    {
+        if (expectedResponse instanceof BodyResponse)
+        {
+            byte expected[] = ((BodyResponse)expectedResponse).getBody();
+            byte received[] = response.getBody();
+
+            if ( (expected == null) && (received == null) )
+                return true;
+            if (expected == null)
+            {
+                result.setDescription("Expected no body, but received one");
+                return false;
+            }
+            if (received == null)
+            {
+                result.setDescription("Expected a body, but didn't get one");
+                return false;
+            }
+            if (received.length != expected.length)
+            {
+                result.setDescription("Expected " + expected.length + " bytes, but got " + received.length);
+                return false;
+            }
+
+            for (int i=0;i<expected.length; i++)
+            {
+                if (expected[i] != received[i])
+                {
+                    result.setDescription("Byte " + i + " was a " + String.valueOf(received[i]) + ", but we expected " + String.valueOf(expected[i]));
+                    return false;
+                }
+            }
+            return true;
+        }
+        else
+        {
+            return true;
         }
     }
 

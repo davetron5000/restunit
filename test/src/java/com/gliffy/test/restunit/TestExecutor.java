@@ -132,6 +132,88 @@ public class TestExecutor
         assert result.getResult() == Result.PASS : "Expected test to pass " + result.toString();
     }
 
+    @Test
+    public void testResultPopulationFailureHeadersBanned()
+    {
+        RestTest fakeTest = createTestForPopulationTest();
+
+        HttpResponse response = createMatchingResponse(fakeTest.getResponse());
+
+        // Make it so the response omits a header the test requires
+        response.getHeaders().put(fakeTest.getResponse().getBannedHeaders().iterator().next(),"BLAH");
+        testResultPopulation(fakeTest,response,Result.FAIL,"Expected test to fail, since we put a header that was banned in the response");
+    }
+
+    @Test
+    public void testResultPopulationFailureDifferentBody()
+    {
+        RestTest fakeTest = createTestForPopulationTest();
+
+        HttpResponse response = createMatchingResponse(fakeTest.getResponse());
+
+        byte copy[] = new byte[response.getBody().length];
+        for (int i=0;i<response.getBody().length; i++)
+        {
+            copy[i] = (byte)(255 - response.getBody()[i]);
+        }
+        response.setBody(copy);
+
+        testResultPopulation(fakeTest,response,Result.FAIL,"Expected test to fail, since we had the response send a shorter body");
+    }
+
+    @Test
+    public void testResultPopulationFailureShorterBody()
+    {
+        RestTest fakeTest = createTestForPopulationTest();
+
+        HttpResponse response = createMatchingResponse(fakeTest.getResponse());
+
+        byte copy[] = new byte[response.getBody().length - 1];
+        System.arraycopy(response.getBody(),0,copy,0,copy.length);
+        response.setBody(copy);
+
+        testResultPopulation(fakeTest,response,Result.FAIL,"Expected test to fail, since we had the response send a shorter body");
+    }
+
+    @Test
+    public void testResultPopulationFailureNoBody()
+    {
+        RestTest fakeTest = createTestForPopulationTest();
+
+        HttpResponse response = createMatchingResponse(fakeTest.getResponse());
+
+        response.setBody(new byte[0]);
+
+        testResultPopulation(fakeTest,response,Result.FAIL,"Expected test to fail, since we had the response send no body");
+    }
+
+    @Test
+    public void testResultPopulationFailureHeadersExpectedValue()
+    {
+        RestTest fakeTest = createTestForPopulationTest();
+
+        HttpResponse response = createMatchingResponse(fakeTest.getResponse());
+
+        // Make it so the response omits a header the test requires
+        response.getHeaders().put(TestFactory.HEADERS_WE_WONT_USE[2], 
+                response.getHeaders().get(TestFactory.HEADERS_WE_WONT_USE[2]) + "BLAH"
+                );
+
+        testResultPopulation(fakeTest,response,Result.FAIL,"Expected test to fail, since we changed the value of a header in the response");
+    }
+
+    @Test
+    public void testResultPopulationFailureHeadersExpected()
+    {
+        RestTest fakeTest = createTestForPopulationTest();
+
+        HttpResponse response = createMatchingResponse(fakeTest.getResponse());
+
+        // Make it so the response omits a header the test requires
+        response.getHeaders().remove(TestFactory.HEADERS_WE_WONT_USE[2]);
+        testResultPopulation(fakeTest,response,Result.FAIL,"Expected test to fail, since we removed a header from the response");
+    }
+
     /** Given a RestTestResponse, returns an HttpResponse that, if received, should indicate
      * that the two response match
      */
@@ -154,32 +236,6 @@ public class TestExecutor
         return response;
     }
 
-    @Test
-    public void testResultPopulationFailureHeadersBanned()
-    {
-        RestTest fakeTest = createTestForPopulationTest();
-
-        HttpResponse response = createMatchingResponse(fakeTest.getResponse());
-
-        // Make it so the response omits a header the test requires
-        response.getHeaders().put(fakeTest.getResponse().getBannedHeaders().iterator().next(),"BLAH");
-        testResultPopulation(fakeTest,response,Result.FAIL,"Expected test to fail, since we put a header that was banned in the response");
-    }
-
-    @Test
-    public void testResultPopulationFailureHeadersExpectedValue()
-    {
-        RestTest fakeTest = createTestForPopulationTest();
-
-        HttpResponse response = createMatchingResponse(fakeTest.getResponse());
-
-        // Make it so the response omits a header the test requires
-        response.getHeaders().put(TestFactory.HEADERS_WE_WONT_USE[2], 
-                response.getHeaders().get(TestFactory.HEADERS_WE_WONT_USE[2]) + "BLAH"
-                );
-
-        testResultPopulation(fakeTest,response,Result.FAIL,"Expected test to fail, since we changed the value of a header in the response");
-    }
 
     private void testResultPopulation(RestTest fakeTest, HttpResponse response, Result res, String error)
     {
@@ -193,17 +249,6 @@ public class TestExecutor
         assert result.getResult() == res : error + "(" + result.toString() + ")";
     }
 
-    @Test
-    public void testResultPopulationFailureHeadersExpected()
-    {
-        RestTest fakeTest = createTestForPopulationTest();
-
-        HttpResponse response = createMatchingResponse(fakeTest.getResponse());
-
-        // Make it so the response omits a header the test requires
-        response.getHeaders().remove(TestFactory.HEADERS_WE_WONT_USE[2]);
-        testResultPopulation(fakeTest,response,Result.FAIL,"Expected test to fail, since we removed a header from the response");
-    }
 
     private RestTest createTestForPopulationTest()
     {
