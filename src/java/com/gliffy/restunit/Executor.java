@@ -69,9 +69,9 @@ public class Executor
             throw new IllegalStateException();
 
         long testStartTime = System.currentTimeMillis();
-        ExecutionResult ex = new ExecutionResult();
-        ex.setTest(test);
-        ex.setExecutionDate(new java.util.Date());
+        ExecutionResult executionResult = new ExecutionResult();
+        executionResult.setTest(test);
+        executionResult.setExecutionDate(new java.util.Date());
 
         try
         {
@@ -91,25 +91,87 @@ public class Executor
             else
                 throw new IllegalArgumentException(test.getMethod() + " is not a supported HTTP method");
 
-            populateResult(test,ex,response);
-            return ex;
+            populateResult(test,executionResult,response);
+            return executionResult;
         }
         catch (MalformedURLException e)
         {
-            ex.setResult(Result.EXCEPTION);
-            ex.setThrowable(e);
+            executionResult.setResult(Result.EXCEPTION);
+            executionResult.setThrowable(e);
         }
-        ex.setExecutionTime(System.currentTimeMillis() - testStartTime);
-        return ex;
+        executionResult.setExecutionTime(System.currentTimeMillis() - testStartTime);
+        return executionResult;
     }
 
     private void populateResult(RestTest test, ExecutionResult result, HttpResponse response)
     {
         RestTestResponse expectedResponse = test.getResponse();
-        if (expectedResponse.getStatusCode() == response.getStatusCode())
-            result.setResult(Result.PASS);
-        else
+        if (expectedResponse == null)
+        {
+            throw new IllegalArgumentException("Test did not have an expected response");
+        }
+        if (expectedResponse.getStatusCode() != response.getStatusCode())
+        {
             result.setResult(Result.FAIL);
+            result.setDescription("Got status " + response.getStatusCode() + ", expected " + expectedResponse.getStatusCode());
+            return;
+        }
+
+        if (headersOK(expectedResponse,result,response))
+        {
+            result.setResult(Result.PASS);
+        }
+        else
+        {
+            result.setResult(Result.FAIL);
+        }
+    }
+
+    private boolean headersOK(RestTestResponse expectedResponse, ExecutionResult result, HttpResponse response)
+    {
+        Set<String> expectedHeaders = new HashSet<String>(expectedResponse.getRequiredHeaders());
+        expectedHeaders.addAll(expectedResponse.getHeaders().keySet());
+
+        for (String header: response.getHeaders().keySet())
+        {
+            if (expectedResponse.getBannedHeaders().contains(header))
+            {
+                result.setDescription("Recieved header '" + header + "', which the test says should NOT be received");
+                return false;
+            }
+
+            if (expectedHeaders.contains(header))
+            {
+                expectedHeaders.remove(header);
+                if (expectedResponse.getHeaders().containsKey(header))
+                {
+                    String headerValueGot = response.getHeaders().get(header);
+                    String headerValueExpected = expectedResponse.getHeaders().get(header);
+
+                    if (headerValueExpected == null)
+                        throw new IllegalArgumentException("Cannot expect a header value of null (" + header + ")");
+
+                    if (!headerValueExpected.equals(headerValueGot))
+                    {
+                        result.setDescription("Expected header '" + header + "' received value '" + headerValueGot + "', but test required '" + headerValueExpected + "'");
+                        return false;
+                    }
+                }
+            }
+        }
+        if (expectedHeaders.size() != 0)
+        {
+            StringBuilder b = new StringBuilder("Expected headers not received: ");
+            for (String header: expectedHeaders)
+            {
+                b.append(header);
+                b.append(",");
+            }
+            b.setLength(b.length()-1);
+            result.setDescription(b.toString());
+            return false;
+        }
+        return true;
     }
 
 }

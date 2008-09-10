@@ -52,6 +52,37 @@ public class TestFactory
         {"ghi","jklmn","opqrstuvwxy","z"},
     };
 
+    /** You can use this and be sure that random tests and responses will
+     * not use these
+     */
+    public static final String HEADERS_WE_WONT_USE[] = 
+    {
+        "WONTUSEfoo",
+        "WONTUSEbar",
+        "WONTUSEblah",
+        "WONTUSEbaz",
+        "WONTUSEquux",
+
+    };
+
+    private static final String BANNED_HEADERS[] = 
+    {
+        "BannedHeader1",
+        "BannedHeader2",
+        "BannedHeader3",
+        "BannedHeader4",
+        "BannedHeader5",
+    };
+
+    private static final String REQUIRED_HEADERS[] = 
+    {
+        "RequiredHeader1",
+        "RequiredHeader2",
+        "RequiredHeader3",
+        "RequiredHeader4",
+        "RequiredHeader5",
+    };
+
     private static final String HEADERS[] = 
     {
         "Header1",
@@ -184,11 +215,11 @@ public class TestFactory
         r.setStatusCode( ( (RANDOM.nextInt(4) + 1) * 100) + RANDOM.nextInt(2) );
         int headers = RANDOM.nextInt(HEADERS.length);
         for (int i=0;i<headers; i++)
-            r.getRequiredHeaders().add(random(HEADERS));
+            r.getRequiredHeaders().add(random(REQUIRED_HEADERS));
 
         headers = RANDOM.nextInt(HEADERS.length);
         for (int i=0;i<headers; i++)
-            r.getBannedHeaders().add(random(HEADERS));
+            r.getBannedHeaders().add(random(BANNED_HEADERS));
 
         headers = RANDOM.nextInt(HEADERS.length);
         for (int i=0;i<headers; i++)

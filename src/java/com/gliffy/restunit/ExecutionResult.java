@@ -11,6 +11,8 @@ public class ExecutionResult implements Serializable
     private long itsExecutionTime;
     private RestTest itsTest;
     private Throwable itsThrowable;
+    private String itsDescription;
+
 
     /** Results of the test execution.
      * @return the results of the test execution
@@ -67,15 +69,31 @@ public class ExecutionResult implements Serializable
         itsThrowable = i; 
     }
 
+    /** Returns a description of what happened, as provided by the executor of the test. 
+     * @return the executor-provided explanation of why the test didn't pass.
+     * */
+    public String getDescription() 
+    { 
+        return itsDescription; 
+    }
+
+    /** Set an explanation as to why the test failed; an assert message. 
+     * @param i the description
+     * */
+    public void setDescription(String i) 
+    { 
+        itsDescription = i; 
+    }
 
     /** Returns a simple description of what happened when the test ran.
      * @return a string with the description of this execution.
      */
     public String toString()
     {
+        String string = getTest().getName() + " " + getResult().getPastTense() + ": " + getDescription();
         if (getResult() == Result.EXCEPTION)
-            return getTest().getName() + " " + getResult().getPastTense() + " (Throwable was: " + (getThrowable() == null ? "null" : getThrowable().getMessage()) + ")";
+            return string + " (Throwable was: " + (getThrowable() == null ? "null" : getThrowable().getMessage()) + ")";
         else
-            return getTest().getName() + " " + getResult().getPastTense();
+            return string;
     }
 }
