@@ -162,6 +162,28 @@ public class TestExecutor
     }
 
     @Test
+    public void testResultPopulationFailureNoBodyReceived()
+    {
+        RestTest fakeTest = createTestForPopulationTest();
+
+        HttpResponse response = createMatchingResponse(fakeTest.getResponse());
+        response.setBody(null);
+
+        testResultPopulation(fakeTest,response,Result.FAIL,"Expected test to fail, since we expected no body, but had one sent");
+    }
+
+    @Test
+    public void testResultPopulationFailureNoBodyExpected()
+    {
+        RestTest fakeTest = createTestForPopulationTest();
+
+        HttpResponse response = createMatchingResponse(fakeTest.getResponse());
+
+        ((BodyResponse)(fakeTest.getResponse())).setBody(null);
+        testResultPopulation(fakeTest,response,Result.FAIL,"Expected test to fail, since we expected no body, but had one sent");
+    }
+
+    @Test
     public void testResultPopulationFailureShorterBody()
     {
         RestTest fakeTest = createTestForPopulationTest();
