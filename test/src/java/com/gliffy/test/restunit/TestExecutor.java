@@ -29,6 +29,28 @@ public class TestExecutor
         }
     }
 
+    @Test(dataProvider = "methods")
+    public void testBasicMethodNoBaseURL(String method)
+    {
+        Http mockHttp = getMockHttp(method.toUpperCase());
+
+        replay(mockHttp);
+
+        RestTest test = TestFactory.getRandomTest();
+        test.setURL("http://www.google.com/" + test.getURL());
+        test.setMethod(method.toUpperCase());
+        test.getResponse().setStatusCode(200);
+        clearHeaderRequirements(test);
+
+        Executor executor = new Executor();
+        executor.setHttp(mockHttp);
+        ExecutionResult result = executor.execute(test);
+
+        assert result.getResult() == Result.PASS : "Got " + result.getResult() + " for " + result.toString() + " instead of " + Result.PASS.toString();
+
+        verify(mockHttp);
+    }
+
     /** Runs a basic test for a method to see that it gets called.
      * @param method the method to use
      */

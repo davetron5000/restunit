@@ -9,6 +9,12 @@ import com.gliffy.restunit.http.*;
 import org.apache.commons.logging.*;
 
 /** Handles the nuts and bolts of executing the rest test.
+ * This class can be configured in two ways:
+ * <ul>
+ * <li>{@link com.gliffy.restunit.http.Http} - this implements the basic HTTP protocol and allows you to use any implementation
+ * you wish.  You must set something via {@link #setHttp(com.gliffy.restunit.http.Http}.</li>
+ * <li>BaseURL - you may optionally provide a base URL against which all requests are run.  This is handy if you don't want your tests to have full URLs in them</li>
+ * </ul>
 */
 public class Executor
 {
@@ -16,7 +22,6 @@ public class Executor
     private String itsBaseURL;
     private HttpRequestFactory itsRequestFactory;
     private Log itsLogger = LogFactory.getLog(Executor.class);
-
 
     /** Creates an executor, deferring setting of the Http imlementation until later.
      */
