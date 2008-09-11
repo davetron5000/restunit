@@ -94,6 +94,7 @@ public class TestExecutor
         RestTest mockTest = createMock(RestTest.class);
         RestTest randomTest = TestFactory.getRandomGetTest();
 
+        expect(mockTest.getName()).andReturn("Mock Test").anyTimes();
         expect(mockTest.getMethod()).andReturn("GET");
         expect(mockTest.getURL()).andReturn(randomTest.getURL());
         expect(mockTest.getParameters()).andReturn(randomTest.getParameters());

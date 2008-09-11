@@ -59,6 +59,7 @@
             classpathref="test.classpath"
             outputdir="${test.output.dir}"
             >
+            <jvmarg value="-Djava.util.logging.config.file=${conf.dir}/jdk.logging.properties" />
             <classfileset dir="${test.classes.dir}" />
         </testng>
     </target>

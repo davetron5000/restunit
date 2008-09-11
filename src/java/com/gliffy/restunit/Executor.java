@@ -6,6 +6,8 @@ import java.util.*;
 
 import com.gliffy.restunit.http.*;
 
+import org.apache.commons.logging.*;
+
 /** Handles the nuts and bolts of executing the rest test.
 */
 public class Executor
@@ -13,6 +15,8 @@ public class Executor
     private Http itsHttp;
     private String itsBaseURL;
     private HttpRequestFactory itsRequestFactory;
+    private Log itsLogger = LogFactory.getLog(Executor.class);
+
 
     /** Creates an executor, deferring setting of the Http imlementation until later.
      */
@@ -56,6 +60,7 @@ public class Executor
     {
         itsBaseURL = i; 
         itsRequestFactory = new HttpRequestFactory(itsBaseURL);
+        itsLogger.debug("New HttpRequestFactory created with base url " + itsBaseURL);
     }
 
     /** Executes a rest test.  No derived or dependent tests are executed.  If the http implementation has not been set, this will
@@ -66,8 +71,9 @@ public class Executor
     public ExecutionResult execute(RestTest test)
     {
         if (getHttp() == null)
-            throw new IllegalStateException();
+            throw new IllegalStateException("No HTTP implementation configured");
 
+        itsLogger.debug("Starting test " + test.getName());
         long testStartTime = System.currentTimeMillis();
         ExecutionResult executionResult = new ExecutionResult();
         executionResult.setTest(test);
@@ -76,6 +82,7 @@ public class Executor
         try
         {
             HttpRequest request = itsRequestFactory.createRequest(test);
+            itsLogger.debug("Request created for " + request.getURL().toString());
             HttpResponse response = null;
 
             if (test.getMethod().equalsIgnoreCase("get"))
@@ -91,6 +98,8 @@ public class Executor
             else
                 throw new IllegalArgumentException(test.getMethod() + " is not a supported HTTP method");
 
+            itsLogger.debug("Received response");
+
             populateResult(test,executionResult,response);
             return executionResult;
         }
@@ -100,6 +109,7 @@ public class Executor
             executionResult.setThrowable(e);
         }
         executionResult.setExecutionTime(System.currentTimeMillis() - testStartTime);
+        itsLogger.debug("Test execution complete");
         return executionResult;
     }
 
