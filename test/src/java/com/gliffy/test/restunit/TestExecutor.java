@@ -13,32 +13,6 @@ import static org.easymock.classextension.EasyMock.*;
 public class TestExecutor
 {
     @Test
-    public void testGet()
-    {
-        testBasicMethod("GET");
-    }
-    @Test
-    public void testHead()
-    {
-        testBasicMethod("HEAD");
-    }
-    @Test
-    public void testPut()
-    {
-        testBasicMethod("PUT");
-    }
-    @Test
-    public void testPost()
-    {
-        testBasicMethod("POST");
-    }
-    @Test
-    public void testDelete()
-    {
-        testBasicMethod("DELETE");
-    }
-
-    @Test
     public void testBadSetup()
     {
         Executor executor = new Executor();
@@ -58,7 +32,8 @@ public class TestExecutor
     /** Runs a basic test for a method to see that it gets called.
      * @param method the method to use
      */
-    private void testBasicMethod(String method)
+    @Test(dataProvider = "methods")
+    public void testBasicMethod(String method)
     {
         Http mockHttp = getMockHttp(method.toUpperCase());
 
@@ -78,17 +53,10 @@ public class TestExecutor
         verify(mockHttp);
     }
 
-    private void clearHeaderRequirements(RestTest test)
-    {
-        test.getResponse().setHeaders(new HashMap<String,String>());
-        test.getResponse().setBannedHeaders(new HashSet<String>());
-        test.getResponse().setRequiredHeaders(new HashSet<String>());
-    }
-
     /** This tests that the HttpRequest created by the Executor to give to Http was done using the actual
      * test information; the Executor must interrogate the test to find out what to request
      */
-    @Test(dependsOnMethods = { "testGet" } )
+    @Test
     public void testRequestCreation()
     {
         RestTest mockTest = createMock(RestTest.class);
@@ -124,6 +92,24 @@ public class TestExecutor
 
         HttpResponse response = createMatchingResponse(fakeTest.getResponse());
         Http mockHttp = getMockHttp("GET",response);
+        Executor executor = new Executor(mockHttp);
+        executor.setBaseURL("http://www.google.com");
+        replay(mockHttp);
+        ExecutionResult result = executor.execute(fakeTest);
+        verify(mockHttp);
+
+        assert result.getResult() == Result.PASS : "Expected test to pass " + result.toString();
+    }
+
+    @Test(dataProvider="methods")
+    public void testResultPopulationSuccessSimple(String method)
+    {
+        RestTest fakeTest = TestFactory.getRandomTest();
+        fakeTest.setMethod(method);
+        fakeTest.getResponse().setStatusCode(200);
+
+        HttpResponse response = createMatchingResponse(fakeTest.getResponse());
+        Http mockHttp = getMockHttp(method,response);
         Executor executor = new Executor(mockHttp);
         executor.setBaseURL("http://www.google.com");
         replay(mockHttp);
@@ -237,6 +223,17 @@ public class TestExecutor
         testResultPopulation(fakeTest,response,Result.FAIL,"Expected test to fail, since we removed a header from the response");
     }
 
+    @DataProvider(name = "methods")
+    public Object[][] getMethods() {
+        return new Object[][] {
+            { "GET" },
+            { "HEAD" },
+            { "POST" },
+            { "PUT" },
+            { "DELETE" },
+        };
+    }
+
     /** Given a RestTestResponse, returns an HttpResponse that, if received, should indicate
      * that the two response match
      */
@@ -319,6 +316,13 @@ public class TestExecutor
         else
             throw new IllegalArgumentException(method + " isn't supported");
         return mockHttp;
+    }
+
+    private void clearHeaderRequirements(RestTest test)
+    {
+        test.getResponse().setHeaders(new HashMap<String,String>());
+        test.getResponse().setBannedHeaders(new HashSet<String>());
+        test.getResponse().setRequiredHeaders(new HashSet<String>());
     }
 
 }
