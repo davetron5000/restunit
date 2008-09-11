@@ -44,7 +44,8 @@ public class TestExecutor
         test.getResponse().setStatusCode(200);
         clearHeaderRequirements(test);
 
-        Executor executor = new Executor(mockHttp);
+        Executor executor = new Executor();
+        executor.setHttp(mockHttp);
         executor.setBaseURL("http://www.google.com/");
         ExecutionResult result = executor.execute(test);
 
@@ -73,7 +74,8 @@ public class TestExecutor
         replay (mockHttp);
         replay (mockTest);
 
-        Executor executor =  new Executor(mockHttp);
+        Executor executor =  new Executor();
+        executor.setHttp(mockHttp);
         executor.setBaseURL("http://www.google.com/");
         executor.execute(mockTest);
 
@@ -92,7 +94,8 @@ public class TestExecutor
 
         HttpResponse response = createMatchingResponse(fakeTest.getResponse());
         Http mockHttp = getMockHttp("GET",response);
-        Executor executor = new Executor(mockHttp);
+        Executor executor = new Executor();
+        executor.setHttp(mockHttp);
         executor.setBaseURL("http://www.google.com");
         replay(mockHttp);
         ExecutionResult result = executor.execute(fakeTest);
@@ -110,7 +113,8 @@ public class TestExecutor
 
         HttpResponse response = createMatchingResponse(fakeTest.getResponse());
         Http mockHttp = getMockHttp(method,response);
-        Executor executor = new Executor(mockHttp);
+        Executor executor = new Executor();
+        executor.setHttp(mockHttp);
         executor.setBaseURL("http://www.google.com");
         replay(mockHttp);
         ExecutionResult result = executor.execute(fakeTest);
@@ -260,7 +264,8 @@ public class TestExecutor
     private void testResultPopulation(RestTest fakeTest, HttpResponse response, Result res, String error)
     {
         Http mockHttp = getMockHttp("GET",response);
-        Executor executor = new Executor(mockHttp);
+        Executor executor = new Executor();
+        executor.setHttp(mockHttp);
         executor.setBaseURL("http://www.google.com");
         replay(mockHttp);
         ExecutionResult result = executor.execute(fakeTest);

@@ -22,16 +22,7 @@ public class Executor
      */
     public Executor()
     {
-        this(null);
         itsRequestFactory = new HttpRequestFactory("");
-    }
-
-    /** Creates an executor with the given HTTP implementation.
-     * @param http an implementation of HTTP to use
-     */
-    public Executor(Http http)
-    {
-        itsHttp = http;
     }
 
     public Http getHttp() 
