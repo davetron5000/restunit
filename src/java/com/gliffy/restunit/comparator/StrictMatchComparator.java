@@ -6,13 +6,13 @@ import com.gliffy.restunit.*;
 import com.gliffy.restunit.http.*;
 
 /** A comparator that requires a strict match between received and expected results.
- * This uses the {@link StatusMatchComparator} and {@link HeaderComparator} to check those portions of the
+ * This uses the {@link StatusComparator} and {@link HeaderComparator} to check those portions of the
  * response.  The response bodies are compared via {@link #compareBodies(byte[],byte[])}.  This implementation requires
  * a byte-for-byte match.  You may subclass this and override that method to provide fuzzier matches.
  */
 public class StrictMatchComparator implements ResultComparator
 {
-    private StatusMatchComparator itsStatusComparator = new StatusMatchComparator();
+    private StatusComparator itsStatusComparator = new StatusComparator();
     private HeaderComparator itsHeaderComparator = new HeaderComparator();
 
     /** Compares the results as per the class Javadoc.

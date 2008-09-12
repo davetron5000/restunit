@@ -179,11 +179,25 @@ public class TestFactory
         t.setResponse(getRandomResponse());
     }
 
+    public static RestTestResponse getRandomResponse(int status)
+    {
+        RestTestResponse r = getRandomResponse();
+        r.setStatusCode(status);
+        return r;
+    }
+
     public static RestTestResponse getRandomResponse()
     {
         RestTestResponse r = new RestTestResponse();
         populate(r);
         return r;
+    }
+
+    public static BodyResponse getRandomBodyResponse(int status)
+    {
+        BodyResponse b = getRandomBodyResponse();
+        b.setStatusCode(status);
+        return b;
     }
 
     public static BodyResponse getRandomBodyResponse()
