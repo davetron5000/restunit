@@ -3,6 +3,7 @@ package com.gliffy.test.restunit;
 import java.util.*;
 
 import com.gliffy.restunit.*;
+import com.gliffy.restunit.http.*;
 
 import org.testng.*;
 
@@ -222,6 +223,28 @@ public class TestFactory
         success.setExecutionDate(new java.util.Date());
 
         return success;
+    }
+
+    /** Given a RestTestResponse, returns an HttpResponse that, if received, should indicate
+     * that the two response match
+     */
+    public static HttpResponse createMatchingResponse(RestTestResponse testResponse)
+    {
+        HttpResponse response = new HttpResponse();
+        response.setStatusCode(200);
+        if (testResponse instanceof BodyResponse)
+        {
+            BodyResponse bodyResponse = (BodyResponse)testResponse;
+            response.setBody(bodyResponse.getBody());
+        }
+        // set the headers to the exact values
+        response.setHeaders(new HashMap<String,String>(testResponse.getHeaders()));
+        // set some value for required headers
+        for (String header: testResponse.getRequiredHeaders())
+        {
+            response.getHeaders().put(header,"foo");
+        }
+        return response;
     }
 
     private static void populate(RestTestResponse r)

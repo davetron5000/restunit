@@ -114,7 +114,7 @@ public class TestExecutor
         fakeTest.setMethod("GET");
         fakeTest.getResponse().setStatusCode(200);
 
-        HttpResponse response = createMatchingResponse(fakeTest.getResponse());
+        HttpResponse response = TestFactory.createMatchingResponse(fakeTest.getResponse());
         Http mockHttp = getMockHttp("GET",response);
         Executor executor = new Executor();
         executor.setHttp(mockHttp);
@@ -133,7 +133,7 @@ public class TestExecutor
         fakeTest.setMethod(method);
         fakeTest.getResponse().setStatusCode(200);
 
-        HttpResponse response = createMatchingResponse(fakeTest.getResponse());
+        HttpResponse response = TestFactory.createMatchingResponse(fakeTest.getResponse());
         Http mockHttp = getMockHttp(method,response);
         Executor executor = new Executor();
         executor.setHttp(mockHttp);
@@ -150,7 +150,7 @@ public class TestExecutor
     {
         RestTest fakeTest = createTestForPopulationTest();
 
-        HttpResponse response = createMatchingResponse(fakeTest.getResponse());
+        HttpResponse response = TestFactory.createMatchingResponse(fakeTest.getResponse());
 
         // Make it so the response omits a header the test requires
         response.getHeaders().put(fakeTest.getResponse().getBannedHeaders().iterator().next(),"BLAH");
@@ -162,7 +162,7 @@ public class TestExecutor
     {
         RestTest fakeTest = createTestForPopulationTest();
 
-        HttpResponse response = createMatchingResponse(fakeTest.getResponse());
+        HttpResponse response = TestFactory.createMatchingResponse(fakeTest.getResponse());
 
         byte copy[] = new byte[response.getBody().length];
         for (int i=0;i<response.getBody().length; i++)
@@ -179,7 +179,7 @@ public class TestExecutor
     {
         RestTest fakeTest = createTestForPopulationTest();
 
-        HttpResponse response = createMatchingResponse(fakeTest.getResponse());
+        HttpResponse response = TestFactory.createMatchingResponse(fakeTest.getResponse());
         response.setBody(null);
 
         testResultPopulation(fakeTest,response,Result.FAIL,"Expected test to fail, since we expected no body, but had one sent");
@@ -190,7 +190,7 @@ public class TestExecutor
     {
         RestTest fakeTest = createTestForPopulationTest();
 
-        HttpResponse response = createMatchingResponse(fakeTest.getResponse());
+        HttpResponse response = TestFactory.createMatchingResponse(fakeTest.getResponse());
 
         ((BodyResponse)(fakeTest.getResponse())).setBody(null);
         testResultPopulation(fakeTest,response,Result.FAIL,"Expected test to fail, since we expected no body, but had one sent");
@@ -201,7 +201,7 @@ public class TestExecutor
     {
         RestTest fakeTest = createTestForPopulationTest();
 
-        HttpResponse response = createMatchingResponse(fakeTest.getResponse());
+        HttpResponse response = TestFactory.createMatchingResponse(fakeTest.getResponse());
 
         byte copy[] = new byte[response.getBody().length - 1];
         System.arraycopy(response.getBody(),0,copy,0,copy.length);
@@ -215,7 +215,7 @@ public class TestExecutor
     {
         RestTest fakeTest = createTestForPopulationTest();
 
-        HttpResponse response = createMatchingResponse(fakeTest.getResponse());
+        HttpResponse response = TestFactory.createMatchingResponse(fakeTest.getResponse());
 
         response.setBody(new byte[0]);
 
@@ -227,7 +227,7 @@ public class TestExecutor
     {
         RestTest fakeTest = createTestForPopulationTest();
 
-        HttpResponse response = createMatchingResponse(fakeTest.getResponse());
+        HttpResponse response = TestFactory.createMatchingResponse(fakeTest.getResponse());
 
         // Make it so the response omits a header the test requires
         response.getHeaders().put(TestFactory.HEADERS_WE_WONT_USE[2], 
@@ -242,7 +242,7 @@ public class TestExecutor
     {
         RestTest fakeTest = createTestForPopulationTest();
 
-        HttpResponse response = createMatchingResponse(fakeTest.getResponse());
+        HttpResponse response = TestFactory.createMatchingResponse(fakeTest.getResponse());
 
         // Make it so the response omits a header the test requires
         response.getHeaders().remove(TestFactory.HEADERS_WE_WONT_USE[2]);
@@ -259,29 +259,6 @@ public class TestExecutor
             { "DELETE" },
         };
     }
-
-    /** Given a RestTestResponse, returns an HttpResponse that, if received, should indicate
-     * that the two response match
-     */
-    private HttpResponse createMatchingResponse(RestTestResponse testResponse)
-    {
-        HttpResponse response = new HttpResponse();
-        response.setStatusCode(200);
-        if (testResponse instanceof BodyResponse)
-        {
-            BodyResponse bodyResponse = (BodyResponse)testResponse;
-            response.setBody(bodyResponse.getBody());
-        }
-        // set the headers to the exact values
-        response.setHeaders(new HashMap<String,String>(testResponse.getHeaders()));
-        // set some value for required headers
-        for (String header: testResponse.getRequiredHeaders())
-        {
-            response.getHeaders().put(header,"foo");
-        }
-        return response;
-    }
-
 
     private void testResultPopulation(RestTest fakeTest, HttpResponse response, Result res, String error)
     {
