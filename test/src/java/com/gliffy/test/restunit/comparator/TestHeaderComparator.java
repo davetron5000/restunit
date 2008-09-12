@@ -13,8 +13,8 @@ import org.testng.annotations.*;
 public class TestHeaderComparator
 {
     @DataProvider(name = "headerTests")
-    public Object[][] getMethods() {
-
+    public Object[][] getMethods() 
+    {
         Object [][] data = new Object[2][3];
         RestTestResponse testResponse = TestFactory.getRandomResponse();
         HttpResponse httpResponse = TestFactory.createMatchingResponse(testResponse);

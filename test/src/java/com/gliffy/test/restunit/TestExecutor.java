@@ -250,7 +250,8 @@ public class TestExecutor
     }
 
     @DataProvider(name = "methods")
-    public Object[][] getMethods() {
+    public Object[][] getMethods() 
+    {
         return new Object[][] {
             { "GET" },
             { "HEAD" },

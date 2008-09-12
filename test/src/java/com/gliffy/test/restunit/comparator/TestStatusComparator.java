@@ -13,7 +13,8 @@ import org.testng.annotations.*;
 public class TestStatusComparator
 {
     @DataProvider(name = "statusTests")
-    public Object[][] getMethods() {
+    public Object[][] getMethods() 
+    {
         HttpResponse httpResponse = new HttpResponse();
         httpResponse.setStatusCode(200);
         HttpResponse httpErrorResponse = new HttpResponse();
