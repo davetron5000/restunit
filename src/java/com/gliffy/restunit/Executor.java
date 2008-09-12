@@ -4,15 +4,16 @@ import java.io.*;
 import java.net.*;
 import java.util.*;
 
+import com.gliffy.restunit.comparator.*;
 import com.gliffy.restunit.http.*;
 
 import org.apache.commons.logging.*;
 
-/** Handles the nuts and bolts of executing the rest test.
- * This class can be configured in two ways:
+/** Handles the nuts and bolts of executing one test.
+ * This class's behavior can be configured in two ways:
  * <ul>
  * <li>{@link com.gliffy.restunit.http.Http} - this implements the basic HTTP protocol and allows you to use any implementation
- * you wish.  You must set something via {@link #setHttp(com.gliffy.restunit.http.Http}.</li>
+ * you wish.  You must set something via {@link #setHttp(com.gliffy.restunit.http.Http)}.</li>
  * <li>BaseURL - you may optionally provide a base URL against which all requests are run.  This is handy if you don't want your tests to have full URLs in them</li>
  * </ul>
 */
@@ -123,105 +124,16 @@ public class Executor
             return;
         }
 
-        if (headersOK(expectedResponse,result,response))
+        StrictMatchComparator comparator = new StrictMatchComparator();
+        ComparisonResult comparisonResult = comparator.compare(response,expectedResponse);
+        if (comparisonResult.getMatches())
         {
-            if (bodyMatches(expectedResponse,result,response))
-                result.setResult(Result.PASS);
-            else
-                result.setResult(Result.FAIL);
+            result.setResult(Result.PASS);
         }
         else
         {
             result.setResult(Result.FAIL);
+            result.setDescription(comparisonResult.getExplanation());
         }
     }
-
-    private boolean bodyMatches(RestTestResponse expectedResponse, ExecutionResult result, HttpResponse response)
-    {
-        if (expectedResponse instanceof BodyResponse)
-        {
-            byte expected[] = ((BodyResponse)expectedResponse).getBody();
-            byte received[] = response.getBody();
-
-            if ( (expected == null) && (received == null) )
-                return true;
-            if (expected == null)
-            {
-                result.setDescription("Expected no body, but received one");
-                return false;
-            }
-            if (received == null)
-            {
-                result.setDescription("Expected a body, but didn't get one");
-                return false;
-            }
-            if (received.length != expected.length)
-            {
-                result.setDescription("Expected " + expected.length + " bytes, but got " + received.length);
-                return false;
-            }
-
-            for (int i=0;i<expected.length; i++)
-            {
-                if (expected[i] != received[i])
-                {
-                    result.setDescription("Byte " + i + " was a " + String.valueOf(received[i]) + ", but we expected " + String.valueOf(expected[i]));
-                    return false;
-                }
-            }
-            return true;
-        }
-        else
-        {
-            return true;
-        }
-    }
-
-    private boolean headersOK(RestTestResponse expectedResponse, ExecutionResult result, HttpResponse response)
-    {
-        Set<String> expectedHeaders = new HashSet<String>(expectedResponse.getRequiredHeaders());
-        expectedHeaders.addAll(expectedResponse.getHeaders().keySet());
-
-        for (String header: response.getHeaders().keySet())
-        {
-            if (expectedResponse.getBannedHeaders().contains(header))
-            {
-                result.setDescription("Recieved header '" + header + "', which the test says should NOT be received");
-                return false;
-            }
-
-            if (expectedHeaders.contains(header))
-            {
-                expectedHeaders.remove(header);
-                if (expectedResponse.getHeaders().containsKey(header))
-                {
-                    String headerValueGot = response.getHeaders().get(header);
-                    String headerValueExpected = expectedResponse.getHeaders().get(header);
-
-                    if (headerValueExpected == null)
-                        throw new IllegalArgumentException("Cannot expect a header value of null (" + header + ")");
-
-                    if (!headerValueExpected.equals(headerValueGot))
-                    {
-                        result.setDescription("Expected header '" + header + "' received value '" + headerValueGot + "', but test required '" + headerValueExpected + "'");
-                        return false;
-                    }
-                }
-            }
-        }
-        if (expectedHeaders.size() != 0)
-        {
-            StringBuilder b = new StringBuilder("Expected headers not received: ");
-            for (String header: expectedHeaders)
-            {
-                b.append(header);
-                b.append(",");
-            }
-            b.setLength(b.length()-1);
-            result.setDescription(b.toString());
-            return false;
-        }
-        return true;
-    }
-
 }

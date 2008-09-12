@@ -9,9 +9,7 @@ public enum Result
     /** The test failed. */
     FAIL,
     /** There was an exception unrelated to the test while executing the test. */
-    EXCEPTION,
-    /** The test was not run. */
-    SKIP;
+    EXCEPTION;
 
     /** Gets a description of this result in past-tense.
      * This facilitates the creation of sentences like "test 64 failed".
@@ -27,8 +25,6 @@ public enum Result
                 return "failed";
             case EXCEPTION :
                 return "generated exception";
-            case SKIP :
-                return "skipped";
             default :
                 return null;
         }
