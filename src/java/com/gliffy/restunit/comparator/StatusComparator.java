@@ -7,7 +7,7 @@ import com.gliffy.restunit.http.*;
  * This is useful mostly for checking erroneous conditions, but is also useful for 
  * subclassing if you wish to customize the header comparison logic.
  */
-public class StatusMatchComparator implements ResultComparator
+public class StatusComparator implements ResultComparator
 {
     /** Requires only that the HTTP statusses match.
      * @param receivedResponse the response received
