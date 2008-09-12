@@ -7,7 +7,7 @@ import com.gliffy.restunit.http.*;
 
 /** A comparator that requires a strict match between received and expected results.
  * This uses the {@link StatusMatchComparator} and {@link HeaderComparator} to check those portions of the
- * response.  The response bodies are compared via {@link compareBodies(byte[],byte[])}.  This implementation requires
+ * response.  The response bodies are compared via {@link #compareBodies(byte[],byte[])}.  This implementation requires
  * a byte-for-byte match.  You may subclass this and override that method to provide fuzzier matches.
  */
 public class StrictMatchComparator implements ResultComparator
@@ -36,7 +36,6 @@ public class StrictMatchComparator implements ResultComparator
                     expectedBody = ((BodyResponse)expectedResponse).getBody();
 
                 return compareBodies(expectedBody,receivedBody);
-
             }
             else
             {

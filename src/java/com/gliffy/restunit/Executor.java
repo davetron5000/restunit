@@ -9,11 +9,13 @@ import com.gliffy.restunit.http.*;
 
 import org.apache.commons.logging.*;
 
-/** Handles the nuts and bolts of executing one test.
- * This class's behavior can be configured in two ways:
+/** Handles the nuts and bolts of executing one test.  This can be re-used, even if you wish to change HTTP implementations or comparators.
+ * This class's behavior can be configured in the following ways:
  * <ul>
  * <li>{@link com.gliffy.restunit.http.Http} - this implements the basic HTTP protocol and allows you to use any implementation
  * you wish.  You must set something via {@link #setHttp(com.gliffy.restunit.http.Http)}.</li>
+ * <li>{@link com.gliffy.restunit.comparator.ResultComparator} - this performs the comparison of results.  By default, this class uses the {@link
+ * com.gliffy.restunit.comparator.StrictMatchComparator}.  You may override this if custom comparisons are required.
  * <li>BaseURL - you may optionally provide a base URL against which all requests are run.  This is handy if you don't want your tests to have full URLs in them</li>
  * </ul>
 */
@@ -21,6 +23,8 @@ public class Executor
 {
     private Http itsHttp;
     private String itsBaseURL;
+    private ResultComparator itsComparator;
+
     private HttpRequestFactory itsRequestFactory;
     private Log itsLogger = LogFactory.getLog(Executor.class);
 
@@ -29,6 +33,7 @@ public class Executor
     public Executor()
     {
         itsRequestFactory = new HttpRequestFactory("");
+        setComparator(new StrictMatchComparator());
     }
 
     public Http getHttp() 
@@ -40,6 +45,17 @@ public class Executor
     { 
         itsHttp = i; 
     }
+
+    public ResultComparator getComparator() 
+    {
+        return itsComparator; 
+    }
+
+    public void setComparator(ResultComparator i) 
+    {
+        itsComparator = i; 
+    }
+
 
     /** Returns the base URL for all requests, or the empty string if not configured.
      * @return a non-null string representing the base URL for all requests.
@@ -124,16 +140,23 @@ public class Executor
             return;
         }
 
-        StrictMatchComparator comparator = new StrictMatchComparator();
-        ComparisonResult comparisonResult = comparator.compare(response,expectedResponse);
-        if (comparisonResult.getMatches())
+        try
         {
-            result.setResult(Result.PASS);
+            ComparisonResult comparisonResult = getComparator().compare(response,expectedResponse);
+            if (comparisonResult.getMatches())
+            {
+                result.setResult(Result.PASS);
+            }
+            else
+            {
+                result.setResult(Result.FAIL);
+                result.setDescription(comparisonResult.getExplanation());
+            }
         }
-        else
+        catch (Throwable t)
         {
-            result.setResult(Result.FAIL);
-            result.setDescription(comparisonResult.getExplanation());
+            result.setResult(Result.EXCEPTION);
+            result.setThrowable(t);
         }
     }
 }
