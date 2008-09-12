@@ -15,25 +15,49 @@ public class TestHeaderComparator
     @DataProvider(name = "headerTests")
     public Object[][] getMethods() 
     {
-        Object [][] data = new Object[2][3];
+        Object [][] data = new Object[5][4];
+
+        int i = 0;
         RestTestResponse testResponse = TestFactory.getRandomResponse();
         HttpResponse httpResponse = TestFactory.createMatchingResponse(testResponse);
         testResponse.setStatusCode(httpResponse.getStatusCode() + 1);
-        data[0] = new Object[] { httpResponse, testResponse, true, };
+        data[i] = new Object[] { httpResponse, testResponse, true, "Checking that exact headers will match, even if status code doesn't" };
+        i++;
 
         testResponse = TestFactory.getRandomBodyResponse();
         httpResponse = TestFactory.createMatchingResponse(testResponse);
+        httpResponse.getBody()[0]++;
         testResponse.setStatusCode(httpResponse.getStatusCode() + 1);
-        data[1] = new Object[] { httpResponse, testResponse, true, };
+        data[i] = new Object[] { httpResponse, testResponse, true, "Checking that exact headers will match, even if status and body don't"};
+        i++;
+
+        testResponse = TestFactory.getRandomBodyResponse();
+        httpResponse = TestFactory.createMatchingResponse(testResponse);
+        httpResponse.getHeaders().remove(testResponse.getHeaders().keySet().iterator().next());
+        data[i] = new Object[] { httpResponse, testResponse, false, "Checking that a missing header causes failure" };
+        i++;
+
+        testResponse = TestFactory.getRandomBodyResponse();
+        httpResponse = TestFactory.createMatchingResponse(testResponse);
+        testResponse.getRequiredHeaders().add(TestFactory.HEADERS_WE_WONT_USE[0]);
+        data[i] = new Object[] { httpResponse, testResponse, false, "Checking that a missing required header causes failure" };
+        i++;
+
+        testResponse = TestFactory.getRandomBodyResponse();
+        httpResponse = TestFactory.createMatchingResponse(testResponse);
+        testResponse.getBannedHeaders().add(httpResponse.getHeaders().keySet().iterator().next());
+        data[i] = new Object[] { httpResponse, testResponse, false, "Checking that a present banned header causes failure" };
+        i++;
+
         return data;
     }
         
     @Test(dataProvider = "headerTests")
-    public void test(HttpResponse httpResponse, RestTestResponse testResponse, boolean match)
+    public void test(HttpResponse httpResponse, RestTestResponse testResponse, boolean match, String testExplanation)
     {
         HeaderComparator comparator = new HeaderComparator();
         ComparisonResult result = comparator.compare(httpResponse,testResponse);
 
-        assert match == result.getMatches() : "Expected " + (match ? "comparison to match" : "comparison to not match") + (result.getMatches() ? "" : ("(" + result.getExplanation() + ")") );
+        assert match == result.getMatches() : "For test '" + testExplanation + "' : Expected " + (match ? "comparison to match" : "comparison to not match") + (result.getMatches() ? "" : ("(" + result.getExplanation() + ")") );
     }
 }
