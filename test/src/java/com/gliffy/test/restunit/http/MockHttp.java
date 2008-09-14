@@ -86,7 +86,23 @@ public class MockHttp implements Http
             return node.getHttp().put(request);
         }
     }
-    public HttpResponse post(HttpRequest request)
+
+    public final HttpResponse post(HttpRequest request)
+    {
+        String tunnel = request.getHeaders().get("X-HTTP-Method-Override");
+        if ("PUT".equals(tunnel))
+            return put(request);
+        else if ("DELETE".equals(tunnel))
+            return delete(request);
+        else if ("HEAD".equals(tunnel))
+            return head(request);
+        else if ("GET".equals(tunnel))
+            return get(request);
+        else
+            return doPost(request);
+    }
+
+    protected HttpResponse doPost(HttpRequest request)
     {
         String path = request.getURL().getPath();
         RESTTree node = findNode(path);

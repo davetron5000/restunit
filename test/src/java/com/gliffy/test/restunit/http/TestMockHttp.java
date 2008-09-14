@@ -62,17 +62,31 @@ public class TestMockHttp
     public void testPutDelete()
         throws Exception
     {
-        testPutPostDelete(false);
+        testPutPostDelete(false,false);
     }
 
     @Test
     public void testPostDelete()
         throws Exception
     {
-        testPutPostDelete(true);
+        testPutPostDelete(true,false);
     }
 
-    private void testPutPostDelete(boolean post)
+    @Test
+    public void testPutDeleteTunnel()
+        throws Exception
+    {
+        testPutPostDelete(false,true);
+    }
+
+    @Test
+    public void testPostDeleteTunnel()
+        throws Exception
+    {
+        testPutPostDelete(true,true);
+    }
+
+    private void testPutPostDelete(boolean post, boolean tunnel)
         throws Exception
     {
         Map<String,String> expectedMimeTypes = new HashMap<String,String>();
@@ -88,10 +102,22 @@ public class TestMockHttp
         request.setBody(body.getBytes());
         HttpResponse response = null;
         if (post)
+        {
             response = http.post(request);
+        }
         else
-            response = http.put(request);
-        
+        {
+            if (tunnel)
+            {
+                request.getHeaders().put("X-HTTP-Method-Override","PUT");
+                response = http.post(request);
+            }
+            else
+            {
+                response = http.put(request);
+            }
+        }
+
         assert response.getStatusCode() == 201 : "Got " + response.getStatusCode() + ", expected 201";
         assert response.getBody() == null : "Expected a null return body";
 
@@ -101,7 +127,15 @@ public class TestMockHttp
 
         assertGet(response,200,body,"text/plain");
 
-        response = http.delete(request);
+        if (tunnel)
+        {
+            request.getHeaders().put("X-HTTP-Method-Override","DELETE");
+            response = http.post(request);
+        }
+        else
+        {
+            response = http.delete(request);
+        }
 
         assert response.getStatusCode() == 200 : "Got " + response.getStatusCode() + ", expected 200";
 
