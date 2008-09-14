@@ -1,14 +1,17 @@
-package com.gliffy.test.restunit;
+package com.gliffy.test.restunit.deriver;
 
 import java.util.*;
 
 import com.gliffy.restunit.*;
 import com.gliffy.restunit.deriver.*;
 
+import com.gliffy.test.restunit.*;
+
 import org.testng.*;
 import org.testng.annotations.*;
 
-public class TestDerivers
+/** Tests the {@link com.gliffy.restunit.deriver.HeadDeriver} class */
+public class TestHeadDeriver
 {
     @Test
     public void testHeadDeriverWithHead()
