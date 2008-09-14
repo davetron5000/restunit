@@ -67,13 +67,24 @@ public class TestRunTest
     }
 
     @Test
-    public void testFailure()
+    public void testFailureFail()
+    {
+        testFailure(Result.FAIL);
+    }
+
+    @Test 
+    public void testFailureException()
+    {
+        testFailure(Result.EXCEPTION);
+    }
+
+    private void testFailure(Result res)
     {
         Executor executor = createMock(Executor.class);
         RestUnit restUnit = new RestUnit(executor);
         RestTest test = TestFactory.getRandomTest();
         ExecutionResult failure = new ExecutionResult();
-        failure.setResult(Result.FAIL);
+        failure.setResult(res);
         failure.setDescription("There is no description");
         failure.setTest(test);
 
@@ -89,7 +100,7 @@ public class TestRunTest
         {
             if (result.getTest() == test)
             {
-                assert result.getResult() == Result.FAIL : "Expected initial test to be a failuire";
+                assert result.getResult() == res : "Expected initial test to be " + res.toString();
             }
             else
             {
