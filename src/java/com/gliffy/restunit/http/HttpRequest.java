@@ -18,8 +18,14 @@ public class HttpRequest
     {
         itsURL = i; 
     }
+
+    /** Returns the map of headers, initializing it to an empty map if needed.
+     * @return a map of header name (without colon) to value.
+     */
     public Map<String,String> getHeaders() 
     {
+        if (itsHeaders == null)
+            itsHeaders = new HashMap<String,String>();
         return itsHeaders; 
     }
     public void setHeaders(Map<String,String> i) 
