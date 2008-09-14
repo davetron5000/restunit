@@ -73,6 +73,7 @@
             outputdir="${test.output.dir}"
             >
             <xmlfileset dir="${test.output.dir}" includes="testng-failed.xml"/>
+            <jvmarg value="-Djava.util.logging.config.file=${conf.dir}/jdk.logging.properties" />
         </testng>
     </target>
 
