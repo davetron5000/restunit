@@ -12,6 +12,9 @@ import static org.easymock.classextension.EasyMock.*;
 
 public class TestRunTest
 {
+    /** This test is a bit complicated, but it ensures that the derived tests are called
+     * and that the dependent ones are, as per the javadoc
+     */
     @Test
     public void testRunTest()
     {
@@ -67,18 +70,18 @@ public class TestRunTest
     }
 
     @Test
-    public void testFailureFail()
+    public void testForSkippedDependentsFail()
     {
-        testFailure(Result.FAIL);
+        testForSkippedDependents(Result.FAIL);
     }
 
     @Test 
-    public void testFailureException()
+    public void testForSkippedDependentsException()
     {
-        testFailure(Result.EXCEPTION);
+        testForSkippedDependents(Result.EXCEPTION);
     }
 
-    private void testFailure(Result res)
+    private void testForSkippedDependents(Result res)
     {
         Executor executor = createMock(Executor.class);
         RestUnit restUnit = new RestUnit(executor);
