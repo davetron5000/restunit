@@ -4,7 +4,16 @@ import java.util.*;
 
 import org.apache.commons.logging.*;
 
-/** This class executes {@link RestTest} instances. */
+/** This class executes {@link RestTest} instances. 
+ * It handles all derivation and results reporting.
+ * This can be configured in two main ways:
+ * <ul>
+ * <li>{@link com.gliffy.restunit.Executor} - this is the class that executes one test.  In most cases, you will want to use the default
+ * implementation configured, but you can entirely replace the implementation used via {@link #setExecutor(com.gliffy.restunit.Executor)}.</li>
+ * <li>{@link #addDeriver(com.gliffy.restunit.Derivable)} - this is used to add derivers to the test run.  Depending on the service under
+ * test, you may wish to derive numerous tests from the user-provided tests.  This is how you accomplish that.
+ * </ul>
+ * */
 public class RestUnit
 {
     private Set<Derivable> itsDerivers;

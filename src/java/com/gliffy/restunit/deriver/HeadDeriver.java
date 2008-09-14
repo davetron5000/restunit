@@ -6,7 +6,6 @@ import com.gliffy.restunit.*;
 */
 public class HeadDeriver implements Derivable
 {
-
     /** Returns a test identicial to the passed-in test, except that does a HEAD request and expects no return body.
      * This will return null if the test is not a 
      {@link com.gliffy.restunit.GetTest} or does not return true from
