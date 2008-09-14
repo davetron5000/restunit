@@ -19,7 +19,7 @@ public class StatusComparator implements ResultComparator
         if (receivedResponse.getStatusCode() == expectedResponse.getStatusCode())
             return ComparisonResult.MATCHES;
         else
-            return new ComparisonResult(false,"Expected " + expectedResponse.getStatusCode() + ", but received " + receivedResponse.getStatusCode());
+            return new ComparisonResult(false,"Expected status of " + expectedResponse.getStatusCode() + ", but received " + receivedResponse.getStatusCode());
 
     }
 }

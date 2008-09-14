@@ -231,11 +231,13 @@ public class TestFactory
     public static HttpResponse createMatchingResponse(RestTestResponse testResponse)
     {
         HttpResponse response = new HttpResponse();
-        response.setStatusCode(200);
+        response.setStatusCode(testResponse.getStatusCode());
         if (testResponse instanceof BodyResponse)
         {
-            BodyResponse bodyResponse = (BodyResponse)testResponse;
-            response.setBody(bodyResponse.getBody());
+            byte responseBytes[] = ((BodyResponse)testResponse).getBody();
+            byte copy[] = new byte[responseBytes.length];
+            System.arraycopy(responseBytes,0,copy,0,copy.length);
+            response.setBody(copy);
         }
         // set the headers to the exact values
         response.setHeaders(new HashMap<String,String>(testResponse.getHeaders()));
