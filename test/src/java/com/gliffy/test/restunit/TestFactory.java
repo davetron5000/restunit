@@ -169,7 +169,7 @@ public class TestFactory
         t.setSSLRequirement(SSLS.get(ssl));
         if (dependents)
         {
-            int deps = RANDOM.nextInt(5);
+            int deps = RANDOM.nextInt(5) + 1;
             for (int i=0;i<deps; i++)
             {
                 RestTest dep = new RestTest();
@@ -252,15 +252,15 @@ public class TestFactory
     private static void populate(RestTestResponse r)
     {
         r.setStatusCode( ( (RANDOM.nextInt(4) + 1) * 100) + RANDOM.nextInt(2) );
-        int headers = RANDOM.nextInt(HEADERS.length);
+        int headers = RANDOM.nextInt(HEADERS.length - 1) + 1;
         for (int i=0;i<headers; i++)
             r.getRequiredHeaders().add(random(REQUIRED_HEADERS));
 
-        headers = RANDOM.nextInt(HEADERS.length);
+        headers = RANDOM.nextInt(HEADERS.length - 1) + 1;
         for (int i=0;i<headers; i++)
             r.getBannedHeaders().add(random(BANNED_HEADERS));
 
-        headers = RANDOM.nextInt(HEADERS.length);
+        headers = RANDOM.nextInt(HEADERS.length - 1) + 1;
         for (int i=0;i<headers; i++)
             r.getHeaders().put(random(HEADERS),random(HEADER_VALUES));
     }

@@ -65,4 +65,36 @@ public class TestRunTest
         verify(mockDerivable1);
         verify(mockDerivable2);
     }
+
+    @Test
+    public void testFailure()
+    {
+        Executor executor = createMock(Executor.class);
+        RestUnit restUnit = new RestUnit(executor);
+        RestTest test = TestFactory.getRandomTest();
+        ExecutionResult failure = new ExecutionResult();
+        failure.setResult(Result.FAIL);
+        failure.setDescription("There is no description");
+        failure.setTest(test);
+
+        expect(executor.execute(test)).andReturn(failure);
+
+        replay(executor);
+
+        List<ExecutionResult> results = restUnit.runTest(test);
+
+        assert results.size() > 1 : "Expected more than one result";
+
+        for (ExecutionResult result: results)
+        {
+            if (result.getTest() == test)
+            {
+                assert result.getResult() == Result.FAIL : "Expected initial test to be a failuire";
+            }
+            else
+            {
+                assert result.getResult() == Result.SKIP : "Got a result of " + result.getResult() + " instead of " + Result.SKIP.toString() + "(" + result.toString() + ")";
+            }
+        }
+    }
 }

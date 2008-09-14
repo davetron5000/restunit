@@ -6,6 +6,7 @@ import com.gliffy.restunit.*;
 
 import org.testng.*;
 
+/** Utility methods for implementing tests */
 public class TestAssertions
 {
     private TestAssertions() {}

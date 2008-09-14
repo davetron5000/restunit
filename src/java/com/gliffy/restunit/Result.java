@@ -8,6 +8,8 @@ public enum Result
     PASS,
     /** The test failed. */
     FAIL,
+    /** The test was not executed. */
+    SKIP, 
     /** There was an exception unrelated to the test while executing the test. */
     EXCEPTION;
 
@@ -23,6 +25,8 @@ public enum Result
                 return "passed";
             case FAIL : 
                 return "failed";
+            case SKIP : 
+                return "skipped";
             case EXCEPTION :
                 return "generated exception";
             default :

@@ -90,7 +90,10 @@ public class ExecutionResult implements Serializable
      */
     public String toString()
     {
-        String string = getTest().getName() + " " + getResult().getPastTense() + ": " + getDescription();
+        String string = (getTest() == null ? "NULL TEST" : getTest().getName()) + " " 
+            + getResult().getPastTense() + ": " 
+            + getDescription();
+
         if (getResult() == Result.EXCEPTION)
             return string + " (Throwable was: " + (getThrowable() == null ? "null" : getThrowable().getMessage()) + ")";
         else
