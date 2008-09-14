@@ -59,7 +59,7 @@ public class TestHeaderComparator
         return data;
     }
         
-    @Test(dataProvider = "headerTests")
+    @Test(dataProvider = "headerTests", groups = { "comparator"} )
     public void test(HttpResponse httpResponse, RestTestResponse testResponse, boolean match, String testExplanation)
     {
         HeaderComparator comparator = new HeaderComparator();

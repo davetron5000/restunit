@@ -7,7 +7,7 @@ import org.testng.annotations.*;
 
 public class TestClone
 {
-    @Test
+    @Test( groups = { "clone" } )
     public void testRestTest()
     {
         RestTest t = TestFactory.getRandomTest();
@@ -29,7 +29,7 @@ public class TestClone
             assert clone.getResponse() != t.getResponse() : "Expected the responses to be different references";
     }
 
-    @Test(dependsOnMethods = { "testRestTest" })
+    @Test(dependsOnMethods = { "testRestTest" }, groups = {"clone"} )
     public void testGetTest()
     {
         GetTest t = TestFactory.getRandomGetTest();

@@ -61,7 +61,7 @@ public class TestStrictMatchComparator
         return testData.toArray(new Object[0][0]);
     }
         
-    @Test(dataProvider = "strictTests")
+    @Test(dataProvider = "strictTests", groups = { "comparator"} )
     public void test(HttpResponse httpResponse, RestTestResponse testResponse, boolean match, String description)
     {
         StrictMatchComparator comparator = new StrictMatchComparator();

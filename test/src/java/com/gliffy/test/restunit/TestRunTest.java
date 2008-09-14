@@ -15,7 +15,7 @@ public class TestRunTest
     /** This test is a bit complicated, but it ensures that the derived tests are called
      * and that the dependent ones are, as per the javadoc
      */
-    @Test
+    @Test(groups = {"runtest"} )
     public void testRunTest()
     {
         RestTest mockTest = createMock("mockTest", RestTest.class);
@@ -69,13 +69,13 @@ public class TestRunTest
         verify(mockDerivable2);
     }
 
-    @Test
+    @Test(groups = {"runtest"} )
     public void testForSkippedDependentsFail()
     {
         testForSkippedDependents(Result.FAIL);
     }
 
-    @Test 
+    @Test(groups = {"runtest"} )
     public void testForSkippedDependentsException()
     {
         testForSkippedDependents(Result.EXCEPTION);

@@ -31,7 +31,7 @@ public class TestStatusComparator
         };
     }
         
-    @Test(dataProvider = "statusTests")
+    @Test(dataProvider = "statusTests", groups = { "comparator"} )
     public void test(HttpResponse httpResponse, RestTestResponse testResponse, boolean match, String description)
     {
         StatusComparator comparator = new StatusComparator();

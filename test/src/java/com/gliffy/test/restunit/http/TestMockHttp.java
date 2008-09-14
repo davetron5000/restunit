@@ -13,7 +13,7 @@ import static org.easymock.classextension.EasyMock.*;
 
 public class TestMockHttp
 {
-    @Test
+    @Test(groups = "mockhttp")
     public void testSimpleGet()
         throws Exception
     {
@@ -58,28 +58,28 @@ public class TestMockHttp
         }
     }
 
-    @Test
+    @Test(groups = "mockhttp")
     public void testPutDelete()
         throws Exception
     {
         testPutPostDelete(false,false);
     }
 
-    @Test
+    @Test(groups = "mockhttp")
     public void testPostDelete()
         throws Exception
     {
         testPutPostDelete(true,false);
     }
 
-    @Test
+    @Test(groups = "mockhttp")
     public void testPutDeleteTunnel()
         throws Exception
     {
         testPutPostDelete(false,true);
     }
 
-    @Test
+    @Test(groups = "mockhttp")
     public void testPostDeleteTunnel()
         throws Exception
     {

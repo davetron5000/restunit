@@ -13,7 +13,7 @@ import org.testng.annotations.*;
 /** Tests the {@link com.gliffy.restunit.deriver.HeadDeriver} class */
 public class TestHeadDeriver
 {
-    @Test
+    @Test(groups = { "deriver" } )
     public void testHeadDeriverWithHead()
     {
         GetTest getTest = TestFactory.getRandomGetTest();
@@ -40,7 +40,7 @@ public class TestHeadDeriver
             : "Expected a derivedResponse body of nothing, not " + derivedResponse.getBody().length + " bytes";
     }
 
-    @Test
+    @Test(groups = { "deriver" } )
     public void testHeadDeriverWithoutHead()
     {
         GetTest getTest = TestFactory.getRandomGetTest();
@@ -53,7 +53,7 @@ public class TestHeadDeriver
         assert derived == null : "Expected null, since the test doesn't suport head";
     }
 
-    @Test
+    @Test(groups = { "deriver" } )
     public void testHeadDeriverNotGetTest()
     {
         RestTest test = TestFactory.getRandomTest();
@@ -65,7 +65,7 @@ public class TestHeadDeriver
         assert derived == null : "Expected null, since the test doesn't suport head";
     }
 
-    @Test
+    @Test(groups = { "deriver" } )
     public void testHeadDeriverNotGetMethod()
     {
         RestTest test = TestFactory.getRandomTest();

@@ -12,7 +12,7 @@ import static org.easymock.classextension.EasyMock.*;
 
 public class TestExecutor
 {
-    @Test
+    @Test(groups = {"executor"})
     public void testBadSetup()
     {
         Executor executor = new Executor();
@@ -29,7 +29,7 @@ public class TestExecutor
         }
     }
 
-    @Test(dataProvider = "methods")
+    @Test(dataProvider = "methods", groups={"executor"})
     public void testBasicMethodNoBaseURL(String method)
     {
         Http mockHttp = getMockHttp(method.toUpperCase());
@@ -54,7 +54,7 @@ public class TestExecutor
     /** Runs a basic test for a method to see that it gets called.
      * @param method the method to use
      */
-    @Test(dataProvider = "methods")
+    @Test(dataProvider = "methods", groups={"executor"})
     public void testBasicMethod(String method)
     {
         Http mockHttp = getMockHttp(method.toUpperCase());
@@ -79,7 +79,7 @@ public class TestExecutor
     /** This tests that the HttpRequest created by the Executor to give to Http was done using the actual
      * test information; the Executor must interrogate the test to find out what to request
      */
-    @Test
+    @Test(groups = {"executor"})
     public void testRequestCreation()
     {
         RestTest mockTest = createMock(RestTest.class);
@@ -107,7 +107,7 @@ public class TestExecutor
 
     /** This tests that the results returned from the MockHTTP service ended up in the right place in the test results
      */
-    @Test
+    @Test(groups = {"executor"})
     public void testResultPopulationSuccess()
     {
         RestTest fakeTest = TestFactory.getRandomGetTest();
@@ -126,7 +126,7 @@ public class TestExecutor
         assert result.getResult() == Result.PASS : "Expected test to pass " + result.toString();
     }
 
-    @Test(dataProvider="methods")
+    @Test(dataProvider="methods", groups = {"executor"})
     public void testResultPopulationSuccessSimple(String method)
     {
         RestTest fakeTest = TestFactory.getRandomTest();
@@ -145,7 +145,7 @@ public class TestExecutor
         assert result.getResult() == Result.PASS : "Expected test to pass " + result.toString();
     }
 
-    @Test
+    @Test(groups = {"executor"})
     public void testResultPopulationFailureHeadersBanned()
     {
         RestTest fakeTest = createTestForPopulationTest();
@@ -157,7 +157,7 @@ public class TestExecutor
         testResultPopulation(fakeTest,response,Result.FAIL,"Expected test to fail, since we put a header that was banned in the response");
     }
 
-    @Test
+    @Test(groups = {"executor"})
     public void testResultPopulationFailureDifferentBody()
     {
         RestTest fakeTest = createTestForPopulationTest();
@@ -174,7 +174,7 @@ public class TestExecutor
         testResultPopulation(fakeTest,response,Result.FAIL,"Expected test to fail, since we had the response send a shorter body");
     }
 
-    @Test
+    @Test(groups = {"executor"})
     public void testResultPopulationFailureNoBodyReceived()
     {
         RestTest fakeTest = createTestForPopulationTest();
@@ -185,7 +185,7 @@ public class TestExecutor
         testResultPopulation(fakeTest,response,Result.FAIL,"Expected test to fail, since we expected no body, but had one sent");
     }
 
-    @Test
+    @Test(groups = {"executor"})
     public void testResultPopulationFailureNoBodyExpected()
     {
         RestTest fakeTest = createTestForPopulationTest();
@@ -196,7 +196,7 @@ public class TestExecutor
         testResultPopulation(fakeTest,response,Result.FAIL,"Expected test to fail, since we expected no body, but had one sent");
     }
 
-    @Test
+    @Test(groups = {"executor"})
     public void testResultPopulationFailureShorterBody()
     {
         RestTest fakeTest = createTestForPopulationTest();
@@ -210,7 +210,7 @@ public class TestExecutor
         testResultPopulation(fakeTest,response,Result.FAIL,"Expected test to fail, since we had the response send a shorter body");
     }
 
-    @Test
+    @Test(groups = {"executor"})
     public void testResultPopulationFailureNoBody()
     {
         RestTest fakeTest = createTestForPopulationTest();
@@ -222,7 +222,7 @@ public class TestExecutor
         testResultPopulation(fakeTest,response,Result.FAIL,"Expected test to fail, since we had the response send no body");
     }
 
-    @Test
+    @Test(groups = {"executor"})
     public void testResultPopulationFailureHeadersExpectedValue()
     {
         RestTest fakeTest = createTestForPopulationTest();
@@ -237,7 +237,7 @@ public class TestExecutor
         testResultPopulation(fakeTest,response,Result.FAIL,"Expected test to fail, since we changed the value of a header in the response");
     }
 
-    @Test
+    @Test(groups = {"executor"})
     public void testResultPopulationFailureHeadersExpected()
     {
         RestTest fakeTest = createTestForPopulationTest();
