@@ -15,7 +15,7 @@ public class TestHeaderComparator
     @DataProvider(name = "headerTests")
     public Object[][] getMethods() 
     {
-        Object [][] data = new Object[5][4];
+        Object [][] data = new Object[6][4];
 
         int i = 0;
         RestTestResponse testResponse = TestFactory.getRandomResponse();
@@ -47,6 +47,13 @@ public class TestHeaderComparator
         httpResponse = TestFactory.createMatchingResponse(testResponse);
         testResponse.getBannedHeaders().add(httpResponse.getHeaders().keySet().iterator().next());
         data[i] = new Object[] { httpResponse, testResponse, false, "Checking that a present banned header causes failure" };
+        i++;
+
+        testResponse = TestFactory.getRandomBodyResponse();
+        testResponse.getHeaders().put(TestFactory.HEADERS_WE_WONT_USE[0],"foo");
+        httpResponse = TestFactory.createMatchingResponse(testResponse);
+        httpResponse.getHeaders().put(TestFactory.HEADERS_WE_WONT_USE[0],"foofoo");
+        data[i] = new Object[] { httpResponse, testResponse, false, "Checking that a required header with a different value causes failure" };
         i++;
 
         return data;
