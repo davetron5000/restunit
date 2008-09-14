@@ -133,12 +133,6 @@ public class Executor
         {
             throw new IllegalArgumentException("Test did not have an expected response");
         }
-        if (expectedResponse.getStatusCode() != response.getStatusCode())
-        {
-            result.setResult(Result.FAIL);
-            result.setDescription("Got status " + response.getStatusCode() + ", expected " + expectedResponse.getStatusCode());
-            return;
-        }
 
         try
         {
