@@ -20,7 +20,6 @@
     <property name="test.output.dir" value="${build.dir}/test-output"/>
     <property name="testng.failed.xml" value="${test.output.dir}/testng-failed.xml"/>
 
-    <property name="doc.dir" value="${basedir}/doc" />
     <property name="conf.dir" value="${basedir}/conf" />
 
     <!-- PATHS -->
