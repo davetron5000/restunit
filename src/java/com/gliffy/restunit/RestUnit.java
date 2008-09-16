@@ -84,7 +84,7 @@ public class RestUnit
             itsLogger.debug("Test passed");
             for (Derivable d: itsDerivers)
             {
-                RestTest derived = d.derive(test);
+                RestTest derived = d.derive(test,result.getResponse());
                 if (derived != null)
                 {
                     itsLogger.debug("Executing derived test");

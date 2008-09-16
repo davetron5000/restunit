@@ -31,7 +31,7 @@ public class Executor
     private ResultComparator itsComparator;
 
     private HttpRequestFactory itsRequestFactory;
-    private Log itsLogger = LogFactory.getLog(Executor.class);
+    private Log itsLogger = LogFactory.getLog(getClass());
 
     /** Creates an executor, deferring setting of the Http imlementation until later.
      */
@@ -141,6 +141,7 @@ public class Executor
 
         try
         {
+            result.setResponse(response);
             ComparisonResult comparisonResult = getComparator().compare(response,expectedResponse);
             if (comparisonResult.getMatches())
             {

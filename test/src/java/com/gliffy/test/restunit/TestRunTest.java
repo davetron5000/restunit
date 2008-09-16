@@ -30,18 +30,18 @@ public class TestRunTest
         
         expect(mockExecutor.execute(mockTest)).andReturn(TestFactory.getSuccessfulResult(mockTest));
         expect(mockTest.getDependentTests()).andReturn(oneTest);
-        expect(mockDerivable1.derive(mockTest)).andReturn(null);
-        expect(mockDerivable2.derive(mockTest)).andReturn(mockDerivedTest);
+        expect(mockDerivable1.derive(mockTest,null)).andReturn(null);
+        expect(mockDerivable2.derive(mockTest,null)).andReturn(mockDerivedTest);
 
         expect(mockExecutor.execute(mockDerivedTest)).andReturn(TestFactory.getSuccessfulResult(mockDerivedTest));
-        expect(mockDerivable1.derive(mockDerivedTest)).andReturn(null);
-        expect(mockDerivable2.derive(mockDerivedTest)).andReturn(null);
+        expect(mockDerivable1.derive(mockDerivedTest,null)).andReturn(null);
+        expect(mockDerivable2.derive(mockDerivedTest,null)).andReturn(null);
         Set<RestTest> emptySet = Collections.emptySet();
         expect(mockDerivedTest.getDependentTests()).andReturn(emptySet);
 
         expect(mockExecutor.execute(mockDependentTest)).andReturn(TestFactory.getSuccessfulResult(mockDerivedTest));
-        expect(mockDerivable1.derive(mockDependentTest)).andReturn(null);
-        expect(mockDerivable2.derive(mockDependentTest)).andReturn(null);
+        expect(mockDerivable1.derive(mockDependentTest,null)).andReturn(null);
+        expect(mockDerivable2.derive(mockDependentTest,null)).andReturn(null);
         expect(mockDependentTest.getDependentTests()).andReturn(emptySet);
         mockExecutor.setHttp(mockHTTP);
 

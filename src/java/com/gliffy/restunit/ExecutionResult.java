@@ -8,6 +8,8 @@ package com.gliffy.restunit;
 import java.io.*;
 import java.util.*;
 
+import com.gliffy.restunit.http.*;
+
 /** The results of a RestTest having been executed. */
 public class ExecutionResult implements Serializable
 {
@@ -17,7 +19,7 @@ public class ExecutionResult implements Serializable
     private RestTest itsTest;
     private Throwable itsThrowable;
     private String itsDescription;
-
+    private HttpResponse itsResponse;
 
     /** Results of the test execution.
      * @return the results of the test execution
@@ -104,4 +106,15 @@ public class ExecutionResult implements Serializable
         else
             return string;
     }
+
+    public HttpResponse getResponse() 
+    {
+        return itsResponse; 
+    }
+
+    public void setResponse(HttpResponse i) 
+    {
+        itsResponse = i; 
+    }
+
 }

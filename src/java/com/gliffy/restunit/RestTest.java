@@ -99,7 +99,7 @@ public class RestTest implements Serializable, Cloneable
      * */
     public String getName() 
     {
-        return itsName; 
+        return itsName == null ? "" : itsName; 
     }
     public void setName(String i) 
     {
@@ -111,7 +111,7 @@ public class RestTest implements Serializable, Cloneable
      */
     public String getDescription() 
     {
-        return itsDescription; 
+        return itsDescription == null ? "" : itsDescription; 
     }
     public void setDescription(String i) 
     {
@@ -176,5 +176,17 @@ public class RestTest implements Serializable, Cloneable
         {
             throw new RuntimeException(e);
         }
+    }
+
+    /** Returns the name and description of this test, or {@link java.lang.Object Object's} implementation
+     * if those weren't set.
+     * @return a string description of this test, if possible.
+     */
+    public String toString()
+    {
+        if ( (getName().equals("") ) && (getDescription().equals("")) )
+            return super.toString();
+        else
+            return getName() + " - " + getDescription();
     }
 }

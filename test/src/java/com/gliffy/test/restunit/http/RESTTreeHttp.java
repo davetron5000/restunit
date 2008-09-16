@@ -18,38 +18,41 @@ public class RESTTreeHttp implements Http
 
     public RESTTreeHttp()
     {
-        itsModDate = new java.util.Date(1221511285);
+        itsModDate = new java.util.Date(1221511000);
         itsETag = "foobarbazblahcruddo";
     }
     public HttpResponse get(HttpRequest request)
     {
-        boolean notModified = false;
+        boolean clientDataOld = true;
+        boolean hadModHeader = false;
         if (request.getHeaders().get("If-Modified-Since") != null)
         {
             try
             {
                 Date date = RFC822_DATE_FORMAT.parse(request.getHeaders().get("If-Modified-Since"));
+                hadModHeader = true;
                 if (date.before(itsModDate))
-                    notModified = false;
+                    clientDataOld = true;
                 else
-                    notModified = true;
+                    clientDataOld = false;
             }
             catch (ParseException e)
             {
+                e.printStackTrace();
                 // ignore for now
             }
         }
-        if (!notModified)
+        if (!hadModHeader && clientDataOld)
         {
-            if (request.getHeaders().get("If-None-Match") != null)
+            if (request.getHeaders().get(RestTestResponse.IF_NONE_MATCH_HEADER) != null)
             {
-                notModified = request.getHeaders().get("If-None-Match").equals(itsETag);
+                clientDataOld = !request.getHeaders().get(RestTestResponse.IF_NONE_MATCH_HEADER).equals(itsETag);
             }
         }
-        return get(request,notModified);
+        return get(request,clientDataOld);
     }
 
-    protected HttpResponse get(HttpRequest request, boolean notModified)
+    protected HttpResponse get(HttpRequest request, boolean clientDataOld)
     {
         return createHttpResponse(405);
     }

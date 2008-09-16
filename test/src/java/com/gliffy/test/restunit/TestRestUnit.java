@@ -3,6 +3,7 @@ package com.gliffy.test.restunit;
 import java.util.*;
 
 import com.gliffy.restunit.*;
+import com.gliffy.restunit.deriver.*;
 import com.gliffy.restunit.http.*;
 
 import com.gliffy.test.restunit.http.*;
@@ -12,6 +13,7 @@ import org.testng.annotations.*;
 
 import static org.easymock.classextension.EasyMock.*;
 
+//@Test (dependsOnGroups = { "mockhttp", "deriver", "executor", "clone", "comparator", "runtest" })
 public class TestRestUnit
 {
     private Map<String,String> itsService;
@@ -42,12 +44,32 @@ public class TestRestUnit
         executor.setHttp(itsHttp);
         executor.setBaseURL("http://www.google.com");
         itsRestUnit = new RestUnit(executor);
+        itsRestUnit.addDeriver(new HeadDeriver());
+        itsRestUnit.addDeriver(new ConditionalGetLastModifiedDeriver());
+        itsRestUnit.addDeriver(new ConditionalGetETagDeriver());
+    }
+
+    @DataProvider(name = "getBodyGetData")
+    public Object[][] getGetTestsOnly() 
+    {
+        List<Object[]> testData = new ArrayList<Object[]>();
+        for (String url: itsService.keySet())
+        {
+            Object oneTest[] = new Object[2];
+            String data = itsService.get(url);
+            oneTest[0] = url;
+            oneTest[1] = data;
+            if (data != null)
+            {
+                testData.add(oneTest);
+            }
+        }
+        return testData.toArray(new Object[0][0]);
     }
 
     @DataProvider(name = "getData")
     public Object[][] getTestsForEntireDataSet() 
     {
-        Object returnMe[][] = new Object[itsService.keySet().size()][4];
         List<Object[]> testData = new ArrayList<Object[]>();
         for (String url: itsService.keySet())
         {
@@ -85,8 +107,38 @@ public class TestRestUnit
         return testData.toArray(new Object[0][0]);
     }
 
+    @Test (dataProvider = "getBodyGetData")
+    public void testLastModHeaders(String url, String body)
+    {
+        GetTest test = new GetTest();
+        test.setURL(url);
+        test.setMethod("GET");
+        test.setName("Test of " + url);
+        test.setRespondsToHead(true);
+        test.setRespondsToIfModified(true);
+        test.setRespondsToIfNoneMatch(true);
+        BodyResponse response = new BodyResponse();
+        if (body.startsWith("<"))
+            response.setContentType("text/xml");
+        else
+            response.setContentType("text/plain");
+        response.setBody(body.getBytes());
+        response.setStatusCode(200);
+        response.getRequiredHeaders().add("Last-Modified");
+        response.getRequiredHeaders().add("ETag");
+        test.setResponse(response);
+
+        List<ExecutionResult> results = itsRestUnit.runTest(test);
+        for (ExecutionResult result: results)
+        {
+            assert result.getResult() == Result.PASS : "A test didn't pass " + result.getTest().toString() + " got: " + result.toString();
+        }
+        int numTests = 6;
+        assert results.size() == numTests : "Expected " + numTests + " total tests to have been run (our original and 3 derived).  Instead got " + results.size();
+    }
+
     /** This simply access the URL from our fake service and sees if a test will pass */
-    @Test (dependsOnGroups = { "mockhttp", "deriver", "executor", "clone", "comparator", "runtest" }, dataProvider = "getData")
+    @Test (dataProvider = "getData")
     public void testSimple(String url, String body, String method, int status)
     {
         RestTest test = new RestTest();

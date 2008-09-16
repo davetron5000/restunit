@@ -11,6 +11,18 @@ import java.util.*;
 /** An expected response. */
 public class RestTestResponse implements Serializable, Cloneable
 {
+    /** HTTP Header for Last-Modified. */
+    public static final String LAST_MODIFIED_HEADER = "Last-Modified";
+    /** HTTP Header for If-Modified-Since. */
+    public static final String IF_MODIFIED_SINCE_HEADER = "If-Modified-Since";
+    /** HTTP Header for ETag. */
+    public static final String ETAG_HEADER = "ETag";
+    /** HTTP Header for If-None-Match. */
+    public static final String IF_NONE_MATCH_HEADER = "If-None-Match";
+
+    /** Status code for 304/Not Modified. */
+    public static final int NOT_MODIFIED_STATUS = 304;
+
     private int itsStatusCode;
     private Set<String> itsRequiredHeaders;
     private Set<String> itsBannedHeaders;
@@ -34,7 +46,6 @@ public class RestTestResponse implements Serializable, Cloneable
      */
     public Set<String> getRequiredHeaders() 
     {
-
         if (itsRequiredHeaders == null)
             itsRequiredHeaders = new HashSet<String>();
         return itsRequiredHeaders; 
@@ -48,9 +59,7 @@ public class RestTestResponse implements Serializable, Cloneable
     /** Entries here indicate that the header <b>must not</b> be part of the response.
      * @return a set of headers that must not be part of the response for this test to pass. */
     public Set<String> getBannedHeaders() 
-
     {
-
         if (itsBannedHeaders == null)
             itsBannedHeaders = new HashSet<String>();
         return itsBannedHeaders; 
@@ -65,14 +74,13 @@ public class RestTestResponse implements Serializable, Cloneable
      * @return a map of headers and their expected values required for this test to pass
      */
     public Map<String,String> getHeaders() 
-
     {
-
         if (itsHeaders == null)
             itsHeaders = new HashMap<String,String>();
         return itsHeaders; 
 
     }
+
     public void setHeaders(Map<String,String> i) 
     {
         itsHeaders = i; 
@@ -83,28 +91,18 @@ public class RestTestResponse implements Serializable, Cloneable
      * @return a clone of this object.
      */
     public Object clone()
-
     {
-
         try
-
         {
-
             RestTestResponse clone = (RestTestResponse)super.clone();
             clone.setHeaders(new HashMap<String,String>(getHeaders()));
             clone.setBannedHeaders(new HashSet<String>(getBannedHeaders()));
             clone.setRequiredHeaders(new HashSet<String>(getRequiredHeaders()));
             return clone;
-
         }
         catch (CloneNotSupportedException e)
-
         {
-
             throw new RuntimeException(e);
-
         }
-
     }
-
 }

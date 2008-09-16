@@ -25,12 +25,13 @@ public class MockHttp implements Http
             if (value != null)
             {
                 node.setHttp(new RESTTreeHttp() {
-                    protected HttpResponse get(HttpRequest request,boolean notModified) 
+                    protected HttpResponse get(HttpRequest request,boolean clientDataOld) 
                     { 
-                        if (notModified)
-                            return createHttpResponse(304);
-                        else
+                        System.err.println("Get of " + request.getURL() + " is " + (clientDataOld ? "expired on client" : "up to date on client"));
+                        if (clientDataOld)
                             return createStringGetResponse(value); 
+                        else
+                            return createHttpResponse(304);
                     }
                 });
             }
@@ -38,14 +39,15 @@ public class MockHttp implements Http
             {
                 node.setHttp(new RESTTreeHttp() {
                     private byte value[];
-                    protected HttpResponse get(HttpRequest request, boolean notModified) 
+                    protected HttpResponse get(HttpRequest request, boolean clientDataOld) 
                     { 
+                        System.err.println("Get of " + request.getURL() + " is " + (clientDataOld ? "expired on client" : "up to date on client"));
                         if (value == null)
                             return createHttpResponse(404);
-                        else if (notModified)
-                            return createHttpResponse(304);
-                        else
+                        else if (clientDataOld)
                             return createBytesGetResponse(value); 
+                        else
+                            return createHttpResponse(304);
                     }
                     public HttpResponse put(HttpRequest request) { value = request.getBody(); return createHttpResponse(201); }
                     public HttpResponse post(HttpRequest request) { return put(request); }

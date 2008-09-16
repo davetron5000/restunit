@@ -21,7 +21,7 @@ public class TestHeadDeriver
         getTest.setMethod("GET");
 
         HeadDeriver deriver = new HeadDeriver();
-        RestTest derived = deriver.derive(getTest);
+        RestTest derived = deriver.derive(getTest,null);
 
         assert derived != null : "Expected a new test, since our test test responds to head";
         assert derived instanceof GetTest : "Expected a GetTest, not a " + derived.getClass().getName();
@@ -48,7 +48,7 @@ public class TestHeadDeriver
         getTest.setMethod("GET");
 
         HeadDeriver deriver = new HeadDeriver();
-        RestTest derived = deriver.derive(getTest);
+        RestTest derived = deriver.derive(getTest,null);
 
         assert derived == null : "Expected null, since the test doesn't suport head";
     }
@@ -60,7 +60,7 @@ public class TestHeadDeriver
         test.setMethod("GET");
 
         HeadDeriver deriver = new HeadDeriver();
-        RestTest derived = deriver.derive(test);
+        RestTest derived = deriver.derive(test,null);
 
         assert derived == null : "Expected null, since the test doesn't suport head";
     }
@@ -72,7 +72,7 @@ public class TestHeadDeriver
         test.setMethod("PUT");
 
         HeadDeriver deriver = new HeadDeriver();
-        RestTest derived = deriver.derive(test);
+        RestTest derived = deriver.derive(test,null);
 
         assert derived == null : "Expected null, since the test doesn't suport head";
     }

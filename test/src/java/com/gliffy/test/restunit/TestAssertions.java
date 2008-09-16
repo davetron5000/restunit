@@ -26,7 +26,6 @@ public class TestAssertions
         assert expected.getURL().equals(got.getURL()) : "Expected URL " + expected.getURL() + ", but got " + got.getURL();
         assert expected.getURL().equals(got.getURL()) : "Expected URL " + expected.getURL() + ", but got " + got.getURL();
         assert expected.getName().equals(got.getName()) : "Expected Name " + expected.getName() + ", but got " + got.getName();
-        assert expected.getDescription().equals(got.getDescription()) : "Expected Description " + expected.getDescription() + ", but got " + got.getDescription();
         assert expected.getSSLRequirement().equals(got.getSSLRequirement()) : "Expected SSLRequirement " + expected.getSSLRequirement() + ", but got " + got.getSSLRequirement();
         assertMapsEqual(expected.getHeaders(),got.getHeaders());
         assertParamsEqual(expected.getParameters(),got.getParameters());
