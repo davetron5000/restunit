@@ -45,7 +45,7 @@ public class TestRestUnit
     }
 
     @DataProvider(name = "getData")
-    public Object[][] getMethods() 
+    public Object[][] getTestsForEntireDataSet() 
     {
         Object returnMe[][] = new Object[itsService.keySet().size()][4];
         List<Object[]> testData = new ArrayList<Object[]>();
@@ -85,6 +85,7 @@ public class TestRestUnit
         return testData.toArray(new Object[0][0]);
     }
 
+    /** This simply access the URL from our fake service and sees if a test will pass */
     @Test (dependsOnGroups = { "mockhttp", "deriver", "executor", "clone", "comparator", "runtest" }, dataProvider = "getData")
     public void testSimple(String url, String body, String method, int status)
     {

@@ -25,17 +25,25 @@ public class MockHttp implements Http
             if (value != null)
             {
                 node.setHttp(new RESTTreeHttp() {
-                    public HttpResponse get(HttpRequest request) { return createStringGetResponse(value); }
+                    protected HttpResponse get(HttpRequest request,boolean notModified) 
+                    { 
+                        if (notModified)
+                            return createHttpResponse(304);
+                        else
+                            return createStringGetResponse(value); 
+                    }
                 });
             }
             else
             {
                 node.setHttp(new RESTTreeHttp() {
                     private byte value[];
-                    public HttpResponse get(HttpRequest request) 
+                    protected HttpResponse get(HttpRequest request, boolean notModified) 
                     { 
                         if (value == null)
                             return createHttpResponse(404);
+                        else if (notModified)
+                            return createHttpResponse(304);
                         else
                             return createBytesGetResponse(value); 
                     }
