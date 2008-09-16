@@ -18,6 +18,7 @@
         <module name="EmptyStatement"/>
         <module name="EqualsHashCode"/>
         <module name="ExplicitInitialization"/>
+        <module name="Header"><property name="headerFile" value="${checkstyle.header.file}" /><property name="ignoreLines" value="1" /></module>
         <module name="HiddenField"/>
         <module name="HideUtilityClassConstructor"/>
         <module name="IllegalCatch"> <property name="illegalClassNames" value="java.lang.Exception" /> </module>

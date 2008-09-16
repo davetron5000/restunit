@@ -131,6 +131,7 @@
             config="${conf.dir}/checkstyle.xml"
             classpathref="compile.classpath"
             >
+            <property key="checkstyle.header.file" value="${conf.dir}/java.header" />
             <fileset dir="${java.src.dir}" includes="**/*.java" />
         </checkstyle>
     </target>
