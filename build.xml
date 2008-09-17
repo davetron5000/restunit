@@ -13,6 +13,7 @@
     <property name="test.java.src.dir" value="${test.src.dir}/java"/>
 
     <property name="build.dir" value="${basedir}/build"/>
+    <property name="javadoc.dir" value="${build.dir}/doc/javadoc"/>
 
     <property name="classes.dir" value="${build.dir}/classes" />
     <property name="test.classes.dir" value="${build.dir}/test-classes" />
@@ -100,12 +101,21 @@
         description="Generates Javadoc"
         >
         <javadoc sourcepath="${java.src.dir}"
-            destdir="${build.dir}/doc/javadoc" 
+            destdir="${javadoc.dir}"
             classpathref="compile.classpath">
-            <link href="http://java.sun.com/j2se/1.4.2/docs/api/" />
+            <link href="http://java.sun.com/j2se/1.5/docs/api/" />
             <link href="http://java.sun.com/javaee/5/docs/api/" />
             <link href="http://logging.apache.org/log4j/1.2/apidocs/" />
+            <link href="http://commons.apache.org/logging/apidocs/" />
         </javadoc>
+    </target>
+
+    <target name="publish.javadoc" depends="javadoc"
+        description="Publishes javadoc to naildrivin5.com">
+        <scp verbose="true" sftp="true"
+            todir="davec@www.naildrivin5.com:/home/webadmin/naildrivin5.com/html/restunit/javadoc/" keyfile="/Users/davec/.ssh/id_dsa" passphrase="">
+            <fileset dir="${javadoc.dir}" />
+        </scp>
     </target>
 
     <!-- SUB TARGETS -->
