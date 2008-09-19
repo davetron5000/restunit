@@ -50,14 +50,14 @@ public class TestRestUnit
     }
 
     @Test
-    public void testDependentsSimple() { testDependents(false); }
+    public void testFunctionalSimple() { testFunctional(false); }
     @Test
-    public void testDependentsComplex() { testDependents(true); }
+    public void testFunctionalComplex() { testFunctional(true); }
 
-    /** tests dependents
+    /**
      * @param full if true, the GET test will say that should respond to HEAD, last-Modified and ETag.  If false, it won't
      */
-    private void testDependents(boolean full)
+    private void testFunctional(boolean full)
     {
         BodyTest test = new BodyTest();
         String url = "/accounts/BurnsODyne/users/lisa";
@@ -72,6 +72,14 @@ public class TestRestUnit
         response.setStatusCode(201);
         test.setResponse(response);
 
+        List<ExecutionResult> results = itsRestUnit.runTest(test);
+        for (ExecutionResult result: results)
+        {
+            assert result.getResult() == Result.PASS : "A test didn't pass " + result.getTest().toString() + " got: " + result.toString();
+        }
+        int numTests = 1;
+        assert results.size() == numTests : "Expected " + numTests + " total tests to have been run (our original and " + (numTests - 1) + "  derived).  Instead got " + results.size();
+
         GetTest getTest = new GetTest();
         getTest.setURL(url);
         getTest.setMethod("GET");
@@ -85,7 +93,13 @@ public class TestRestUnit
         getResponse.setBody(body.getBytes());
         getTest.setResponse(getResponse);
 
-        test.getDependentTests().add(getTest);
+        results = itsRestUnit.runTest(getTest);
+        for (ExecutionResult result: results)
+        {
+            assert result.getResult() == Result.PASS : "A test didn't pass " + result.getTest().toString() + " got: " + result.toString();
+        }
+        numTests = full ? 6 : 1;
+        assert results.size() == numTests : "Expected " + numTests + " total tests to have been run (our original and " + (numTests - 1) + "  derived).  Instead got " + results.size();
 
         RestTest deleteTest = new RestTest();
         deleteTest.setURL(url);
@@ -95,18 +109,14 @@ public class TestRestUnit
         deleteResponse.setStatusCode(200);
         deleteTest.setResponse(deleteResponse);
 
-        getTest.getDependentTests().add(deleteTest);
-
-        List<ExecutionResult> results = itsRestUnit.runTest(test);
-
+        results = itsRestUnit.runTest(deleteTest);
         for (ExecutionResult result: results)
         {
             assert result.getResult() == Result.PASS : "A test didn't pass " + result.getTest().toString() + " got: " + result.toString();
         }
-        int numTests = 3;
-        int derivedTests = full ? 5 : 0;
-        numTests += derivedTests;
+        numTests = 1;
         assert results.size() == numTests : "Expected " + numTests + " total tests to have been run (our original and " + (numTests - 1) + "  derived).  Instead got " + results.size();
+
     }
 
     @DataProvider(name = "getBodyGetData")

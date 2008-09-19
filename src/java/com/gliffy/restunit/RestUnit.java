@@ -63,7 +63,6 @@ public class RestUnit
      * <ol>
      * <li>The test itself.  
      * <li>Any tests derived from the derivers added via {@link #addDeriver(Derivable)}</li>
-     * <li>Any dependent tests.</li>
      * </ol>
      * @param test the test to run.  
      * @return the results of the execution.  This is a list, as the test passed-in could yield numerous tests.
@@ -91,23 +90,10 @@ public class RestUnit
                     results.addAll(runTest(derived));
                 }
             }
-            for (RestTest dep: test.getDependentTests())
-            {
-                itsLogger.debug("Executing dependant test");
-                results.addAll(runTest(dep));
-            }
         }
         else
         {
-            itsLogger.debug("Test failed, marking immediate children as skipped");
-            for (RestTest dep: test.getDependentTests())
-            {
-                ExecutionResult skipped = new ExecutionResult();
-                skipped.setTest(dep);
-                skipped.setResult(Result.SKIP);
-                skipped.setDescription("Parent did not pass");
-                results.add(skipped);
-            }
+            itsLogger.debug("Test failed");
         }
         itsLogger.debug("Returning " + results.size() + " results");
         return results;

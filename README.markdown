@@ -83,3 +83,17 @@ Presumably, a REST service has three layers:
 1. Data
 
 REST tests will ideally test the first two layers; As mentioned above, we wish to support using the actual database with known test data.  This may be inconvenient or impossible.  Tools exist to mock the database so as to still be able to test business logic.  Integrating (or rather, not preventing) this is desirable.  This may require some investigation into database mocking technology.
+
+## Open Issues regarding functional and derived tests
+
+One complication regarding derived tests is how to deal with tests derived from a non-idempotent (i.e. destructive) test.  As such, a derived test might fail if run immediately after its base test, though it may have succeeded if executed on its own from a known setup.
+
+Further complicating this is when executing tests as part of a functional test; would derived tests be run?
+
+Options:
+
+* Only GET/HEAD tests have automatically derived tests run
+* Group derived tests into a different test run, so that any setup can be done again
+* Facility for generating derived tests but not running them; basically a "compile step" for the tests that spits out any derived tests
+
+

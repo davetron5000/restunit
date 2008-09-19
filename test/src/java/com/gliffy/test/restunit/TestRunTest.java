@@ -20,16 +20,13 @@ public class TestRunTest
     {
         RestTest mockTest = createMock("mockTest", RestTest.class);
         RestTest mockDerivedTest = createMock("mockDerivedTest", RestTest.class);
-        RestTest mockDependentTest = createMock("mockDependentTest", RestTest.class);
         Executor mockExecutor = createMock(Executor.class);
         Http mockHTTP = createMock(Http.class);
         Derivable mockDerivable1 = createMock("mockDerivable1",Derivable.class);
         Derivable mockDerivable2 = createMock("mockDerivable2",Derivable.class);
         Set<RestTest> oneTest = new HashSet<RestTest>();
-        oneTest.add(mockDependentTest);
         
         expect(mockExecutor.execute(mockTest)).andReturn(TestFactory.getSuccessfulResult(mockTest));
-        expect(mockTest.getDependentTests()).andReturn(oneTest);
         expect(mockDerivable1.derive(mockTest,null)).andReturn(null);
         expect(mockDerivable2.derive(mockTest,null)).andReturn(mockDerivedTest);
 
@@ -37,12 +34,7 @@ public class TestRunTest
         expect(mockDerivable1.derive(mockDerivedTest,null)).andReturn(null);
         expect(mockDerivable2.derive(mockDerivedTest,null)).andReturn(null);
         Set<RestTest> emptySet = Collections.emptySet();
-        expect(mockDerivedTest.getDependentTests()).andReturn(emptySet);
 
-        expect(mockExecutor.execute(mockDependentTest)).andReturn(TestFactory.getSuccessfulResult(mockDerivedTest));
-        expect(mockDerivable1.derive(mockDependentTest,null)).andReturn(null);
-        expect(mockDerivable2.derive(mockDependentTest,null)).andReturn(null);
-        expect(mockDependentTest.getDependentTests()).andReturn(emptySet);
         mockExecutor.setHttp(mockHTTP);
 
         RestUnit unit = new RestUnit();
@@ -52,7 +44,6 @@ public class TestRunTest
 
         replay(mockTest);
         replay(mockDerivedTest);
-        replay(mockDependentTest);
         replay(mockExecutor);
         replay(mockDerivable1);
         replay(mockDerivable2);
@@ -63,7 +54,6 @@ public class TestRunTest
 
         verify(mockTest);
         verify(mockDerivedTest);
-        verify(mockDependentTest);
         verify(mockExecutor);
         verify(mockDerivable1);
         verify(mockDerivable2);
@@ -97,7 +87,7 @@ public class TestRunTest
 
         List<ExecutionResult> results = restUnit.runTest(test);
 
-        assert results.size() > 1 : "Expected more than one result";
+        assert results.size() == 1 : "Expected one result";
 
         for (ExecutionResult result: results)
         {

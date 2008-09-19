@@ -24,7 +24,6 @@ public class TestClone
         assert clone.getSSLRequirement().equals(t.getSSLRequirement()):  "Expected " + t.getSSLRequirement() + " for getSSLRequirement()";
         assert clone.getParameters() != t.getParameters() : "Expected that clone's parameters would be a different ref";
         assert clone.getHeaders() != t.getHeaders() : "Expected that clone's headers would be a different ref";
-        assert clone.getDependentTests() != t.getDependentTests() : "Expected that clone's dependent tests would be a different ref";
         if (t.getResponse() != null)
             assert clone.getResponse() != t.getResponse() : "Expected the responses to be different references";
     }

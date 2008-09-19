@@ -81,7 +81,7 @@ public class Executor
         itsLogger.debug("New HttpRequestFactory created with base url " + itsBaseURL);
     }
 
-    /** Executes a rest test.  No derived or dependent tests are executed.  If the http implementation has not been set, this will
+    /** Executes a rest test.  No derived tests are executed.  If the http implementation has not been set, this will
      * throw an {@link java.lang.IllegalStateException}.
      * @param test the test to execute.
      * @return the results of the test.  This will always return, no exceptions are thrown from this method

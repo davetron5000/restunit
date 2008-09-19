@@ -118,14 +118,14 @@ public class TestFactory
     public static RestTest getRandomTest()
     {
         RestTest t = new RestTest();
-        populateWithDependents(t);
+        populate(t);
         return t;
     }
 
     public static GetTest getRandomGetTest()
     {
         GetTest t = new GetTest();
-        populateWithDependents(t);
+        populate(t);
         popualteGet(t);
         t.setResponse(getRandomBodyResponse());
         return t;
@@ -138,9 +138,7 @@ public class TestFactory
         t.setRespondsToHead(RANDOM.nextBoolean());
     }
 
-    private static void populateWithDependents(RestTest t) { populate(t,true); }
-    private static void populateWithOutDependents(RestTest t){ populate(t,false); }
-    private static void populate(RestTest t, boolean dependents)
+    private static void populate(RestTest t)
     {
         int parts = RANDOM.nextInt(5) + 1;
 
@@ -167,16 +165,6 @@ public class TestFactory
         t.setDescription("A pretend Test");
         int ssl = RANDOM.nextInt(SSLS.size());
         t.setSSLRequirement(SSLS.get(ssl));
-        if (dependents)
-        {
-            int deps = RANDOM.nextInt(5) + 1;
-            for (int i=0;i<deps; i++)
-            {
-                RestTest dep = new RestTest();
-                populateWithOutDependents(dep);
-                t.getDependentTests().add(dep);
-            }
-        }
         t.setResponse(getRandomResponse());
     }
 

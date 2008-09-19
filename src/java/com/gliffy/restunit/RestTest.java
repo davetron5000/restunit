@@ -19,7 +19,6 @@ public class RestTest implements Serializable, Cloneable
     private String itsDescription;
     private RestTestResponse itsResponse;
     private SSLRequirement itsSSLRequirement;
-    private Set<RestTest> itsDependentTests;
 
     /** The URL being tested.  This can be a complete URL or a partial one; it depends on your runtime configuration.  The recommendation is
      * that your tests only have URLs relative to the REST service root 
@@ -139,20 +138,6 @@ public class RestTest implements Serializable, Cloneable
         itsSSLRequirement = i; 
     }
 
-    /** Any tests that are dependent on this one.
-     * @return a set of dependent tests.  The execution order is obviously not guaranteed.
-     */
-    public Set<RestTest> getDependentTests() 
-    {
-        if (itsDependentTests == null) 
-            itsDependentTests = new HashSet<RestTest>(); 
-        return itsDependentTests; 
-    }
-    public void setDependentTests(Set<RestTest> i) 
-    {
-        itsDependentTests = i; 
-    }
-
     /** Returns a deep-ish copy of this object.
      * All fields are copied as via {@link java.lang.Object#clone()}, however all internal collections are
      * also copied, so that you can freely change them in the returned object without affecting this one.
@@ -164,7 +149,6 @@ public class RestTest implements Serializable, Cloneable
         try
         {
             RestTest clone = (RestTest)super.clone();
-            clone.setDependentTests(new HashSet<RestTest>(getDependentTests()));
             if (getResponse() != null)
                 clone.setResponse((RestTestResponse)(getResponse().clone()));
             clone.setHeaders(new HashMap<String,String>(getHeaders()));
