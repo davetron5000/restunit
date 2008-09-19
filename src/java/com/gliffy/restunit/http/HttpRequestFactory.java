@@ -12,14 +12,14 @@ import java.util.*;
 import com.gliffy.restunit.*;
 
 /** This class produces {@link HttpRequest} objects based upon {@link com.gliffy.restunit.RestTest} objects.
- * This is the bridge between a human-usable test and the mechanics of HTTP.
+ * This is the bridge between a human-usable call and the mechanics of HTTP.
  */
 public class HttpRequestFactory
 {
     private String itsBaseURL;
 
     /** Create an HttpRequestFactory with the given baseURL.
-     * @param baseURL the base of all URLs that will be created.  If null, the tests
+     * @param baseURL the base of all URLs that will be created.  If null, the calls
      * will be assumed to have complete URLs in them
      */
     public HttpRequestFactory(String baseURL)
@@ -27,21 +27,21 @@ public class HttpRequestFactory
         itsBaseURL = baseURL == null ? "" : baseURL;
     }
 
-    /** Creates the HttpRequest using the baseURL and the provided test.
-     * @param test the test to use to create an HttpRequest
+    /** Creates the HttpRequest using the baseURL and the provided call.
+     * @param call the call to use to create an HttpRequest
      * @return an HttpRequest
-     * @throws MalformedURLException if the baseURL + the test URL do not create a valid URL.  This represents a problem with your configuration and/or tests.
+     * @throws MalformedURLException if the baseURL + the call URL do not create a valid URL.  This represents a problem with your configuration and/or calls.
      */
-    public HttpRequest createRequest(RestTest test)
+    public HttpRequest createRequest(RestCall call)
         throws MalformedURLException
     {
         HttpRequest request = new HttpRequest();
-        String url = createURL(test);
+        String url = createURL(call);
         request.setURL(new URL(url));
-        request.setHeaders(test.getHeaders());
-        if (test instanceof BodyTest)
+        request.setHeaders(call.getHeaders());
+        if (call instanceof BodyCall)
         {
-            BodyTest bodyTest = (BodyTest)test;
+            BodyCall bodyTest = (BodyCall)call;
             if (bodyTest.getBody() != null)
             {
                 request.getHeaders().put("Content-Type",bodyTest.getContentType());
@@ -56,13 +56,13 @@ public class HttpRequestFactory
         return request;
     }
 
-    private String createURL(RestTest test)
+    private String createURL(RestCall call)
     {
-        String queryString = createQueryString(test.getParameters());
+        String queryString = createQueryString(call.getParameters());
         if (queryString.length() > 0)
-            return itsBaseURL + test.getURL() + "?" + queryString;
+            return itsBaseURL + call.getURL() + "?" + queryString;
         else
-            return itsBaseURL + test.getURL();
+            return itsBaseURL + call.getURL();
     }
 
     private String createQueryString(Map<String,List<String>> params)

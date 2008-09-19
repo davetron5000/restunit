@@ -8,8 +8,8 @@ package com.gliffy.restunit;
 import java.io.*;
 import java.util.*;
 
-/** A test of REST service. */
-public class RestTest implements Serializable, Cloneable
+/** A call to a REST endpoint. This is essentially a test of an HTTP method to a URL */
+public class RestCall implements Serializable, Cloneable
 {
     private String itsURL;
     private String itsMethod;
@@ -17,12 +17,12 @@ public class RestTest implements Serializable, Cloneable
     private Map<String,String> itsHeaders;
     private String itsName;
     private String itsDescription;
-    private RestTestResponse itsResponse;
+    private RestCallResponse itsResponse;
     private SSLRequirement itsSSLRequirement;
 
-    /** The URL being tested.  This can be a complete URL or a partial one; it depends on your runtime configuration.  The recommendation is
-     * that your tests only have URLs relative to the REST service root 
-     * @return the URL being tested.
+    /** The URL being called.  This can be a complete URL or a partial one; it depends on your runtime configuration.  The recommendation is
+     * that your calls only have URLs relative to the REST service root 
+     * @return the URL being called.
      * */
     public String getURL() 
     {
@@ -46,7 +46,7 @@ public class RestTest implements Serializable, Cloneable
     }
 
     /** The parameters to include with the request. 
-     * @return the parameters to include in this test.
+     * @return the parameters to include in this call.
      * */
     public Map<String,List<String>> getParameters() 
     {
@@ -93,8 +93,8 @@ public class RestTest implements Serializable, Cloneable
         getHeaders().put(header,value);
     }
 
-    /** An arbitrary name for the test, to help you identify it in results.
-     * @return the name of this test.
+    /** An arbitrary name for the call, to help you identify it in results.
+     * @return the name of this call.
      * */
     public String getName() 
     {
@@ -105,8 +105,8 @@ public class RestTest implements Serializable, Cloneable
         itsName = i; 
     }
 
-    /** A longer description of what the test does.
-     * @return a string containing the longer description of this test.
+    /** A longer description of what the call does.
+     * @return a string containing the longer description of this call.
      */
     public String getDescription() 
     {
@@ -117,17 +117,17 @@ public class RestTest implements Serializable, Cloneable
         itsDescription = i; 
     }
 
-    public RestTestResponse getResponse() 
+    public RestCallResponse getResponse() 
     {
         return itsResponse; 
     }
-    public void setResponse(RestTestResponse i) 
+    public void setResponse(RestCallResponse i) 
     {
         itsResponse = i; 
     }
 
-    /** The SSL requirements for this test.
-     * @return the SSL requirements for this test.
+    /** The SSL requirements for this call.
+     * @return the SSL requirements for this call.
      */
     public SSLRequirement getSSLRequirement() 
     {
@@ -141,16 +141,16 @@ public class RestTest implements Serializable, Cloneable
     /** Returns a deep-ish copy of this object.
      * All fields are copied as via {@link java.lang.Object#clone()}, however all internal collections are
      * also copied, so that you can freely change them in the returned object without affecting this one.
-     * <b>Those</b> collections' contents will still be the same objects as this test, however.
+     * <b>Those</b> collections' contents will still be the same objects as this call, however.
      * @return a deeper-than-shallow copy of this object.
      */
     public Object clone()
     {
         try
         {
-            RestTest clone = (RestTest)super.clone();
+            RestCall clone = (RestCall)super.clone();
             if (getResponse() != null)
-                clone.setResponse((RestTestResponse)(getResponse().clone()));
+                clone.setResponse((RestCallResponse)(getResponse().clone()));
             clone.setHeaders(new HashMap<String,String>(getHeaders()));
             clone.setParameters(new HashMap<String,List<String>>(getParameters()));
 
@@ -162,9 +162,9 @@ public class RestTest implements Serializable, Cloneable
         }
     }
 
-    /** Returns the name and description of this test, or {@link java.lang.Object Object's} implementation
+    /** Returns the name and description of this call, or {@link java.lang.Object Object's} implementation
      * if those weren't set.
-     * @return a string description of this test, if possible.
+     * @return a string description of this call, if possible.
      */
     public String toString()
     {

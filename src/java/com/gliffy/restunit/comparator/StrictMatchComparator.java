@@ -26,7 +26,7 @@ public class StrictMatchComparator implements ResultComparator
      * is not, the "expected body" is assumed to be null.
      * @return A matching result if the bodies, status and headers match exactly as per the test response.
      */
-    public ComparisonResult compare(HttpResponse receivedResponse, RestTestResponse expectedResponse)
+    public ComparisonResult compare(HttpResponse receivedResponse, RestCallResponse expectedResponse)
     {
         ComparisonResult result = itsStatusComparator.compare(receivedResponse,expectedResponse);
         if (result.getMatches())

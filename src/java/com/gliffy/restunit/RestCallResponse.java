@@ -9,7 +9,7 @@ import java.io.*;
 import java.util.*;
 
 /** An expected response. */
-public class RestTestResponse implements Serializable, Cloneable
+public class RestCallResponse implements Serializable, Cloneable
 {
     /** HTTP Header for Last-Modified. */
     public static final String LAST_MODIFIED_HEADER = "Last-Modified";
@@ -42,7 +42,7 @@ public class RestTestResponse implements Serializable, Cloneable
 
     /** Entries here indicate that the header <b>must</b> be part of the response.  If a header is in the Map returned
      * by getHeaders, you don't need to duplicate it here.  Only use this if you just care that the header was included
-     * @return a set of headers that must be included in the response for this test to pass.
+     * @return a set of headers that must be included in the response for this call to be considered successful.
      */
     public Set<String> getRequiredHeaders() 
     {
@@ -57,7 +57,7 @@ public class RestTestResponse implements Serializable, Cloneable
     }
 
     /** Entries here indicate that the header <b>must not</b> be part of the response.
-     * @return a set of headers that must not be part of the response for this test to pass. */
+     * @return a set of headers that must not be part of the response for this call to be considered successful. */
     public Set<String> getBannedHeaders() 
     {
         if (itsBannedHeaders == null)
@@ -70,8 +70,8 @@ public class RestTestResponse implements Serializable, Cloneable
         itsBannedHeaders = i; 
     }
 
-    /** Entries here indicate that a header is required and that it should have the given value in order for the test to pass.
-     * @return a map of headers and their expected values required for this test to pass
+    /** Entries here indicate that a header is required and that it should have the given value in order for the call to be considered successful.
+     * @return a map of headers and their expected values required for this call to be considered successful
      */
     public Map<String,String> getHeaders() 
     {
@@ -94,7 +94,7 @@ public class RestTestResponse implements Serializable, Cloneable
     {
         try
         {
-            RestTestResponse clone = (RestTestResponse)super.clone();
+            RestCallResponse clone = (RestCallResponse)super.clone();
             clone.setHeaders(new HashMap<String,String>(getHeaders()));
             clone.setBannedHeaders(new HashSet<String>(getBannedHeaders()));
             clone.setRequiredHeaders(new HashSet<String>(getRequiredHeaders()));

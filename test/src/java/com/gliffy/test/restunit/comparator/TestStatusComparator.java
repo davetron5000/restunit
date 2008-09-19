@@ -20,19 +20,19 @@ public class TestStatusComparator
         HttpResponse httpErrorResponse = new HttpResponse();
         httpErrorResponse.setStatusCode(404);
         return new Object[][] {
-            { httpResponse, TestFactory.getRandomResponse(200), true, "Ensure that tests with same status are equal" },
-            { httpResponse, TestFactory.getRandomBodyResponse(200), true, "Ensure that tests with same status are equal for body response " },
-            { httpErrorResponse, TestFactory.getRandomResponse(404), true, "Ensure that tests with the same non-OK HTTP status are equal" },
-            { httpErrorResponse, TestFactory.getRandomBodyResponse(404), true, "Ensure success for same non-OK HTTP status for body response" },
-            { httpErrorResponse, TestFactory.getRandomResponse(400), false, "Check that different status fails" },
-            { httpErrorResponse, TestFactory.getRandomBodyResponse(400), false, "Check that different status fails for body response" },
-            { httpResponse, TestFactory.getRandomResponse(0), false, "Check that invalid HTTP status fails" },
-            { httpResponse, TestFactory.getRandomBodyResponse(0), false, "Check that invalid HTTP status fails for a body response" },
+            { httpResponse, CallFactory.getRandomResponse(200), true, "Ensure that tests with same status are equal" },
+            { httpResponse, CallFactory.getRandomBodyResponse(200), true, "Ensure that tests with same status are equal for body response " },
+            { httpErrorResponse, CallFactory.getRandomResponse(404), true, "Ensure that tests with the same non-OK HTTP status are equal" },
+            { httpErrorResponse, CallFactory.getRandomBodyResponse(404), true, "Ensure success for same non-OK HTTP status for body response" },
+            { httpErrorResponse, CallFactory.getRandomResponse(400), false, "Check that different status fails" },
+            { httpErrorResponse, CallFactory.getRandomBodyResponse(400), false, "Check that different status fails for body response" },
+            { httpResponse, CallFactory.getRandomResponse(0), false, "Check that invalid HTTP status fails" },
+            { httpResponse, CallFactory.getRandomBodyResponse(0), false, "Check that invalid HTTP status fails for a body response" },
         };
     }
         
     @Test(dataProvider = "statusTests", groups = { "comparator"} )
-    public void test(HttpResponse httpResponse, RestTestResponse testResponse, boolean match, String description)
+    public void test(HttpResponse httpResponse, RestCallResponse testResponse, boolean match, String description)
     {
         StatusComparator comparator = new StatusComparator();
         ComparisonResult result = comparator.compare(httpResponse,testResponse);

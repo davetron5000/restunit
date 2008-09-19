@@ -9,7 +9,7 @@ import java.io.*;
 import java.util.*;
 
 /** A response that has a body. */
-public class BodyResponse extends RestTestResponse
+public class BodyResponse extends RestCallResponse
 {
     /** The MIME type of the body content. */
     private String itsContentType;

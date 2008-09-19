@@ -11,8 +11,8 @@ public class TestAssertions
 {
     private TestAssertions() {}
 
-    /** Checks that the items in RestTestResponds are the same */
-    public static void assertEquals(RestTestResponse expected, RestTestResponse got)
+    /** Checks that the items in RestCallResponds are the same */
+    public static void assertEquals(RestCallResponse expected, RestCallResponse got)
     {
         assertSetsEqual(expected.getRequiredHeaders(),got.getRequiredHeaders());
         assertSetsEqual(expected.getBannedHeaders(),got.getBannedHeaders());

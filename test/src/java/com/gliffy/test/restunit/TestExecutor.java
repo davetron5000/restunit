@@ -20,7 +20,7 @@ public class TestExecutor
 
         try
         {
-            executor.execute(TestFactory.getRandomTest());
+            executor.execute(CallFactory.getRandomCall());
             assert false : "Expected an exception when HTTP wasn't configured";
         }
         catch (IllegalStateException e)
@@ -36,7 +36,7 @@ public class TestExecutor
 
         replay(mockHttp);
 
-        RestTest test = TestFactory.getRandomTest();
+        RestCall test = CallFactory.getRandomCall();
         test.setURL("http://www.google.com/" + test.getURL());
         test.setMethod(method.toUpperCase());
         test.getResponse().setStatusCode(200);
@@ -61,7 +61,7 @@ public class TestExecutor
 
         replay(mockHttp);
 
-        RestTest test = TestFactory.getRandomTest();
+        RestCall test = CallFactory.getRandomCall();
         test.setMethod(method.toUpperCase());
         test.getResponse().setStatusCode(200);
         clearHeaderRequirements(test);
@@ -82,27 +82,27 @@ public class TestExecutor
     @Test(groups = {"executor"})
     public void testRequestCreation()
     {
-        RestTest mockTest = createMock(RestTest.class);
-        RestTest randomTest = TestFactory.getRandomGetTest();
+        RestCall mockCall = createMock(RestCall.class);
+        RestCall randomCall = CallFactory.getRandomGetCall();
 
-        expect(mockTest.getName()).andReturn("Mock Test").anyTimes();
-        expect(mockTest.getMethod()).andReturn("GET");
-        expect(mockTest.getURL()).andReturn(randomTest.getURL());
-        expect(mockTest.getParameters()).andReturn(randomTest.getParameters());
-        expect(mockTest.getHeaders()).andReturn(randomTest.getHeaders());
-        expect(mockTest.getResponse()).andReturn(randomTest.getResponse());
+        expect(mockCall.getName()).andReturn("Mock Call").anyTimes();
+        expect(mockCall.getMethod()).andReturn("GET");
+        expect(mockCall.getURL()).andReturn(randomCall.getURL());
+        expect(mockCall.getParameters()).andReturn(randomCall.getParameters());
+        expect(mockCall.getHeaders()).andReturn(randomCall.getHeaders());
+        expect(mockCall.getResponse()).andReturn(randomCall.getResponse());
 
         Http mockHttp = getMockHttp("GET");
         replay (mockHttp);
-        replay (mockTest);
+        replay (mockCall);
 
         Executor executor =  new Executor();
         executor.setHttp(mockHttp);
         executor.setBaseURL("http://www.google.com/");
-        executor.execute(mockTest);
+        executor.execute(mockCall);
 
         verify(mockHttp);
-        verify(mockTest);
+        verify(mockCall);
     }
 
     /** This tests that the results returned from the MockHTTP service ended up in the right place in the test results
@@ -110,17 +110,17 @@ public class TestExecutor
     @Test(groups = {"executor"})
     public void testResultPopulationSuccess()
     {
-        RestTest fakeTest = TestFactory.getRandomGetTest();
-        fakeTest.setMethod("GET");
-        fakeTest.getResponse().setStatusCode(200);
+        RestCall fakeCall = CallFactory.getRandomGetCall();
+        fakeCall.setMethod("GET");
+        fakeCall.getResponse().setStatusCode(200);
 
-        HttpResponse response = TestFactory.createMatchingResponse(fakeTest.getResponse());
+        HttpResponse response = CallFactory.createMatchingResponse(fakeCall.getResponse());
         Http mockHttp = getMockHttp("GET",response);
         Executor executor = new Executor();
         executor.setHttp(mockHttp);
         executor.setBaseURL("http://www.google.com");
         replay(mockHttp);
-        ExecutionResult result = executor.execute(fakeTest);
+        ExecutionResult result = executor.execute(fakeCall);
         verify(mockHttp);
 
         assert result.getResult() == Result.PASS : "Expected test to pass " + result.toString();
@@ -129,17 +129,17 @@ public class TestExecutor
     @Test(dataProvider="methods", groups = {"executor"})
     public void testResultPopulationSuccessSimple(String method)
     {
-        RestTest fakeTest = TestFactory.getRandomTest();
-        fakeTest.setMethod(method);
-        fakeTest.getResponse().setStatusCode(200);
+        RestCall fakeCall = CallFactory.getRandomCall();
+        fakeCall.setMethod(method);
+        fakeCall.getResponse().setStatusCode(200);
 
-        HttpResponse response = TestFactory.createMatchingResponse(fakeTest.getResponse());
+        HttpResponse response = CallFactory.createMatchingResponse(fakeCall.getResponse());
         Http mockHttp = getMockHttp(method,response);
         Executor executor = new Executor();
         executor.setHttp(mockHttp);
         executor.setBaseURL("http://www.google.com");
         replay(mockHttp);
-        ExecutionResult result = executor.execute(fakeTest);
+        ExecutionResult result = executor.execute(fakeCall);
         verify(mockHttp);
 
         assert result.getResult() == Result.PASS : "Expected test to pass " + result.toString();
@@ -148,21 +148,21 @@ public class TestExecutor
     @Test(groups = {"executor"})
     public void testResultPopulationFailureHeadersBanned()
     {
-        RestTest fakeTest = createTestForPopulationTest();
+        RestCall fakeCall = createCallForPopulationCall();
 
-        HttpResponse response = TestFactory.createMatchingResponse(fakeTest.getResponse());
+        HttpResponse response = CallFactory.createMatchingResponse(fakeCall.getResponse());
 
         // Make it so the response omits a header the test requires
-        response.getHeaders().put(fakeTest.getResponse().getBannedHeaders().iterator().next(),"BLAH");
-        testResultPopulation(fakeTest,response,Result.FAIL,"Expected test to fail, since we put a header that was banned in the response");
+        response.getHeaders().put(fakeCall.getResponse().getBannedHeaders().iterator().next(),"BLAH");
+        testResultPopulation(fakeCall,response,Result.FAIL,"Expected test to fail, since we put a header that was banned in the response");
     }
 
     @Test(groups = {"executor"})
     public void testResultPopulationFailureDifferentBody()
     {
-        RestTest fakeTest = createTestForPopulationTest();
+        RestCall fakeCall = createCallForPopulationCall();
 
-        HttpResponse response = TestFactory.createMatchingResponse(fakeTest.getResponse());
+        HttpResponse response = CallFactory.createMatchingResponse(fakeCall.getResponse());
 
         byte copy[] = new byte[response.getBody().length];
         for (int i=0;i<response.getBody().length; i++)
@@ -171,82 +171,82 @@ public class TestExecutor
         }
         response.setBody(copy);
 
-        testResultPopulation(fakeTest,response,Result.FAIL,"Expected test to fail, since we had the response send a shorter body");
+        testResultPopulation(fakeCall,response,Result.FAIL,"Expected test to fail, since we had the response send a shorter body");
     }
 
     @Test(groups = {"executor"})
     public void testResultPopulationFailureNoBodyReceived()
     {
-        RestTest fakeTest = createTestForPopulationTest();
+        RestCall fakeCall = createCallForPopulationCall();
 
-        HttpResponse response = TestFactory.createMatchingResponse(fakeTest.getResponse());
+        HttpResponse response = CallFactory.createMatchingResponse(fakeCall.getResponse());
         response.setBody(null);
 
-        testResultPopulation(fakeTest,response,Result.FAIL,"Expected test to fail, since we expected no body, but had one sent");
+        testResultPopulation(fakeCall,response,Result.FAIL,"Expected test to fail, since we expected no body, but had one sent");
     }
 
     @Test(groups = {"executor"})
     public void testResultPopulationFailureNoBodyExpected()
     {
-        RestTest fakeTest = createTestForPopulationTest();
+        RestCall fakeCall = createCallForPopulationCall();
 
-        HttpResponse response = TestFactory.createMatchingResponse(fakeTest.getResponse());
+        HttpResponse response = CallFactory.createMatchingResponse(fakeCall.getResponse());
 
-        ((BodyResponse)(fakeTest.getResponse())).setBody(null);
-        testResultPopulation(fakeTest,response,Result.FAIL,"Expected test to fail, since we expected no body, but had one sent");
+        ((BodyResponse)(fakeCall.getResponse())).setBody(null);
+        testResultPopulation(fakeCall,response,Result.FAIL,"Expected test to fail, since we expected no body, but had one sent");
     }
 
     @Test(groups = {"executor"})
     public void testResultPopulationFailureShorterBody()
     {
-        RestTest fakeTest = createTestForPopulationTest();
+        RestCall fakeCall = createCallForPopulationCall();
 
-        HttpResponse response = TestFactory.createMatchingResponse(fakeTest.getResponse());
+        HttpResponse response = CallFactory.createMatchingResponse(fakeCall.getResponse());
 
         byte copy[] = new byte[response.getBody().length - 1];
         System.arraycopy(response.getBody(),0,copy,0,copy.length);
         response.setBody(copy);
 
-        testResultPopulation(fakeTest,response,Result.FAIL,"Expected test to fail, since we had the response send a shorter body");
+        testResultPopulation(fakeCall,response,Result.FAIL,"Expected test to fail, since we had the response send a shorter body");
     }
 
     @Test(groups = {"executor"})
     public void testResultPopulationFailureNoBody()
     {
-        RestTest fakeTest = createTestForPopulationTest();
+        RestCall fakeCall = createCallForPopulationCall();
 
-        HttpResponse response = TestFactory.createMatchingResponse(fakeTest.getResponse());
+        HttpResponse response = CallFactory.createMatchingResponse(fakeCall.getResponse());
 
         response.setBody(new byte[0]);
 
-        testResultPopulation(fakeTest,response,Result.FAIL,"Expected test to fail, since we had the response send no body");
+        testResultPopulation(fakeCall,response,Result.FAIL,"Expected test to fail, since we had the response send no body");
     }
 
     @Test(groups = {"executor"})
     public void testResultPopulationFailureHeadersExpectedValue()
     {
-        RestTest fakeTest = createTestForPopulationTest();
+        RestCall fakeCall = createCallForPopulationCall();
 
-        HttpResponse response = TestFactory.createMatchingResponse(fakeTest.getResponse());
+        HttpResponse response = CallFactory.createMatchingResponse(fakeCall.getResponse());
 
         // Make it so the response omits a header the test requires
-        response.getHeaders().put(TestFactory.HEADERS_WE_WONT_USE[2], 
-                response.getHeaders().get(TestFactory.HEADERS_WE_WONT_USE[2]) + "BLAH"
+        response.getHeaders().put(CallFactory.HEADERS_WE_WONT_USE[2], 
+                response.getHeaders().get(CallFactory.HEADERS_WE_WONT_USE[2]) + "BLAH"
                 );
 
-        testResultPopulation(fakeTest,response,Result.FAIL,"Expected test to fail, since we changed the value of a header in the response");
+        testResultPopulation(fakeCall,response,Result.FAIL,"Expected test to fail, since we changed the value of a header in the response");
     }
 
     @Test(groups = {"executor"})
     public void testResultPopulationFailureHeadersExpected()
     {
-        RestTest fakeTest = createTestForPopulationTest();
+        RestCall fakeCall = createCallForPopulationCall();
 
-        HttpResponse response = TestFactory.createMatchingResponse(fakeTest.getResponse());
+        HttpResponse response = CallFactory.createMatchingResponse(fakeCall.getResponse());
 
         // Make it so the response omits a header the test requires
-        response.getHeaders().remove(TestFactory.HEADERS_WE_WONT_USE[2]);
-        testResultPopulation(fakeTest,response,Result.FAIL,"Expected test to fail, since we removed a header from the response");
+        response.getHeaders().remove(CallFactory.HEADERS_WE_WONT_USE[2]);
+        testResultPopulation(fakeCall,response,Result.FAIL,"Expected test to fail, since we removed a header from the response");
     }
 
     @DataProvider(name = "methods")
@@ -261,30 +261,30 @@ public class TestExecutor
         };
     }
 
-    private void testResultPopulation(RestTest fakeTest, HttpResponse response, Result res, String error)
+    private void testResultPopulation(RestCall fakeCall, HttpResponse response, Result res, String error)
     {
         Http mockHttp = getMockHttp("GET",response);
         Executor executor = new Executor();
         executor.setHttp(mockHttp);
         executor.setBaseURL("http://www.google.com");
         replay(mockHttp);
-        ExecutionResult result = executor.execute(fakeTest);
+        ExecutionResult result = executor.execute(fakeCall);
         verify(mockHttp);
 
         assert result.getResult() == res : error + "(" + result.toString() + ")";
     }
 
 
-    private RestTest createTestForPopulationTest()
+    private RestCall createCallForPopulationCall()
     {
-        RestTest fakeTest = TestFactory.getRandomGetTest();
-        fakeTest.setMethod("GET");
-        fakeTest.getResponse().setStatusCode(200);
+        RestCall fakeCall = CallFactory.getRandomGetCall();
+        fakeCall.setMethod("GET");
+        fakeCall.getResponse().setStatusCode(200);
         // Make sure each has at least one value
-        fakeTest.getResponse().getBannedHeaders().add(TestFactory.HEADERS_WE_WONT_USE[0]);
-        fakeTest.getResponse().getRequiredHeaders().add(TestFactory.HEADERS_WE_WONT_USE[1]);
-        fakeTest.getResponse().getHeaders().put(TestFactory.HEADERS_WE_WONT_USE[2],TestFactory.HEADERS_WE_WONT_USE[3]);
-        return fakeTest;
+        fakeCall.getResponse().getBannedHeaders().add(CallFactory.HEADERS_WE_WONT_USE[0]);
+        fakeCall.getResponse().getRequiredHeaders().add(CallFactory.HEADERS_WE_WONT_USE[1]);
+        fakeCall.getResponse().getHeaders().put(CallFactory.HEADERS_WE_WONT_USE[2],CallFactory.HEADERS_WE_WONT_USE[3]);
+        return fakeCall;
     }
 
     /** Returns a mock http object (<b>not</b> in replay mode) with a non-mock, but fake, response.
@@ -323,7 +323,7 @@ public class TestExecutor
         return mockHttp;
     }
 
-    private void clearHeaderRequirements(RestTest test)
+    private void clearHeaderRequirements(RestCall test)
     {
         test.getResponse().setHeaders(new HashMap<String,String>());
         test.getResponse().setBannedHeaders(new HashSet<String>());

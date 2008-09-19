@@ -8,10 +8,10 @@ package com.gliffy.restunit;
 import java.io.*;
 import java.util.*;
 
-/** An test of a GET request. */
-public class GetTest extends RestTest 
+/** An call to a GET endpoint. */
+public class GetCall extends RestCall 
 {
-    /** true if this test should respond to HEAD requests. */
+    /** true if this call should respond to HEAD requests. */
     private boolean itsRespondsToHead;
 
     /** True if conditional gets based upon date are supported. */

@@ -13,10 +13,10 @@ import org.apache.commons.logging.*;
  * It handles all derivation and results reporting.
  * This can be configured in two main ways:
  * <ul>
- * <li>{@link com.gliffy.restunit.Executor} - this is the class that executes one test.  In most cases, you will want to use the default
+ * <li>{@link com.gliffy.restunit.Executor} - this is the class that executes one call.  In most cases, you will want to use the default
  * implementation configured, but you can entirely replace the implementation used via {@link #setExecutor(com.gliffy.restunit.Executor)}.</li>
- * <li>{@link #addDeriver(com.gliffy.restunit.Derivable)} - this is used to add derivers to the test run.  Depending on the service under
- * test, you may wish to derive numerous tests from the user-provided tests.  This is how you accomplish that.
+ * <li>{@link #addDeriver(com.gliffy.restunit.Derivable)} - this is used to add derivers to the call run.  Depending on the service under
+ * call, you may wish to derive numerous calls from the user-provided calls.  This is how you accomplish that.
  * </ul>
  * */
 public class RestUnit
@@ -33,7 +33,7 @@ public class RestUnit
     }
 
     /** Create a new RestUnit. 
-     * @param executor the test executor to use
+     * @param executor the call executor to use
      */
     public RestUnit(Executor executor)
     {
@@ -41,8 +41,8 @@ public class RestUnit
         itsExecutor = executor;
     }
 
-    /** Adds derivers to be used on all tests.
-     * @param d the Derivable that will be used to derive new tests.
+    /** Adds derivers to be used on all calls.
+     * @param d the Derivable that will be used to derive new calls.
      */
     public void addDeriver(Derivable d)
     {
@@ -58,35 +58,35 @@ public class RestUnit
         itsExecutor = i; 
     }
 
-    /** This executes a rest test, and possibly derived tests.
+    /** This executes a rest call, and possibly derived calls.
      * This will run as follows (a failure, skip, or exception at any step, stops the process):
      * <ol>
-     * <li>The test itself.  
-     * <li>Any tests derived from the derivers added via {@link #addDeriver(Derivable)}</li>
+     * <li>The call itself.  
+     * <li>Any calls derived from the derivers added via {@link #addDeriver(Derivable)}</li>
      * </ol>
-     * @param test the test to run.  
-     * @return the results of the execution.  This is a list, as the test passed-in could yield numerous tests.
+     * @param call the call to run.  
+     * @return the results of the execution.  This is a list, as the call passed-in could yield numerous calls.
      * The results are inserted in the order executed (or examined and skipped).  
      */
-    public List<ExecutionResult> runTest(RestTest test)
+    public List<ExecutionResult> runTest(RestCall call)
     {
         if (getExecutor() == null)
-            throw new IllegalStateException("You may not run tests without a configured executor either via the constructor or setExecutor");
+            throw new IllegalStateException("You may not run calls without a configured executor either via the constructor or setExecutor");
 
-        itsLogger.debug("Executing test " + test.toString());
+        itsLogger.debug("Executing call " + call.toString());
 
         List<ExecutionResult> results = new ArrayList<ExecutionResult>();
-        ExecutionResult result = getExecutor().execute(test);
+        ExecutionResult result = getExecutor().execute(call);
         results.add(result);
         if (result.getResult() == Result.PASS)
         {
             itsLogger.debug("Test passed");
             for (Derivable d: itsDerivers)
             {
-                RestTest derived = d.derive(test,result.getResponse());
+                RestCall derived = d.derive(call,result.getResponse());
                 if (derived != null)
                 {
-                    itsLogger.debug("Executing derived test");
+                    itsLogger.debug("Executing derived call");
                     results.addAll(runTest(derived));
                 }
             }

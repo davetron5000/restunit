@@ -8,13 +8,13 @@ package com.gliffy.restunit;
 import java.io.*;
 import java.util.*;
 
-/** An test of a request that has a body. */
-public class BodyTest extends RestTest
+/** A call of a request that has a body. */
+public class BodyCall extends RestCall
 {
     /** The MIME type of the body. */
     private String itsContentType;
 
-    /** The body to send in the test, as bytes. */
+    /** The body to send in the call, as bytes. */
     private byte[] itsBody;
 
     public String getContentType() 

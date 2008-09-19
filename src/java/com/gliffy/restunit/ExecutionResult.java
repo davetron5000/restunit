@@ -16,13 +16,13 @@ public class ExecutionResult implements Serializable
     private Result itsResult;
     private Date itsExecutionDate;
     private long itsExecutionTime;
-    private RestTest itsTest;
+    private RestCall itsCall;
     private Throwable itsThrowable;
     private String itsDescription;
     private HttpResponse itsResponse;
 
-    /** Results of the test execution.
-     * @return the results of the test execution
+    /** Results of the call execution.
+     * @return the results of the call execution
      */
     public Result getResult() 
     {
@@ -42,8 +42,8 @@ public class ExecutionResult implements Serializable
         itsExecutionDate = i; 
     }
 
-    /** Milliseconds it took for the test to run.
-     * @return number of millisecond elapsed while the test ran.
+    /** Milliseconds it took for the call to run.
+     * @return number of millisecond elapsed while the call ran.
      */
     public long getExecutionTime() 
     {
@@ -54,16 +54,16 @@ public class ExecutionResult implements Serializable
         itsExecutionTime = i; 
     }
 
-    /** The test that was run.
-     * @return the test that was run
+    /** The call that was run.
+     * @return the call that was run
      */
-    public RestTest getTest() 
+    public RestCall getCall() 
     {
-        return itsTest; 
+        return itsCall; 
     }
-    public void setTest(RestTest i) 
+    public void setCall(RestCall i) 
     {
-        itsTest = i; 
+        itsCall = i; 
     }
 
     public Throwable getThrowable() 
@@ -76,15 +76,15 @@ public class ExecutionResult implements Serializable
         itsThrowable = i; 
     }
 
-    /** Returns a description of what happened, as provided by the executor of the test. 
-     * @return the executor-provided explanation of why the test didn't pass.
+    /** Returns a description of what happened, as provided by the executor of the call. 
+     * @return the executor-provided explanation of why the call didn't pass.
      * */
     public String getDescription() 
     { 
         return itsDescription; 
     }
 
-    /** Set an explanation as to why the test failed; an assert message. 
+    /** Set an explanation as to why the call failed; an assert message. 
      * @param i the description
      * */
     public void setDescription(String i) 
@@ -92,12 +92,12 @@ public class ExecutionResult implements Serializable
         itsDescription = i; 
     }
 
-    /** Returns a simple description of what happened when the test ran.
+    /** Returns a simple description of what happened when the call ran.
      * @return a string with the description of this execution.
      */
     public String toString()
     {
-        String string = (getTest() == null ? "NULL TEST" : getTest().getName()) + " " 
+        String string = (getCall() == null ? "NULL TEST" : getCall().getName()) + " " 
             + getResult().getPastTense() + ": " 
             + getDescription();
 

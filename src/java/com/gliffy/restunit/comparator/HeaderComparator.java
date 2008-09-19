@@ -25,7 +25,7 @@ public class HeaderComparator implements ResultComparator
      * @param expectedResponse the response expected.
      * @return true if the headers match (see class Javadoc).
      */
-    public ComparisonResult compare(HttpResponse receivedResponse, RestTestResponse expectedResponse)
+    public ComparisonResult compare(HttpResponse receivedResponse, RestCallResponse expectedResponse)
     {
         Set<String> expectedHeaders = new HashSet<String>(expectedResponse.getRequiredHeaders());
         expectedHeaders.addAll(expectedResponse.getHeaders().keySet());

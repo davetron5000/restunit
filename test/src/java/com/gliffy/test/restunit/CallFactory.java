@@ -7,7 +7,7 @@ import com.gliffy.restunit.http.*;
 
 import org.testng.*;
 
-public class TestFactory
+public class CallFactory
 {
     private static final String URL_PARTS[] = 
     {
@@ -115,30 +115,30 @@ public class TestFactory
         return array[RANDOM.nextInt(array.length)];
     }
 
-    public static RestTest getRandomTest()
+    public static RestCall getRandomCall()
     {
-        RestTest t = new RestTest();
+        RestCall t = new RestCall();
         populate(t);
         return t;
     }
 
-    public static GetTest getRandomGetTest()
+    public static GetCall getRandomGetCall()
     {
-        GetTest t = new GetTest();
+        GetCall t = new GetCall();
         populate(t);
         popualteGet(t);
         t.setResponse(getRandomBodyResponse());
         return t;
     }
 
-    private static void popualteGet(GetTest t)
+    private static void popualteGet(GetCall t)
     {
         t.setRespondsToIfNoneMatch(RANDOM.nextBoolean());
         t.setRespondsToIfModified(RANDOM.nextBoolean());
         t.setRespondsToHead(RANDOM.nextBoolean());
     }
 
-    private static void populate(RestTest t)
+    private static void populate(RestCall t)
     {
         int parts = RANDOM.nextInt(5) + 1;
 
@@ -161,23 +161,23 @@ public class TestFactory
         {
             t.addHeader(random(HEADERS), random(HEADER_VALUES));
         }
-        t.setName("Pretend Test");
-        t.setDescription("A pretend Test");
+        t.setName("Pretend Call");
+        t.setDescription("A pretend Call");
         int ssl = RANDOM.nextInt(SSLS.size());
         t.setSSLRequirement(SSLS.get(ssl));
         t.setResponse(getRandomResponse());
     }
 
-    public static RestTestResponse getRandomResponse(int status)
+    public static RestCallResponse getRandomResponse(int status)
     {
-        RestTestResponse r = getRandomResponse();
+        RestCallResponse r = getRandomResponse();
         r.setStatusCode(status);
         return r;
     }
 
-    public static RestTestResponse getRandomResponse()
+    public static RestCallResponse getRandomResponse()
     {
-        RestTestResponse r = new RestTestResponse();
+        RestCallResponse r = new RestCallResponse();
         populate(r);
         return r;
     }
@@ -202,21 +202,21 @@ public class TestFactory
         return r;
     }
 
-    public static ExecutionResult getSuccessfulResult(RestTest test)
+    public static ExecutionResult getSuccessfulResult(RestCall test)
     {
         ExecutionResult success = new ExecutionResult();
         success.setResult(Result.PASS);
-        success.setTest(test);
+        success.setCall(test);
         success.setExecutionTime(1L);
         success.setExecutionDate(new java.util.Date());
 
         return success;
     }
 
-    /** Given a RestTestResponse, returns an HttpResponse that, if received, should indicate
+    /** Given a RestCallResponse, returns an HttpResponse that, if received, should indicate
      * that the two response match
      */
-    public static HttpResponse createMatchingResponse(RestTestResponse testResponse)
+    public static HttpResponse createMatchingResponse(RestCallResponse testResponse)
     {
         HttpResponse response = new HttpResponse();
         response.setStatusCode(testResponse.getStatusCode());
@@ -237,7 +237,7 @@ public class TestFactory
         return response;
     }
 
-    private static void populate(RestTestResponse r)
+    private static void populate(RestCallResponse r)
     {
         r.setStatusCode( ( (RANDOM.nextInt(4) + 1) * 100) + RANDOM.nextInt(2) );
         int headers = RANDOM.nextInt(HEADERS.length - 1) + 1;

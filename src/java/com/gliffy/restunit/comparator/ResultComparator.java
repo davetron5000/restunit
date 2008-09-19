@@ -22,6 +22,6 @@ public interface ResultComparator
      * throw for exceptional conditions unrelated to result comparison.  This allows implementors to
      * just focuse on comparing the results. 
      */
-    ComparisonResult compare(HttpResponse receivedResponse, RestTestResponse expectedResponse)
+    ComparisonResult compare(HttpResponse receivedResponse, RestCallResponse expectedResponse)
         throws Exception;
 }

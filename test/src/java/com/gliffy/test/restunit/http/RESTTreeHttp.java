@@ -44,9 +44,9 @@ public class RESTTreeHttp implements Http
         }
         if (!hadModHeader && clientDataOld)
         {
-            if (request.getHeaders().get(RestTestResponse.IF_NONE_MATCH_HEADER) != null)
+            if (request.getHeaders().get(RestCallResponse.IF_NONE_MATCH_HEADER) != null)
             {
-                clientDataOld = !request.getHeaders().get(RestTestResponse.IF_NONE_MATCH_HEADER).equals(itsETag);
+                clientDataOld = !request.getHeaders().get(RestCallResponse.IF_NONE_MATCH_HEADER).equals(itsETag);
             }
         }
         return get(request,clientDataOld);

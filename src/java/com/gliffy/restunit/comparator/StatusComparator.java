@@ -19,7 +19,7 @@ public class StatusComparator implements ResultComparator
      * @param expectedResponse the response expected.
      * @return true if the stautses are equal.
      */
-    public ComparisonResult compare(HttpResponse receivedResponse, RestTestResponse expectedResponse)
+    public ComparisonResult compare(HttpResponse receivedResponse, RestCallResponse expectedResponse)
     {
         if (receivedResponse.getStatusCode() == expectedResponse.getStatusCode())
             return ComparisonResult.MATCHES;

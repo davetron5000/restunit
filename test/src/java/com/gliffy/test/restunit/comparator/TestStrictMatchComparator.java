@@ -18,37 +18,37 @@ public class TestStrictMatchComparator
     {
         List<Object[]> testData = new ArrayList<Object[]>();
 
-        RestTestResponse testResponse = TestFactory.getRandomBodyResponse();
-        HttpResponse httpResponse = TestFactory.createMatchingResponse(testResponse);
+        RestCallResponse testResponse = CallFactory.getRandomBodyResponse();
+        HttpResponse httpResponse = CallFactory.createMatchingResponse(testResponse);
 
         testData.add(new Object[] { httpResponse, testResponse, true, "Exactly matching bodies are equal", });
 
-        testResponse = TestFactory.getRandomResponse();
-        httpResponse = TestFactory.createMatchingResponse(testResponse);
+        testResponse = CallFactory.getRandomResponse();
+        httpResponse = CallFactory.createMatchingResponse(testResponse);
 
         testData.add(new Object[] { httpResponse, testResponse, true, "null bodies are equal", });
 
-        testResponse = TestFactory.getRandomResponse();
-        httpResponse = TestFactory.createMatchingResponse(testResponse);
+        testResponse = CallFactory.getRandomResponse();
+        httpResponse = CallFactory.createMatchingResponse(testResponse);
         httpResponse.setBody(new byte[0]);
 
         testData.add(new Object[] { httpResponse, testResponse, true, "null body equals empty body", });
 
-        testResponse = TestFactory.getRandomBodyResponse();
+        testResponse = CallFactory.getRandomBodyResponse();
         ((BodyResponse)testResponse).setBody(new byte[0]);
-        httpResponse = TestFactory.createMatchingResponse(testResponse);
+        httpResponse = CallFactory.createMatchingResponse(testResponse);
         httpResponse.setBody(null);
 
         testData.add(new Object[] { httpResponse, testResponse, true, "empty body equals null body", });
 
-        testResponse = TestFactory.getRandomBodyResponse();
-        httpResponse = TestFactory.createMatchingResponse(testResponse);
+        testResponse = CallFactory.getRandomBodyResponse();
+        httpResponse = CallFactory.createMatchingResponse(testResponse);
         httpResponse.getBody()[0]++;
 
         testData.add(new Object[] { httpResponse, testResponse, false, "Same size, but different bodies fail"});
 
-        testResponse = TestFactory.getRandomBodyResponse();
-        httpResponse = TestFactory.createMatchingResponse(testResponse);
+        testResponse = CallFactory.getRandomBodyResponse();
+        httpResponse = CallFactory.createMatchingResponse(testResponse);
         httpResponse.setBody(new byte[((BodyResponse)testResponse).getBody().length]);
         System.arraycopy(((BodyResponse)testResponse).getBody(),0,
                 httpResponse.getBody(),
@@ -62,7 +62,7 @@ public class TestStrictMatchComparator
     }
         
     @Test(dataProvider = "strictTests", groups = { "comparator"} )
-    public void test(HttpResponse httpResponse, RestTestResponse testResponse, boolean match, String description)
+    public void test(HttpResponse httpResponse, RestCallResponse testResponse, boolean match, String description)
     {
         StrictMatchComparator comparator = new StrictMatchComparator();
         ComparisonResult result = comparator.compare(httpResponse,testResponse);

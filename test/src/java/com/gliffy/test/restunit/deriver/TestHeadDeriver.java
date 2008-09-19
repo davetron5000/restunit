@@ -16,19 +16,19 @@ public class TestHeadDeriver
     @Test(groups = { "deriver" } )
     public void testHeadDeriverWithHead()
     {
-        GetTest getTest = TestFactory.getRandomGetTest();
+        GetCall getTest = CallFactory.getRandomGetCall();
         getTest.setRespondsToHead(true);
         getTest.setMethod("GET");
 
         HeadDeriver deriver = new HeadDeriver();
-        RestTest derived = deriver.derive(getTest,null);
+        RestCall derived = deriver.derive(getTest,null);
 
         assert derived != null : "Expected a new test, since our test test responds to head";
-        assert derived instanceof GetTest : "Expected a GetTest, not a " + derived.getClass().getName();
+        assert derived instanceof GetCall : "Expected a GetCall, not a " + derived.getClass().getName();
         assert derived.getMethod().equals("HEAD") : "Expected method of 'HEAD', but got " + derived.getMethod();
         checkEqualityMoreOrLess(getTest,derived);
 
-        RestTestResponse response = derived.getResponse();
+        RestCallResponse response = derived.getResponse();
 
         assert response instanceof BodyResponse : "Expected a BodyResponse, not a " + response.getClass().getName();
         BodyResponse derivedResponse = (BodyResponse)response;
@@ -43,24 +43,24 @@ public class TestHeadDeriver
     @Test(groups = { "deriver" } )
     public void testHeadDeriverWithoutHead()
     {
-        GetTest getTest = TestFactory.getRandomGetTest();
+        GetCall getTest = CallFactory.getRandomGetCall();
         getTest.setRespondsToHead(false);
         getTest.setMethod("GET");
 
         HeadDeriver deriver = new HeadDeriver();
-        RestTest derived = deriver.derive(getTest,null);
+        RestCall derived = deriver.derive(getTest,null);
 
         assert derived == null : "Expected null, since the test doesn't suport head";
     }
 
     @Test(groups = { "deriver" } )
-    public void testHeadDeriverNotGetTest()
+    public void testHeadDeriverNotGetCall()
     {
-        RestTest test = TestFactory.getRandomTest();
+        RestCall test = CallFactory.getRandomCall();
         test.setMethod("GET");
 
         HeadDeriver deriver = new HeadDeriver();
-        RestTest derived = deriver.derive(test,null);
+        RestCall derived = deriver.derive(test,null);
 
         assert derived == null : "Expected null, since the test doesn't suport head";
     }
@@ -68,17 +68,17 @@ public class TestHeadDeriver
     @Test(groups = { "deriver" } )
     public void testHeadDeriverNotGetMethod()
     {
-        RestTest test = TestFactory.getRandomTest();
+        RestCall test = CallFactory.getRandomCall();
         test.setMethod("PUT");
 
         HeadDeriver deriver = new HeadDeriver();
-        RestTest derived = deriver.derive(test,null);
+        RestCall derived = deriver.derive(test,null);
 
         assert derived == null : "Expected null, since the test doesn't suport head";
     }
 
     /** Checks that two tests are essentially equal in their request, save for the method */
-    private void checkEqualityMoreOrLess(RestTest expected, RestTest got)
+    private void checkEqualityMoreOrLess(RestCall expected, RestCall got)
     {
         assert expected.getURL().equals(got.getURL()) : "Expected URL " + expected.getURL() + ", but got " + got.getURL();
         assert expected.getURL().equals(got.getURL()) : "Expected URL " + expected.getURL() + ", but got " + got.getURL();

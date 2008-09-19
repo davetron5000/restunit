@@ -8,15 +8,15 @@ import org.testng.annotations.*;
 public class TestClone
 {
     @Test( groups = { "clone" } )
-    public void testRestTest()
+    public void testRestCall()
     {
-        RestTest t = TestFactory.getRandomTest();
-        RestTest clone = (RestTest)t.clone();
+        RestCall t = CallFactory.getRandomCall();
+        RestCall clone = (RestCall)t.clone();
 
         testClone(t,clone);
     }
 
-    private void testClone(RestTest t, RestTest clone)
+    private void testClone(RestCall t, RestCall clone)
     {
         assert clone.getName().equals(t.getName()):  "Expected " + t.getName() + " for getName()";
         assert clone.getMethod().equals(t.getMethod()):  "Expected " + t.getMethod() + " for getMethod()";
@@ -28,11 +28,11 @@ public class TestClone
             assert clone.getResponse() != t.getResponse() : "Expected the responses to be different references";
     }
 
-    @Test(dependsOnMethods = { "testRestTest" }, groups = {"clone"} )
-    public void testGetTest()
+    @Test(dependsOnMethods = { "testRestCall" }, groups = {"clone"} )
+    public void testGetCall()
     {
-        GetTest t = TestFactory.getRandomGetTest();
-        GetTest clone = (GetTest)t.clone();
+        GetCall t = CallFactory.getRandomGetCall();
+        GetCall clone = (GetCall)t.clone();
 
         testClone(t,clone);
 
