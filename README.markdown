@@ -96,4 +96,56 @@ Options:
 * Group derived tests into a different test run, so that any setup can be done again
 * Facility for generating derived tests but not running them; basically a "compile step" for the tests that spits out any derived tests
 
+### Potential Solution
+
+Perhaps we start from the assumption that a test of a REST endpoint is not just one REST call, but a series of REST calls.  In many cases (GETs), it is a series of 1 call, but for other cases, it is a series of PUT/GET/DELETE or PUT/POST/GET/DELETE.
+
+#### Idempontent Specification
+
+    - name: Test Account Meta-Data
+    - type: idempotent
+    - url: /accounts/BurnsODyne
+    - GET
+        - respondsToHead: true
+        - respondsIfNoneMatch: true
+        - respondsIfModifiedSince: true
+        - response:
+            - contentType: text/xml
+            - body: <accounts><account users="4"><name>BurnsODyne</name></account</accounts>
+            - headersRequired:
+                - ETag
+                - Last-Modified
+
+#### Mutable
+
+    - name: Create a new user
+    - type: mutable
+    - url: /accounts/BurnsODyne/users/lisa
+    - tunneling: true
+    - PUT
+        - params
+            - name: lisa
+            - email: lisa@springfield.gov
+    - GET
+        - respondsToHead: true
+        - respondsIfNoneMatch: true
+        - respondsIfModifiedSince: true
+        - response:
+            - contentType: text/xml
+            - body: <user id="45"><name>lisa</name><email>lisa@springfield.gov</email></user>
+    - POST
+        - contentType: text/xml
+        - body: <user id="45"><name>Lisa Simpsons</name></user>
+    - GET
+        - respondsToHead: true
+        - respondsIfNoneMatch: true
+        - respondsIfModifiedSince: true
+        - response:
+            - contentType: text/xml
+            - body: <user id="45"><name>Lisa Simpson</name><email>lisa@springfield.gov</email></user>
+    - DELETE
+    - GET
+        -response
+            -status: 404
+
 
