@@ -49,7 +49,14 @@ public class MockHttp implements Http
                         else
                             return createHttpResponse(304);
                     }
-                    public HttpResponse put(HttpRequest request) { value = request.getBody(); return createHttpResponse(201); }
+                    public HttpResponse put(HttpRequest request) 
+                    { 
+                        value = request.getBody(); 
+                        if (value == null)
+                            return createHttpResponse(400); 
+                        else
+                            return createHttpResponse(201); 
+                    }
                     public HttpResponse post(HttpRequest request) { return put(request); }
                     public HttpResponse delete(HttpRequest request) { value = null; return createHttpResponse(200); }
                 });
