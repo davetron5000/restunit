@@ -90,6 +90,7 @@
             <src path="${java.src.dir}"/>
             <compilerarg line="-Xlint -Xlint:-serial -Xlint:-path" />
         </javac>
+        <copy todir="${classes.dir}" file="${conf.dir}/log4j.properties" />
     </target>
 
     <target name="clean"

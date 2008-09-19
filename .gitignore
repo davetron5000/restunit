@@ -1,3 +1,5 @@
 .*sw?
+error.log
+debug.log
 build
 doc/readme.html
