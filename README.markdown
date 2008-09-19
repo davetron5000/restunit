@@ -15,7 +15,13 @@ Main features:
 
 ## Test Form 
 
-A REST test is much simpler than an arbitrary unit test.  It is a matter of an HTTP request and an HTTP response.
+A REST test is much simpler than an arbitrary unit test.  It is a matter of a HTTP requests and responses.
+
+A test of a REST service endpoint (which would be a resource, identified by a URL) is a series of REST calls.  This could be simply one call (a GET to a resource that should return known data), or a more complex interaction of PUTing a new resource to the server, GETing that resource to see if it was received and DELETEing it to leave the remote data store in a known state.
+
+### REST Call
+
+We'll use the term "Call" to be one HTTP request and response cycle.  
 
 The request can be as simple as:
 
@@ -30,22 +36,92 @@ The response is equally simple:
 * Response content
 * Response headers
 
-From this, we can derive tests:
+We could represendt such a call in [YAML](http://en.wikipedia.org/wiki/YAML)  as so:
 
-* A GET test can be used to automatically create the same test that uses the HEAD method but expects no body in return
-* A GET test can check to see if `Last-Modified` was sent; if so, a new test can be derived that sends `If-Last-Modified` and checks that a 304 was returned and not a body
-* Same for `ETag` and `If-None-Match`
-* If tunneling is allowed, we can run all PUT and DELETE tests over POST setting `X-HTTP-Method-Override` (or some tester-configured mechanism)
+    url: /accounts/Initech/users
+    method: GET
+    parameters:
+        - name: *bob*
+        - sort: { ascending: true, by: last name}
+    headers:
+        If-None-Match: 71783837e5a4c543bce456
+    response:
+        status: 200
+        body: <users><user id="34"><name>Bob 1</name></user><users id="556"><name>Bob 2</name></user></users>
+        headers:
+            Content-Type: { value: text/xml }
+            Last-Modified: { required: true }
 
-Further, there is no reason to express these tests in Java code.
+#### Why not just use HttpClient or HttpUnit?
 
-### Test File Format 
+These require programmatic construction of the tests.  They also don't have definitive meta-data that we can use to derive other tests (see below).  Further, describing tests in a declarative format
+allows them to be used by other testing frameworks and not just Java.  If you were building a REST-based service, various programming languages could be used to interact with it.  Tests described as data, and not code, could be fed to any number of language libraries to test your service.  If you are writing client libraries for your service, this would save significant testing time.
 
-[YAML](http://en.wikipedia.org/wiki/YAML)  is a good format for the tests.  It's superior to XML for this purpose, mainly because of it's readability and ease with which XML can be embedded (embedding XML in XML is a monumental pain). 
+#### Why YAML?
 
-Unfortunately, the two YAML serializers for Java seem to be dead.  The seemingly superior one, JYAML, has some annoyances regarding deserialization (seems to require explicit class naming, or it uses a hashtable).
+For starters, It's much more readable and editable than XML.  Further, embedding XML (or YAML, for that matter) is much simpler than with XML.  This allows the tests to be readable.
 
-An option would be to write a minimal YAML parser that serializes only the subset of YAML needed for the data structures here.
+### Rest Test
+
+A full-on test would be a series of calls.  This could easily be described using the format above.  Further, since a series of calls is made against the same URL, we can promote the URL up to the test level.
+Calls could override the URL as needed (as for a POST that would create a new URL):
+
+    url: /accounts/Initech/users/bolton
+    - POST:
+        - url: /accounts/Initech/users
+        - stuff to put data
+    - GET: # uses the parent URL
+        - stuff for the get test
+    - DELETE
+    - GET
+        response:
+            status: 404
+
+So far, this just looks like a simplistic way to test any HTTP endpoint.  However, we can use this tests to derive new ones, based upon the conventions of REST (or conventions your REST service provides), such as:
+* URLs responding to GET should respond to HEAD in the same way, save for the body
+* URLs responding to GET should send `ETag` and `Last-Modified` headers to allow for conditional gets
+* URLs responding to GET should send a 304 if `If-None-Match` or `If-Modified-Since` headers are set to indicate the client has up-to-date data.
+* PUT and DELETE methods may be tunneled over POST for clients/configurations that don't support it
+
+Such derived tests would be virtually identical to their base counterparts, so why copy them?  Consider the URL `/accounts/Initech/users/bob/profile.xml` and supposed your REST service only sends ETags for JPEGs.  You could test this via:
+
+    url: /accounts/Initech/users/bob/profile.xml
+    - GET:
+        respondsToIfNonMatch: false
+        response:
+            status: 200
+            content: <profile id="234"><name>Mike Bolton</name></profile>
+            contentType: text/xml
+            
+We could then derive this test:
+
+    url: /accounts/Initech/users/bob/profile.xml
+    - GET:
+        respondsToIfNonMatch: false
+        response:
+            status: 200
+            content: <profile id="234"><name>Mike Bolton</name></profile>
+            contentType: text/xml
+            headers:
+                Last-Modified {required: true}
+    - GET:
+        respondsToIfNonMatch: false
+        respondsToIfModifiedSince: false
+        headers:
+            If-Modified-Since: $Last-Modified$ # indicates to use the last tests response header
+        response:
+            status: 304
+            content: <profile id="234"><name>Mike Bolton</name></profile>
+            contentType: text/xml
+    - HEAD:
+        response:
+            status: 200
+            # body omitted means no body should be returned 
+    - HEAD:
+        headers:
+            If-Modified-Since: 2008-01-01
+        response:
+            status: 304
 
 ## Comparing Results 
 
@@ -61,91 +137,4 @@ Further, we can provide a means of customizing the comparison.  For example, a u
 ## Output Format 
 
 JUnit's XML results file seems to be ubiquitous.  RESTUnit must output that so that integration with tools like Bamboo are possible.  Support for TestNG's output format may also be desirable, though this could be most easily achieved by allow RESTUnit to run as a TestNG test. Making up a new output format is probably NOT desirable.
-
-## Unit vs. Functional Test and Test Order 
-
-The most complete test of a REST service is against the actual service itself, backed by actual data.  This avoids the need to stub or mock the service and gives the most solid results.  Accomplishing this requires coordination with the backing store that may be difficult.
-
-There should be support for this in a few different ways:
-
-* Ability to indicate which tests have no dependents
-* Ability to chain tests via dependency
-* Ability to specify an ordered group of tests that are run as a "functional" test
-
-The idea is that we assume some sort of database/server reset prior to a group of tests, and that we can ensure tests run in a particular order.  This allows the developer to test the creation of data, and then, using the REST service, clean up that data.
-
-### Mocking the backing store 
-
-Presumably, a REST service has three layers:
-
-1. REST endpoint
-1. Business logic
-1. Data
-
-REST tests will ideally test the first two layers; As mentioned above, we wish to support using the actual database with known test data.  This may be inconvenient or impossible.  Tools exist to mock the database so as to still be able to test business logic.  Integrating (or rather, not preventing) this is desirable.  This may require some investigation into database mocking technology.
-
-## Open Issues regarding functional and derived tests
-
-One complication regarding derived tests is how to deal with tests derived from a non-idempotent (i.e. destructive) test.  As such, a derived test might fail if run immediately after its base test, though it may have succeeded if executed on its own from a known setup.
-
-Further complicating this is when executing tests as part of a functional test; would derived tests be run?
-
-Options:
-
-* Only GET/HEAD tests have automatically derived tests run
-* Group derived tests into a different test run, so that any setup can be done again
-* Facility for generating derived tests but not running them; basically a "compile step" for the tests that spits out any derived tests
-
-### Potential Solution
-
-Perhaps we start from the assumption that a test of a REST endpoint is not just one REST call, but a series of REST calls.  In many cases (GETs), it is a series of 1 call, but for other cases, it is a series of PUT/GET/DELETE or PUT/POST/GET/DELETE.
-
-#### Idempontent Specification
-
-    - name: Test Account Meta-Data
-    - type: idempotent
-    - url: /accounts/BurnsODyne
-    - GET
-        - respondsToHead: true
-        - respondsIfNoneMatch: true
-        - respondsIfModifiedSince: true
-        - response:
-            - contentType: text/xml
-            - body: <accounts><account users="4"><name>BurnsODyne</name></account</accounts>
-            - headersRequired:
-                - ETag
-                - Last-Modified
-
-#### Mutable
-
-    - name: Create a new user
-    - type: mutable
-    - url: /accounts/BurnsODyne/users/lisa
-    - tunneling: true
-    - PUT
-        - params
-            - name: lisa
-            - email: lisa@springfield.gov
-    - GET
-        - respondsToHead: true
-        - respondsIfNoneMatch: true
-        - respondsIfModifiedSince: true
-        - response:
-            - contentType: text/xml
-            - body: <user id="45"><name>lisa</name><email>lisa@springfield.gov</email></user>
-    - POST
-        - contentType: text/xml
-        - body: <user id="45"><name>Lisa Simpsons</name></user>
-    - GET
-        - respondsToHead: true
-        - respondsIfNoneMatch: true
-        - respondsIfModifiedSince: true
-        - response:
-            - contentType: text/xml
-            - body: <user id="45"><name>Lisa Simpson</name><email>lisa@springfield.gov</email></user>
-    - DELETE
-    - GET
-        -response
-            -status: 404
-
 
