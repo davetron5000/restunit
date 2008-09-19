@@ -39,7 +39,20 @@ public class HttpRequestFactory
         String url = createURL(test);
         request.setURL(new URL(url));
         request.setHeaders(test.getHeaders());
-        request.setBody(null);
+        if (test instanceof BodyTest)
+        {
+            BodyTest bodyTest = (BodyTest)test;
+            if (bodyTest.getBody() != null)
+            {
+                request.getHeaders().put("Content-Type",bodyTest.getContentType());
+                request.getHeaders().put("Content-Length",String.valueOf(bodyTest.getBody().length));
+                request.setBody(bodyTest.getBody());
+            }
+        }
+        else
+        {
+            request.setBody(null);
+        }
         return request;
     }
 

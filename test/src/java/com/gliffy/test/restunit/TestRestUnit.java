@@ -49,6 +49,57 @@ public class TestRestUnit
         itsRestUnit.addDeriver(new ConditionalGetETagDeriver());
     }
 
+    @Test
+    public void testDependents()
+    {
+        BodyTest test = new BodyTest();
+        String url = "/accounts/BurnsODyne/users/lisa";
+        test.setURL(url);
+        test.setMethod("PUT");
+        test.setName("Test of putting user lisa");
+        String body = "<user><name>lisa</name><email type=\"work\">lisa@simpsons.org</email></user>";
+        String contentType = "text/xml";
+        test.setContentType(contentType);
+        test.setBody(body.getBytes());
+        RestTestResponse response = new RestTestResponse();
+        response.setStatusCode(201);
+        test.setResponse(response);
+
+        GetTest getTest = new GetTest();
+        getTest.setURL(url);
+        getTest.setMethod("GET");
+        getTest.setName("Getting " + url);
+        getTest.setRespondsToHead(false);
+        getTest.setRespondsToIfModified(false);
+        getTest.setRespondsToIfNoneMatch(false);
+        BodyResponse getResponse = new BodyResponse();
+        getResponse.setStatusCode(200);
+        getResponse.setContentType(contentType);
+        getResponse.setBody(body.getBytes());
+        getTest.setResponse(getResponse);
+
+        test.getDependentTests().add(getTest);
+
+        RestTest deleteTest = new RestTest();
+        deleteTest.setURL(url);
+        deleteTest.setMethod("DELETE");
+        deleteTest.setName("Delete of " + url);
+        RestTestResponse deleteResponse = new RestTestResponse();
+        deleteResponse.setStatusCode(200);
+        deleteTest.setResponse(deleteResponse);
+
+        getTest.getDependentTests().add(deleteTest);
+
+        List<ExecutionResult> results = itsRestUnit.runTest(test);
+
+        for (ExecutionResult result: results)
+        {
+            assert result.getResult() == Result.PASS : "A test didn't pass " + result.getTest().toString() + " got: " + result.toString();
+        }
+        int numTests = 3;
+        assert results.size() == numTests : "Expected " + numTests + " total tests to have been run (our original and " + (numTests - 1) + "  derived).  Instead got " + results.size();
+    }
+
     @DataProvider(name = "getBodyGetData")
     public Object[][] getGetTestsOnly() 
     {
@@ -107,6 +158,7 @@ public class TestRestUnit
         return testData.toArray(new Object[0][0]);
     }
 
+    /** This tests the last-mod headers that should be sent with GET requests */
     @Test (dataProvider = "getBodyGetData")
     public void testLastModHeaders(String url, String body)
     {
@@ -141,7 +193,7 @@ public class TestRestUnit
     @Test (dataProvider = "getData")
     public void testSimple(String url, String body, String method, int status)
     {
-        RestTest test = new RestTest();
+        RestTest test = (method.equals("PUT") || method.equals("POST")) ? new BodyTest() : new RestTest();
         test.setURL(url);
         test.setMethod(method);
         test.setName("Test of " + url);
@@ -161,6 +213,11 @@ public class TestRestUnit
             RestTestResponse response = new RestTestResponse();
             response.setStatusCode(status);
             test.setResponse(response);
+        }
+        if (test instanceof BodyTest)
+        {
+            ((BodyTest)test).setBody(new byte[0]);
+            ((BodyTest)test).setContentType("text/plain");
         }
 
         List<ExecutionResult> results = itsRestUnit.runTest(test);
