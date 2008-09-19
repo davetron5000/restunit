@@ -50,7 +50,14 @@ public class TestRestUnit
     }
 
     @Test
-    public void testDependents()
+    public void testDependentsSimple() { testDependents(false); }
+    @Test
+    public void testDependentsComplex() { testDependents(true); }
+
+    /** tests dependents
+     * @param full if true, the GET test will say that should respond to HEAD, last-Modified and ETag.  If false, it won't
+     */
+    private void testDependents(boolean full)
     {
         BodyTest test = new BodyTest();
         String url = "/accounts/BurnsODyne/users/lisa";
@@ -69,9 +76,9 @@ public class TestRestUnit
         getTest.setURL(url);
         getTest.setMethod("GET");
         getTest.setName("Getting " + url);
-        getTest.setRespondsToHead(false);
-        getTest.setRespondsToIfModified(false);
-        getTest.setRespondsToIfNoneMatch(false);
+        getTest.setRespondsToHead(full);
+        getTest.setRespondsToIfModified(full);
+        getTest.setRespondsToIfNoneMatch(full);
         BodyResponse getResponse = new BodyResponse();
         getResponse.setStatusCode(200);
         getResponse.setContentType(contentType);
@@ -97,6 +104,8 @@ public class TestRestUnit
             assert result.getResult() == Result.PASS : "A test didn't pass " + result.getTest().toString() + " got: " + result.toString();
         }
         int numTests = 3;
+        int derivedTests = full ? 5 : 0;
+        numTests += derivedTests;
         assert results.size() == numTests : "Expected " + numTests + " total tests to have been run (our original and " + (numTests - 1) + "  derived).  Instead got " + results.size();
     }
 

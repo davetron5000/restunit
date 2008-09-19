@@ -29,6 +29,7 @@ public class ConditionalGetLastModifiedDeriver implements Derivable
             if (getTest.getRespondsToIfModified())
             {
                 GetTest lastModified = (GetTest)test.clone();
+                lastModified.getDependentTests().clear();
                 lastModified.setDescription(lastModified.getDescription() + " (derived by " + getClass().getName() + ")");
                 lastModified.setRespondsToHead(false);
                 lastModified.setRespondsToIfModified(false);

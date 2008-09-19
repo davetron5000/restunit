@@ -33,6 +33,7 @@ public class ConditionalGetETagDeriver implements Derivable
             if (getTest.getRespondsToIfNoneMatch())
             {
                 GetTest etag = (GetTest)test.clone();
+                etag.getDependentTests().clear();
                 etag.setDescription(etag.getDescription() + " (derived by " + getClass().getName() + ")");
                 etag.setRespondsToHead(false);
                 etag.setRespondsToIfModified(false);

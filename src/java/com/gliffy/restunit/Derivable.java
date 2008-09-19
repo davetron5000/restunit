@@ -19,7 +19,7 @@ public interface Derivable
      * @param test the test from which to derive
      * @param response the response received when the test was executed.  This is so you can examine the actual results returned from
      * the test in creating the derived test.
-     * @return a new instance of RestTest derived from the parameter, or null if no such derivation was possible, given the test.
+     * @return a new instance of RestTest derived from the parameter, or null if no such derivation was possible, given the test. 
      */
     RestTest derive(RestTest test, HttpResponse response);
 }

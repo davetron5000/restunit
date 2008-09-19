@@ -26,7 +26,7 @@ public class TestHeadDeriver
         assert derived != null : "Expected a new test, since our test test responds to head";
         assert derived instanceof GetTest : "Expected a GetTest, not a " + derived.getClass().getName();
         assert derived.getMethod().equals("HEAD") : "Expected method of 'HEAD', but got " + derived.getMethod();
-        TestAssertions.assertEqualRegardlessOfMethod(getTest,derived);
+        checkEqualityMoreOrLess(getTest,derived);
 
         RestTestResponse response = derived.getResponse();
 
@@ -76,4 +76,17 @@ public class TestHeadDeriver
 
         assert derived == null : "Expected null, since the test doesn't suport head";
     }
+
+    /** Checks that two tests are essentially equal in their request, save for the method */
+    private void checkEqualityMoreOrLess(RestTest expected, RestTest got)
+    {
+        assert expected.getURL().equals(got.getURL()) : "Expected URL " + expected.getURL() + ", but got " + got.getURL();
+        assert expected.getURL().equals(got.getURL()) : "Expected URL " + expected.getURL() + ", but got " + got.getURL();
+        assert expected.getName().equals(got.getName()) : "Expected Name " + expected.getName() + ", but got " + got.getName();
+        assert expected.getSSLRequirement().equals(got.getSSLRequirement()) : "Expected SSLRequirement " + expected.getSSLRequirement() + ", but got " + got.getSSLRequirement();
+        TestAssertions.assertMapsEqual(expected.getHeaders(),got.getHeaders());
+        TestAssertions.assertParamsEqual(expected.getParameters(),got.getParameters());
+        TestAssertions.assertEquals(expected.getResponse(),got.getResponse());
+    }
+
 }
