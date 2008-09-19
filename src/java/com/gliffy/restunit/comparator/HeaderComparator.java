@@ -12,9 +12,9 @@ import com.gliffy.restunit.http.*;
 
 /** A comparator that matches the headers against the test specification.
  * <ul>
- * <li>Any received header that is in {@link com.gliffy.restunit.RestTestResponse#getBannedHeaders()} will cause a failure</li>
- * <li>All headers in {@link com.gliffy.restunit.RestTestResponse#getRequiredHeaders()} must be present with non-null, non-empty values.</li>
- * <li>All headers in {@link com.gliffy.restunit.RestTestResponse#getHeaders()} must be present and their values must match exactly.</li>
+ * <li>Any received header that is in {@link com.gliffy.restunit.RestCallResponse#getBannedHeaders()} will cause a failure</li>
+ * <li>All headers in {@link com.gliffy.restunit.RestCallResponse#getRequiredHeaders()} must be present with non-null, non-empty values.</li>
+ * <li>All headers in {@link com.gliffy.restunit.RestCallResponse#getHeaders()} must be present and their values must match exactly.</li>
  * </ul>
  * The header matching can be overriden via {@link #compareHeaderValues(java.lang.String,java.lang.String,java.lang.String)}.
  */
@@ -65,7 +65,7 @@ public class HeaderComparator implements ResultComparator
         return ComparisonResult.MATCHES;
     }
 
-    /** Performs a comparison of header values for entires in {@link com.gliffy.restunit.RestTestResponse#getHeaders}.
+    /** Performs a comparison of header values for entires in {@link com.gliffy.restunit.RestCallResponse#getHeaders}.
      * This checks for an exactly value match.  You can override this method to provide fuzzy matches or whatever other
      * kind of comparison you wish.
      * @param header the name of the header (used in failure explanations)

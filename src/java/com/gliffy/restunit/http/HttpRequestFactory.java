@@ -11,7 +11,7 @@ import java.util.*;
 
 import com.gliffy.restunit.*;
 
-/** This class produces {@link HttpRequest} objects based upon {@link com.gliffy.restunit.RestTest} objects.
+/** This class produces {@link HttpRequest} objects based upon {@link com.gliffy.restunit.RestCall} objects.
  * This is the bridge between a human-usable call and the mechanics of HTTP.
  */
 public class HttpRequestFactory

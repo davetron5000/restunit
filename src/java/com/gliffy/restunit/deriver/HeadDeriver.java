@@ -13,9 +13,8 @@ import com.gliffy.restunit.http.*;
 public class HeadDeriver implements Derivable
 {
     /** Returns a call identicial to the passed-in call, except that does a HEAD request and expects no return body.
-     * This will return null if the call is not a 
-     {@link com.gliffy.restunit.GetTest} or does not return true from
-     * {@link com.gliffy.restunit.GetTest#getRespondsToHead() }.
+     * This will return null if the call is not a {@link com.gliffy.restunit.GetCall} or does not return true from
+     * {@link com.gliffy.restunit.GetCall#getRespondsToHead() }.
      * @param call the call to derive.
      * @param response the response from executing the call (not used)
      * @return a newly derived call, or null if no such derivation was possible.

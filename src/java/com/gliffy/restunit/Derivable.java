@@ -19,7 +19,7 @@ public interface Derivable
      * @param call the call from which to derive
      * @param response the response received when the call was executed.  This is so you can examine the actual results returned from
      * the call in creating the derived call.
-     * @return a new instance of RestTest derived from the parameter, or null if no such derivation was possible, given the call. 
+     * @return a new instance of RestCall derived from the parameter, or null if no such derivation was possible, given the call. 
      */
     RestCall derive(RestCall call, HttpResponse response);
 }

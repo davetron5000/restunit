@@ -10,7 +10,7 @@ import java.util.*;
 
 import com.gliffy.restunit.http.*;
 
-/** The results of a RestTest having been executed. */
+/** The results of a RestCall having been executed. */
 public class ExecutionResult implements Serializable
 {
     private Result itsResult;
