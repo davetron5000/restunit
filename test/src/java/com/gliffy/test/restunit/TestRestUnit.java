@@ -92,16 +92,9 @@ public class TestRestUnit
 
         restTest.addCall(getCall);
 
-        RestTestResult result = itsRestUnit.runTest(restTest);
-
-        for (RestCallResult callResult: result.getDetailedResults())
-        {
-            assert callResult.getResult() == Result.PASS : "Got " + callResult.getResult() + " but expected a PASS (" + callResult.toString() + ")";
-        }
-        assert result.getSuccess() == true : "Expected our test to be marked successful";
+        assertTestsPass(restTest);
     }
 
-    /*
     @DataProvider(name = "getBodyGetData")
     public Object[][] getGetTestsOnly() 
     {
@@ -159,15 +152,14 @@ public class TestRestUnit
         }
         return testData.toArray(new Object[0][0]);
     }
-    */
 
     /** This simply access the URL from our fake service and sees if a test will pass */
-    /*
     @Test (dataProvider = "getData")
     public void testSimple(String url, String body, String method, int status)
     {
+        RestTest restTest = new RestTest();
+        restTest.setDefaultURL(url);
         RestCall test = (method.equals("PUT") || method.equals("POST")) ? new BodyCall() : new RestCall();
-        test.setURL(url);
         test.setMethod(method);
         test.setName("Call of " + url);
         if (body != null)
@@ -193,11 +185,19 @@ public class TestRestUnit
             ((BodyCall)test).setContentType("text/plain");
         }
 
-        List<RestCallResult> results = itsRestUnit.runCall(test);
-        for (RestCallResult result: results)
-        {
-            assert result.getResult() == Result.PASS : "A test didn't pass " + test.toString() + " got: " + result.toString();
-        }
+        restTest.addCall(test);
+        assertTestsPass(restTest);
     }
-    */
+
+    private void assertTestsPass(RestTest restTest)
+    {
+        RestTestResult result = itsRestUnit.runTest(restTest);
+
+        for (RestCallResult callResult: result.getDetailedResults())
+        {
+            assert callResult.getResult() == Result.PASS : "Got " + callResult.getResult() + " but expected a PASS (" + callResult.toString() + ")";
+        }
+        assert result.getSuccess() == true : "Expected our test to be marked successful";
+    }
+
 }
