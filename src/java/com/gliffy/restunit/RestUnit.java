@@ -17,6 +17,12 @@ public class RestUnit
     private Log itsLogger = LogFactory.getLog(getClass());
     private Executor itsExecutor;
 
+    /** Create a new RestUnit with the default Executor and HTTP implementation. */
+    public RestUnit()
+    {
+        itsExecutor = new Executor();
+    }
+
     /** Executes the test.
      * @param test the test to execute.
      * @return returns the results of the test.  Will not throw an exception and will not return null.
