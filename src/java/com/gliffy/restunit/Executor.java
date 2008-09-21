@@ -119,7 +119,7 @@ public class Executor
             populateResult(call,executionResult,response);
             return executionResult;
         }
-        catch (MalformedURLException e)
+        catch (Throwable e)
         {
             executionResult.setResult(Result.EXCEPTION);
             executionResult.setThrowable(e);

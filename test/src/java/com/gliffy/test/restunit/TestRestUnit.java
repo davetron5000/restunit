@@ -17,7 +17,8 @@ public class TestRestUnit
 {
     private Map<String,String> itsService;
     private MockHttp itsHttp;
-    private RestUnit itsRestUnit;
+    protected RestUnit itsRestUnit;
+    private TestNGRestUnit itsTestNG;
 
     @BeforeTest
     public void setUp()
@@ -40,12 +41,31 @@ public class TestRestUnit
         itsHttp = new MockHttp(itsService);
 
         itsRestUnit = new RestUnit();
+        itsTestNG = new TestNGRestUnit();
+        itsTestNG.setRestUnit(itsRestUnit);
         itsRestUnit.getExecutor().setHttp(itsHttp);
         itsRestUnit.getExecutor().setBaseURL("http://www.google.com");
     }
 
     @Test
-    public void testFunctional()
+    public void testFunctionalSuccess()
+    {
+        testFunctional(false,false);
+    }
+
+    @Test
+    public void testFailure()
+    {
+        testFunctional(true,false);
+    }
+
+    @Test
+    public void testException()
+    {
+        testFunctional(true,true);
+    }
+
+    public void testFunctional(boolean badGet, boolean exception)
     {
         String url = "/accounts/BurnsODyne/users/lisa";
         RestTest restTest = new RestTest();
@@ -66,6 +86,13 @@ public class TestRestUnit
 
         GetCall getCall = new GetCall();
         getCall.setMethod("GET");
+        if (badGet)
+        {
+            if (exception)
+                getCall.setURL(MockHttp.EXCEPTION_PATH);
+            else
+                getCall.setURL("/asdf/asdf/asdf/asdf/asdf");
+        }
         BodyResponse getResponse = new BodyResponse();
         getResponse.setStatusCode(200);
         getResponse.setContentType(contentType);
@@ -90,25 +117,45 @@ public class TestRestUnit
 
         restTest.addCall(getCall);
 
-        assertTestsPass(restTest);
-    }
-
-    @DataProvider(name = "getBodyGetData")
-    public Object[][] getGetTestsOnly() 
-    {
-        List<Object[]> testData = new ArrayList<Object[]>();
-        for (String url: itsService.keySet())
+        if (badGet)
         {
-            Object oneTest[] = new Object[2];
-            String data = itsService.get(url);
-            oneTest[0] = url;
-            oneTest[1] = data;
-            if (data != null)
+            RestTestResult result = itsRestUnit.runTest(restTest);
+
+            assert result.getSuccess() == false : "Expected our test to fail, but all succeeded!";
+
+            int counter = 0;
+            for (RestCallResult callResult: result.getDetailedResults())
             {
-                testData.add(oneTest);
+                if (counter > 1)
+                {
+                    assert callResult.getResult() == Result.SKIP : "Got " + callResult.getResult() + " but expected a SKIP (" + callResult.toString() + ")";
+                }
+                else if (counter == 0)
+                {
+                    assert callResult.getResult() == Result.PASS : "Got " + callResult.getResult() + " but expected a PASS (" + callResult.toString() + ")";
+                }
+                else
+                {
+                    if (exception)
+                        assert callResult.getResult() == Result.EXCEPTION : "Got " + callResult.getResult() + " but expected a EXCEPTION (" + callResult.toString() + ")";
+                    else
+                        assert callResult.getResult() == Result.FAIL : "Got " + callResult.getResult() + " but expected a FAIL (" + callResult.toString() + ")";
+                }
+                counter++;
+            }
+            try
+            {
+                itsTestNG.runTest(restTest);
+                assert false : "Expected an AssertionError to be thrown";
+            }
+            catch (AssertionError t)
+            {
             }
         }
-        return testData.toArray(new Object[0][0]);
+        else
+        {
+            assertTestsPass(restTest);
+        }
     }
 
     @DataProvider(name = "getData")
@@ -187,7 +234,7 @@ public class TestRestUnit
         assertTestsPass(restTest);
     }
 
-    private void assertTestsPass(RestTest restTest)
+    protected void assertTestsPass(RestTest restTest)
     {
         RestTestResult result = itsRestUnit.runTest(restTest);
 
@@ -196,6 +243,8 @@ public class TestRestUnit
             assert callResult.getResult() == Result.PASS : "Got " + callResult.getResult() + " but expected a PASS (" + callResult.toString() + ")";
         }
         assert result.getSuccess() == true : "Expected our test to be marked successful";
+
+        itsTestNG.runTest(restTest);
     }
 
 }

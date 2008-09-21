@@ -12,6 +12,8 @@ import org.apache.commons.logging.*;
  */
 public class MockHttp implements Http
 {
+    public static final String EXCEPTION_PATH = "/noone/may/go/here";
+
     private Log itsLogger = LogFactory.getLog(getClass());
     private RESTTree itsTree;
     /** Create a MockHttp service that exposes the given urls.
@@ -70,6 +72,8 @@ public class MockHttp implements Http
     public HttpResponse get(HttpRequest request)
     {
         String path = request.getURL().getPath();
+        if (path.equals(EXCEPTION_PATH))
+            throw new RuntimeException("Tubez is clogged");
         RESTTree node = findNode(path);
         if (node == null)
         {
