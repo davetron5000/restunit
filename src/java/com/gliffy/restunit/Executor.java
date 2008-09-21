@@ -93,9 +93,7 @@ public class Executor
 
         itsLogger.debug("Starting call " + call.getName());
         long callStartTime = System.currentTimeMillis();
-        RestCallResult executionResult = new RestCallResult();
-        executionResult.setCall(call);
-        executionResult.setExecutionDate(new java.util.Date());
+        RestCallResult executionResult = initializeResult(call);
 
         try
         {
@@ -128,6 +126,26 @@ public class Executor
         }
         executionResult.setExecutionTime(System.currentTimeMillis() - callStartTime);
         itsLogger.debug("Test execution complete");
+        return executionResult;
+    }
+
+    /** Skips the call, generating a result that indicates that.  This is preferable to creating
+     * RestCallResults yourself as it maintains a consistent means of vending this objects.
+     * @param call the call to skip
+     * @return a RestCallResult that indicates that this call was skipped.
+     */
+    public RestCallResult skip(RestCall call)
+    {
+        RestCallResult result = initializeResult(call);
+        result.setResult(Result.SKIP);
+        return result;
+    }
+
+    private RestCallResult initializeResult(RestCall call)
+    {
+        RestCallResult executionResult = new RestCallResult();
+        executionResult.setCall(call);
+        executionResult.setExecutionDate(new java.util.Date());
         return executionResult;
     }
 
