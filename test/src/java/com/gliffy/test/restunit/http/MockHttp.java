@@ -5,11 +5,14 @@ import java.util.*;
 import com.gliffy.restunit.http.*;
 import com.gliffy.restunit.*;
 
+import org.apache.commons.logging.*;
+
 /** This is an implementation of HTTP that does no actual network connectivity, but takes a configured
  * data set and responds to rest calls
  */
 public class MockHttp implements Http
 {
+    private Log itsLogger = LogFactory.getLog(getClass());
     private RESTTree itsTree;
     /** Create a MockHttp service that exposes the given urls.
      * @param urls a map of relative url to content.  This content is returned by a GET request.
@@ -27,7 +30,7 @@ public class MockHttp implements Http
                 node.setHttp(new RESTTreeHttp() {
                     protected HttpResponse get(HttpRequest request,boolean clientDataOld) 
                     { 
-                        System.err.println("Get of " + request.getURL() + " is " + (clientDataOld ? "expired on client" : "up to date on client"));
+                        itsLogger.debug("Get of " + request.getURL() + " is " + (clientDataOld ? "expired on client" : "up to date on client"));
                         if (clientDataOld)
                             return createStringGetResponse(value); 
                         else
@@ -41,7 +44,7 @@ public class MockHttp implements Http
                     private byte value[];
                     protected HttpResponse get(HttpRequest request, boolean clientDataOld) 
                     { 
-                        System.err.println("Get of " + request.getURL() + " is " + (clientDataOld ? "expired on client" : "up to date on client"));
+                        itsLogger.debug("Get of " + request.getURL() + " is " + (clientDataOld ? "expired on client" : "up to date on client"));
                         if (value == null)
                             return createHttpResponse(404);
                         else if (clientDataOld)

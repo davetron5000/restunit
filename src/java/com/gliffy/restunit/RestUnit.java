@@ -29,6 +29,8 @@ public class RestUnit
         boolean success = true;
         for (RestCall call: test.getCalls())
         {
+            if (call.getURL() == null)
+                call.setURL(test.getDefaultURL());
             RestCallResult result;
             if (skipRest)
             {

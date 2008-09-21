@@ -20,7 +20,7 @@ public class RestTestResult implements Serializable
      * */
     public void setDetailedResults (List<RestCallResult> results)
     {
-        itsDetailedResults = Collections.unmodifiableList(itsDetailedResults);
+        itsDetailedResults = Collections.unmodifiableList(results);
     }
     /** returns the detailed results of the test, with one result
      * per call.
