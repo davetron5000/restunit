@@ -40,7 +40,7 @@ public class RestTest implements Serializable
         return itsDefaultURL; 
     }
 
-    /** Adds a call to this test.
+    /** Adds a call to this test.  It will be executed after the previously added call.
      * @param call the call to add
      */
     public void addCall(RestCall call)
@@ -48,14 +48,17 @@ public class RestTest implements Serializable
         itsCalls.add(call);
     }
 
-    /** returns the list of calls.
-     * @return an ordered list of RestCall objects
+    /** returns the list of calls.  
+     * @return an ordered list of RestCall objects.  This is not a modifibale list.
      */
     public List<RestCall> getCalls() 
     { 
-        return itsCalls; 
+        return Collections.unmodifiableList(itsCalls); 
     }
 
+    /** Sets a name to describe the test.
+     * @param name the name of this test, to help identify it in a report
+     */
     public void setName(String name) 
     {
         itsName = name; 
@@ -65,6 +68,4 @@ public class RestTest implements Serializable
     {
         return itsName; 
     }
-
-
 }
