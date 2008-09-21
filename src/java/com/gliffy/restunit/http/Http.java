@@ -11,26 +11,36 @@ public interface Http
     /** Performs an HTTP GET.
      * @param request the request describing the GET.
      * @return a response
+     * @throws Exception implementors may simply thrown any exceptions their implementation generates; the calling class will deal with it
      */
-    HttpResponse get(HttpRequest request);
+    HttpResponse get(HttpRequest request)
+        throws Exception;
     /** Performs an HTTP HEAD. 
      * @param request the request describing the HEAD.
      * @return a response
+     * @throws Exception implementors may simply thrown any exceptions their implementation generates; the calling class will deal with it
      */
-    HttpResponse head(HttpRequest request);
+    HttpResponse head(HttpRequest request)
+        throws Exception;
     /** Performs an HTTP PUT. 
      * @param request the request describing the PUT.
      * @return a response
+     * @throws Exception implementors may simply thrown any exceptions their implementation generates; the calling class will deal with it
      */
-    HttpResponse put(HttpRequest request);
+    HttpResponse put(HttpRequest request)
+        throws Exception;
     /** Performs an HTTP POST.
      * @param request the request describing the POST.
      * @return a response
+     * @throws Exception implementors may simply thrown any exceptions their implementation generates; the calling class will deal with it
      */
-    HttpResponse post(HttpRequest request);
+    HttpResponse post(HttpRequest request)
+        throws Exception;
     /** Performs an HTTP DELETE. 
      * @param request the request describing the DELETE.
      * @return a response
+     * @throws Exception implementors may simply thrown any exceptions their implementation generates; the calling class will deal with it
      */
-    HttpResponse delete(HttpRequest request);
+    HttpResponse delete(HttpRequest request)
+        throws Exception;
 }
