@@ -11,7 +11,7 @@ import java.util.*;
 import com.gliffy.restunit.http.*;
 
 /** The results of a RestCall having been executed. */
-public class ExecutionResult implements Serializable
+public class RestCallResult implements Serializable
 {
     private Result itsResult;
     private Date itsExecutionDate;

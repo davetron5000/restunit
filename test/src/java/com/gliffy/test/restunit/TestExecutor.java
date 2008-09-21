@@ -44,7 +44,7 @@ public class TestExecutor
 
         Executor executor = new Executor();
         executor.setHttp(mockHttp);
-        ExecutionResult result = executor.execute(test);
+        RestCallResult result = executor.execute(test);
 
         assert result.getResult() == Result.PASS : "Got " + result.getResult() + " for " + result.toString() + " instead of " + Result.PASS.toString();
 
@@ -69,7 +69,7 @@ public class TestExecutor
         Executor executor = new Executor();
         executor.setHttp(mockHttp);
         executor.setBaseURL("http://www.google.com/");
-        ExecutionResult result = executor.execute(test);
+        RestCallResult result = executor.execute(test);
 
         assert result.getResult() == Result.PASS : "Got " + result.getResult() + " for " + result.toString() + " instead of " + Result.PASS.toString();
 
@@ -120,7 +120,7 @@ public class TestExecutor
         executor.setHttp(mockHttp);
         executor.setBaseURL("http://www.google.com");
         replay(mockHttp);
-        ExecutionResult result = executor.execute(fakeCall);
+        RestCallResult result = executor.execute(fakeCall);
         verify(mockHttp);
 
         assert result.getResult() == Result.PASS : "Expected test to pass " + result.toString();
@@ -139,7 +139,7 @@ public class TestExecutor
         executor.setHttp(mockHttp);
         executor.setBaseURL("http://www.google.com");
         replay(mockHttp);
-        ExecutionResult result = executor.execute(fakeCall);
+        RestCallResult result = executor.execute(fakeCall);
         verify(mockHttp);
 
         assert result.getResult() == Result.PASS : "Expected test to pass " + result.toString();
@@ -268,7 +268,7 @@ public class TestExecutor
         executor.setHttp(mockHttp);
         executor.setBaseURL("http://www.google.com");
         replay(mockHttp);
-        ExecutionResult result = executor.execute(fakeCall);
+        RestCallResult result = executor.execute(fakeCall);
         verify(mockHttp);
 
         assert result.getResult() == res : error + "(" + result.toString() + ")";

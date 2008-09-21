@@ -86,14 +86,14 @@ public class Executor
      * @param call the call to execute.
      * @return the results of the call.  This will always return, no exceptions are thrown from this method
      */
-    public ExecutionResult execute(RestCall call)
+    public RestCallResult execute(RestCall call)
     {
         if (getHttp() == null)
             throw new IllegalStateException("No HTTP implementation configured");
 
         itsLogger.debug("Starting call " + call.getName());
         long callStartTime = System.currentTimeMillis();
-        ExecutionResult executionResult = new ExecutionResult();
+        RestCallResult executionResult = new RestCallResult();
         executionResult.setCall(call);
         executionResult.setExecutionDate(new java.util.Date());
 
@@ -131,7 +131,7 @@ public class Executor
         return executionResult;
     }
 
-    private void populateResult(RestCall call, ExecutionResult result, HttpResponse response)
+    private void populateResult(RestCall call, RestCallResult result, HttpResponse response)
     {
         RestCallResponse expectedResponse = call.getResponse();
         if (expectedResponse == null)

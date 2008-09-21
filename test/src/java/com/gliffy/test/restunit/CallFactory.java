@@ -202,9 +202,9 @@ public class CallFactory
         return r;
     }
 
-    public static ExecutionResult getSuccessfulResult(RestCall test)
+    public static RestCallResult getSuccessfulResult(RestCall test)
     {
-        ExecutionResult success = new ExecutionResult();
+        RestCallResult success = new RestCallResult();
         success.setResult(Result.PASS);
         success.setCall(test);
         success.setExecutionTime(1L);
