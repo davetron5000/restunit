@@ -1,4 +1,3 @@
-
 # Overview 
 
 RESTUnit is a set of Java classes that can be used to test REST services.  The data structure classes shall be serializable to and from a simple format, making the simplest way to create tests a matter of creating text files.  
@@ -36,7 +35,7 @@ The response is equally simple:
 * Response content
 * Response headers
 
-We could represendt such a call in [YAML](http://en.wikipedia.org/wiki/YAML)  as so:
+We could represent such a call in [YAML](http://en.wikipedia.org/wiki/YAML)  as so:
 
     url: /accounts/Initech/users
     method: GET
@@ -51,15 +50,6 @@ We could represendt such a call in [YAML](http://en.wikipedia.org/wiki/YAML)  as
         headers:
             Content-Type: { value: text/xml }
             Last-Modified: { required: true }
-
-#### Why not just use HttpClient or HttpUnit?
-
-These require programmatic construction of the tests.  They also don't have definitive meta-data that we can use to derive other tests (see below).  Further, describing tests in a declarative format
-allows them to be used by other testing frameworks and not just Java.  If you were building a REST-based service, various programming languages could be used to interact with it.  Tests described as data, and not code, could be fed to any number of language libraries to test your service.  If you are writing client libraries for your service, this would save significant testing time.
-
-#### Why YAML?
-
-For starters, It's much more readable and editable than XML.  Further, embedding XML (or YAML, for that matter) is much simpler than with XML.  This allows the tests to be readable.
 
 ### Rest Test
 
