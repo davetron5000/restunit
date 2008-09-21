@@ -39,11 +39,9 @@ public class TestRestUnit
 
         itsHttp = new MockHttp(itsService);
 
-        Executor executor = new Executor();
-        executor.setHttp(itsHttp);
-        executor.setBaseURL("http://www.google.com");
         itsRestUnit = new RestUnit();
-        itsRestUnit.setExecutor(executor);
+        itsRestUnit.getExecutor().setHttp(itsHttp);
+        itsRestUnit.getExecutor().setBaseURL("http://www.google.com");
     }
 
     @Test
