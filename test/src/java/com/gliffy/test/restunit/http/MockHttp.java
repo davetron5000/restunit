@@ -70,6 +70,7 @@ public class MockHttp implements Http
     }
 
     public HttpResponse get(HttpRequest request)
+        throws Exception
     {
         String path = request.getURL().getPath();
         if (path.equals(EXCEPTION_PATH))
@@ -85,6 +86,7 @@ public class MockHttp implements Http
         }
     }
     public HttpResponse head(HttpRequest request)
+        throws Exception
     {
         String path = request.getURL().getPath();
         RESTTree node = findNode(path);
@@ -98,6 +100,7 @@ public class MockHttp implements Http
         }
     }
     public HttpResponse put(HttpRequest request)
+        throws Exception
     {
         String path = request.getURL().getPath();
         RESTTree node = findNode(path);
@@ -112,6 +115,7 @@ public class MockHttp implements Http
     }
 
     public final HttpResponse post(HttpRequest request)
+        throws Exception
     {
         String tunnel = request.getHeaders().get("X-HTTP-Method-Override");
         if ("PUT".equals(tunnel))
@@ -127,6 +131,7 @@ public class MockHttp implements Http
     }
 
     protected HttpResponse doPost(HttpRequest request)
+        throws Exception
     {
         String path = request.getURL().getPath();
         RESTTree node = findNode(path);
@@ -141,6 +146,7 @@ public class MockHttp implements Http
     }
 
     public HttpResponse delete(HttpRequest request)
+        throws Exception
     {
         String path = request.getURL().getPath();
         RESTTree node = findNode(path);

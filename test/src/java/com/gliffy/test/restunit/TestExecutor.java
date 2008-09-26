@@ -306,21 +306,32 @@ public class TestExecutor
      */
     private Http getMockHttp(String method, HttpResponse fakeResponse)
     {
-        HttpRequest anyRequest = anyObject();
-        Http mockHttp = createMock(Http.class);
-        if (method.equalsIgnoreCase("get"))
-            expect(mockHttp.get(anyRequest)).andReturn(fakeResponse);
-        else if (method.equalsIgnoreCase("put"))
-            expect(mockHttp.put(anyRequest)).andReturn(fakeResponse);
-        else if (method.equalsIgnoreCase("post"))
-            expect(mockHttp.post(anyRequest)).andReturn(fakeResponse);
-        else if (method.equalsIgnoreCase("delete"))
-            expect(mockHttp.delete(anyRequest)).andReturn(fakeResponse);
-        else if (method.equalsIgnoreCase("head"))
-            expect(mockHttp.head(anyRequest)).andReturn(fakeResponse);
-        else
-            throw new IllegalArgumentException(method + " isn't supported");
-        return mockHttp;
+        try
+        {
+            HttpRequest anyRequest = anyObject();
+            Http mockHttp = createMock(Http.class);
+            if (method.equalsIgnoreCase("get"))
+                expect(mockHttp.get(anyRequest)).andReturn(fakeResponse);
+            else if (method.equalsIgnoreCase("put"))
+                expect(mockHttp.put(anyRequest)).andReturn(fakeResponse);
+            else if (method.equalsIgnoreCase("post"))
+                expect(mockHttp.post(anyRequest)).andReturn(fakeResponse);
+            else if (method.equalsIgnoreCase("delete"))
+                expect(mockHttp.delete(anyRequest)).andReturn(fakeResponse);
+            else if (method.equalsIgnoreCase("head"))
+                expect(mockHttp.head(anyRequest)).andReturn(fakeResponse);
+            else
+                throw new IllegalArgumentException(method + " isn't supported");
+            return mockHttp;
+        }
+        catch (IllegalStateException e)
+        {
+            throw e;
+        }
+        catch (Exception e)
+        {
+            throw new RuntimeException(e);
+        }
     }
 
     private void clearHeaderRequirements(RestCall test)
