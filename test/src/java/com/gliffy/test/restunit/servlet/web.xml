@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+
+<!DOCTYPE web-app
+PUBLIC "-//Sun Microsystems, Inc.//DTD Web Application 2.2//EN"
+"http://java.sun.com/dtd/web-app_2_3.dtd">
+
+<web-app>
+    <display-name>RESTUnit Test Servlet</display-name>
+    <servlet>
+        <servlet-name>test</servlet-name>
+        <servlet-class>com.gliffy.test.restunit.servlet.TestServlet</servlet-class>
+
+        <init-param>
+            <param-name>/users</param-name>
+            <param-value>dave
+amy
+rudy</param-value>
+        </init-param>
+        <init-param>
+            <param-name>/users/dave</param-name>
+            <param-value><![CDATA[<?xml version="1.0" encoding="UTF-8"?><person><name>Dave Copeland</name><email>davetron5000@gmail.com</email></person>]]></param-value>
+        </init-param>
+        <init-param>
+            <param-name>/users/rudy</param-name>
+            <param-value>Roozula, The Old Schoola, rudy@meowmix.info</param-value>
+        </init-param>
+        <init-param>
+            <param-name>/photos/cats/rudy</param-name>
+            <param-value>http://www.google.com/blah/whatever</param-value>
+        </init-param>
+    </servlet> 
+
+    <servlet-mapping>
+        <servlet-name>test</servlet-name>
+        <url-pattern>/test/*</url-pattern>
+    </servlet-mapping> 
+</web-app>

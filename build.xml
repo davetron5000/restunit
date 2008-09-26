@@ -51,7 +51,7 @@
 
     <!-- TARGETRS -->
 
-    <target name="test" depends="compile,checkstyle,compile.test"
+    <target name="test" depends="compile.test,checkstyle"
         description="Runs tests">
         <delete file="${testng.failed.xml}" />
         <testng
@@ -66,7 +66,7 @@
 
     <target name="test.failed" 
         description="Runs Failed Tests"
-        depends="compile,compile.test">
+        depends="compile.test">
         <testng
             sourcedir="${test.java.src.dir}"
             classpathref="test.classpath"
@@ -122,7 +122,7 @@
     <!-- SUB TARGETS -->
 
     <!-- compiles test code -->
-    <target name="compile.test">
+    <target name="compile.test" depends="compile">
         <mkdir dir="${test.classes.dir}" />
         <depend srcdir="${test.java.src.dir}"
             destdir="${test.classes.dir}"
@@ -145,6 +145,22 @@
             <property key="checkstyle.header.file" value="${conf.dir}/java.header" />
             <fileset dir="${java.src.dir}" includes="**/*.java" />
         </checkstyle>
+    </target>
+
+    <target name="test.war" depends="compile.test">
+        <war
+            destfile="${build.dir}/test.war"
+            update="yes"
+            duplicate="fail"
+            webxml="${test.java.src.dir}/com/gliffy/test/restunit/servlet/web.xml">
+            <lib dir="${rt.lib.dir}" />
+            <classes dir="${test.classes.dir}">
+                <include name="**/*.class" />
+            </classes>
+            <classes dir="${conf.dir}">
+                <include name="log4j.properties" />
+            </classes>
+        </war>
     </target>
     
 
