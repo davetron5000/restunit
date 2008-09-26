@@ -1,27 +1,7 @@
 <project name="restunit" default="compile" basedir=".">
 
     <property environment="env" />
-
-    <property name="src.dir" value="${basedir}/src"/>
-    <property name="test.src.dir" value="${basedir}/test/src"/>
-
-    <property name="lib.dir" value="${basedir}/lib"/>
-    <property name="rt.lib.dir" value="${lib.dir}/rt"/>
-    <property name="test.lib.dir" value="${lib.dir}/test"/>
-
-    <property name="java.src.dir" value="${src.dir}/java"/>
-    <property name="test.java.src.dir" value="${test.src.dir}/java"/>
-
-    <property name="build.dir" value="${basedir}/build"/>
-    <property name="javadoc.dir" value="${build.dir}/doc/javadoc"/>
-
-    <property name="classes.dir" value="${build.dir}/classes" />
-    <property name="test.classes.dir" value="${build.dir}/test-classes" />
-
-    <property name="test.output.dir" value="${build.dir}/test-output"/>
-    <property name="testng.failed.xml" value="${test.output.dir}/testng-failed.xml"/>
-
-    <property name="conf.dir" value="${basedir}/conf" />
+    <property file="build.properties" />
 
     <!-- PATHS -->
 
@@ -51,7 +31,7 @@
 
     <!-- TARGETRS -->
 
-    <target name="test" depends="compile.test,checkstyle"
+    <target name="test" depends="deploy.test.war,checkstyle"
         description="Runs tests">
         <delete file="${testng.failed.xml}" />
         <testng
@@ -62,6 +42,7 @@
             <jvmarg value="-Djava.util.logging.config.file=${conf.dir}/jdk.logging.properties" />
             <classfileset dir="${test.classes.dir}" />
         </testng>
+        <ant target="stop.winstone" />
     </target>
 
     <target name="test.failed" 
@@ -149,7 +130,7 @@
 
     <target name="test.war" depends="compile.test">
         <war
-            destfile="${build.dir}/test.war"
+            destfile="${test.war}"
             update="yes"
             duplicate="fail"
             webxml="${test.java.src.dir}/com/gliffy/test/restunit/servlet/web.xml">
@@ -162,6 +143,20 @@
             </classes>
         </war>
     </target>
-    
+
+    <target name="deploy.test.war" depends="test.war">
+        <java jar="${test.lib.dir}/winstone-0.9.10.jar"
+            fork="true"
+            spawn="true" >
+            <arg line="--warfile=${test.war} --logfile=winstone.log --httpPort=${winstone.httpPort} --controlPort=${winstone.controlPort} -ajp13Port=-1" />
+        </java>
+    </target>
+
+    <!-- Stop the winstone servlet container -->
+    <target name="stop.winstone">
+        <java classname="winstone.tools.WinstoneControl" classpath="${test.lib.dir}/winstone-0.9.10.jar">
+            <arg line="shutdown --host=localhost --controlPort=${winstone.controlPort}" />
+        </java>
+    </target>
 
 </project>
