@@ -11,6 +11,25 @@ import org.apache.commons.logging.*;
 /** A servlet that provides a very basic REST interface.
  * Useful in deploying into a container for the purposes of testing
  * actual HTTP calls and not just mocked ones.
+ * It works as follows:
+ * <ul>
+ * <li>On startup, init params in <tt>web.xml</tt> map URLs to data. 
+ * <li>Any data mapped to a URL can get "gotten", and the etag and last-update date will be set based on the
+ * time the data was inserted</li>
+ * <li>An unmapped URL can be PUT to</li>
+ * <li>A mapped URL can be DELETEed from</li>
+ * <li>A POST to a mapped URL will change the data</li>
+ * <li>A POST to an unampped URL will create a new URL based on the URL and the "name" attribute<li>
+ * <li>HEAD does a GET but returns no body</li>
+ * <li>A DELETE to any URL with the parameter "reset" set to "true" re-initializes the data</li>
+ * </ul>
+ * Further, the service as the following bugs:
+ * <ul>
+ * <li>If the data PUT or POSTed is all numeric, an exception is thrown</li>
+ * <li>A DELETE to a URL with one part (e.g. "/blah") will not have an effect</li>
+ * <li>A GET requesting "text/html" will return "text/xml"</li>
+ * <li>HEAD requests omit the ETag header</li>
+ * </ul>
  */
 public class TestServlet extends HttpServlet
 {
@@ -42,6 +61,13 @@ public class TestServlet extends HttpServlet
     protected void doDelete(HttpServletRequest request, HttpServletResponse response)
         throws IOException
     {
+        itsLogger.debug("DELETE of " + getPath(request));
+        if ("true".equals(request.getParameter("reset")) )
+        {
+            initializeData();
+            response.setStatus(HttpServletResponse.SC_OK);
+            return;
+        }
         String data = findData(request);
         if (data != null)
         {
@@ -58,12 +84,14 @@ public class TestServlet extends HttpServlet
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
         throws IOException
     {
+        itsLogger.debug("GET of " + getPath(request));
         doGetHead(request,response,false);
     }
 
     protected void doHead(HttpServletRequest request, HttpServletResponse response)
         throws IOException
     {
+        itsLogger.debug("HEAD of " + getPath(request));
         doGetHead(request,response,true);
     }
 
@@ -99,6 +127,7 @@ public class TestServlet extends HttpServlet
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
         throws IOException
     {
+        itsLogger.debug("POST to " + getPath(request));
         String newData = request.getParameter("data");
         if (newData == null)
         {
@@ -135,6 +164,7 @@ public class TestServlet extends HttpServlet
     protected void doPut(HttpServletRequest request, HttpServletResponse response) 
         throws IOException
     {
+        itsLogger.debug("PUT to " + getPath(request));
         String data = findData(request);
         if (data == null)
         {
@@ -185,6 +215,12 @@ public class TestServlet extends HttpServlet
 
     private void saveData(HttpServletRequest request, String data)
     {
+        try
+        {
+            Long.parseLong(data);
+            throw new RuntimeException("Dunno what just happened?!?!??");
+        }
+        catch (NumberFormatException e) { }
         String path = getPath(request);
         itsDatabase.put(path,data);
         updateHashes(path,data);
@@ -193,6 +229,8 @@ public class TestServlet extends HttpServlet
     private void deleteData(HttpServletRequest request)
     {
         String path = getPath(request);
+        if (path.lastIndexOf("/") <= 0)
+            return;
         itsDatabase.remove(path);
         itsModificationDates.remove(path);
         itsETags.remove(path);
@@ -250,6 +288,7 @@ public class TestServlet extends HttpServlet
         String data = getData(request);
         if (data != null)
         {
+            itsLogger.debug("Data at the url");
             if (clientCacheIsUsable(request))
             {
                 itsLogger.debug("Client data is good");
@@ -258,18 +297,39 @@ public class TestServlet extends HttpServlet
             else
             {
                 itsLogger.debug("Client data is out of date");
-                response.setHeader("ETag",getETag(request));
-                itsLogger.debug("Setting ETag header to " + getETag(request));
+                if (!head)
+                {
+                    response.setHeader("ETag",getETag(request));
+                    itsLogger.debug("Setting ETag header to " + getETag(request));
+                }
                 Date lastMod = getLastModifiedDate(request);
                 if (lastMod != null)
                     response.setDateHeader("Last-Modified",lastMod.getTime());
                 response.setStatus(HttpServletResponse.SC_OK);
-                if (data.startsWith("<?xml"))
+                String acceptHeader = request.getHeader("Accept");
+                if (acceptHeader.indexOf("text/html") != -1)
+                {
                     response.setContentType("text/xml");
-                else
+                }
+                else if (acceptHeader.indexOf("text/xml") != -1)
+                {
+                    response.setContentType("text/xml");
+                }
+                else if (acceptHeader.indexOf("text/plain") != -1)
+                {
                     response.setContentType("text/plain");
+                }
+                else if (acceptHeader.indexOf("*/*") != -1)
+                {
+                    response.setContentType("text/plain");
+                }
+                else
+                {
+                    response.sendError(HttpServletResponse.SC_NOT_FOUND,acceptHeader + " is not a supported mime type");
+                    return;
+                }
                 if (!head)
-                    response.getWriter().println(data);
+                    response.getWriter().print(data);
             }
         }
         else
