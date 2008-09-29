@@ -102,7 +102,23 @@ public class RestCallResult implements Serializable
             + getDescription();
 
         if (getResult() == Result.EXCEPTION)
-            return string + " (Throwable was: " + (getThrowable() == null ? "null" : getThrowable().getMessage()) + ")";
+        {
+            Throwable t = getThrowable();
+            if (t == null)
+                return string + " (NO THROWABLE)";
+            StringBuilder b = new StringBuilder(string);
+            while (t != null)
+            {
+                b.append("\nThrowable was: " + t.getMessage());
+                for (StackTraceElement e: t.getStackTrace())
+                {
+                    b.append("\n");
+                    b.append(e.toString());
+                }
+                t = t.getCause();
+            }
+            return b.toString();
+        }
         else
             return string;
     }

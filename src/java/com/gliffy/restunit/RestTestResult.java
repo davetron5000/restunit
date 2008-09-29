@@ -40,4 +40,25 @@ public class RestTestResult implements Serializable
     {
         return itsSuccess; 
     }
+
+    /** Returns a string suitable for including in test results to indicate what happened during the
+     * test.
+     * @return A string containing information about what happened during the test.
+     */
+    public String toString()
+    {
+        StringBuilder b = new StringBuilder(getClass().getName());
+        b.append(" {\n");
+        b.append("\tsuccess: ");
+        b.append(getSuccess() ? "YES\n" : "NO\n");
+
+        for (RestCallResult result: getDetailedResults())
+        {
+            b.append("\t");
+            b.append(result.toString());
+            b.append("\n");
+        }
+        b.append("}");
+        return b.toString();
+    }
 }
