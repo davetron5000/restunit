@@ -115,6 +115,94 @@ public class CallFactory
         return array[RANDOM.nextInt(array.length)];
     }
 
+    public static RestCall getDelete(String url)
+        throws Exception
+    {
+        RestCall call = new RestCall();
+        call.setURL(url);
+        call.setMethod("DELETE");
+        call.setName("DELETE oof " + url);
+        call.setResponse(getOKResponse());
+        return call;
+    }
+
+    public static RestCall getPut(String url, String data)
+        throws Exception
+    {
+        BodyCall call = new BodyCall();
+        call.setURL(url);
+        call.setMethod("PUT");
+        call.setBody(data.getBytes("UTF-8"));
+        call.setContentType("text/plain");
+        call.setName("PUT to " + url);
+        call.setResponse(getCreatedResponse());
+        return call;
+    }
+
+    public static RestCall get404(String url)
+    {
+        GetCall call = new GetCall();
+        call.setURL(url);
+        call.setMethod("GET");
+        call.setName("GET of " + url + " that we expcect to return a 404");
+        call.setResponse(get404Response());
+        return call;
+    }
+
+    public static RestCall getPost(String url, String data)
+    {
+        RestCall call = new RestCall();
+        call.setURL(url);
+        call.setMethod("POST");
+        call.addParameter("data",data);
+        call.setName("POST to " + url);
+        call.setResponse(getOKResponse());
+        return call;
+    }
+
+    public static RestCall getGet(String url, String data, String contentType)
+        throws Exception
+    {
+        GetCall call = new GetCall();
+        call.setURL(url);
+        call.setMethod("GET");
+        call.getHeaders().put("Accept",contentType);
+        call.setName("GET of " + url);
+        call.setResponse(getBodyResponse(contentType,data));
+        return call;
+    }
+
+    public static RestCallResponse getBodyResponse(String contentType, String data)
+        throws Exception
+    {
+        BodyResponse response = new BodyResponse();
+        response.setStatusCode(200);
+        response.setContentType(contentType);
+        response.setBody(data.getBytes("UTF-8"));
+        return response;
+    }
+
+    public static RestCallResponse getOKResponse()
+    {
+        RestCallResponse response = new RestCallResponse();
+        response.setStatusCode(200);
+        return response;
+    }
+
+    public static RestCallResponse get404Response()
+    {
+        RestCallResponse response = new RestCallResponse();
+        response.setStatusCode(404);
+        return response;
+    }
+
+    public static RestCallResponse getCreatedResponse()
+    {
+        RestCallResponse response = new RestCallResponse();
+        response.setStatusCode(201);
+        return response;
+    }
+
     public static RestCall getRandomCall()
     {
         RestCall t = new RestCall();

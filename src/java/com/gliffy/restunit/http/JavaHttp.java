@@ -9,11 +9,15 @@ import java.io.*;
 import java.net.*;
 import java.util.*;
 
+import org.apache.commons.logging.*;
+
 /** Implementation that uses the {@link java.net.HttpURLConnection} class.  For many reasons, you should probably 
  * use another implementation, however this one carries the least dependencies and other baggage.
  */
 public class JavaHttp implements Http
 {
+    private Log itsLogger = LogFactory.getLog(getClass().getName());
+
     /** Performs an HTTP GET.
      * @param request the request describing the GET.
      * @return a response
@@ -55,6 +59,7 @@ public class JavaHttp implements Http
     {
         HttpURLConnection connection = getConnection(request);
         connection.setRequestMethod("PUT");
+        connection.setDoOutput(true);
         connection.connect();
         setBody(request,connection);
         HttpResponse response = createResponse(connection);
@@ -71,6 +76,7 @@ public class JavaHttp implements Http
     {
         HttpURLConnection connection = getConnection(request);
         connection.setRequestMethod("POST");
+        connection.setDoOutput(true);
         connection.connect();
         setBody(request,connection);
         HttpResponse response = createResponse(connection);
@@ -119,6 +125,7 @@ public class JavaHttp implements Http
         while (ch != -1)
         {
             os.write(ch);
+            ch = is.read();
         }
         return os.toByteArray();
     }
@@ -142,7 +149,14 @@ public class JavaHttp implements Http
     {
         HttpResponse response = new HttpResponse();
         response.setStatusCode(connection.getResponseCode());
-        response.setBody(readBody(connection));
+        if (response.getStatusCode() == HttpURLConnection.HTTP_OK)
+        {
+            response.setBody(readBody(connection));
+        }
+        else
+        {
+            itsLogger.debug("Got " + response.getStatusCode() + " and java.net will barf if we try to read the body");
+        }
         for (String header: connection.getHeaderFields().keySet())
         {
             response.getHeaders().put(header,joinHeaderValues(connection.getHeaderFields().get(header)));
