@@ -1,4 +1,7 @@
 .*sw?
+winstone.log
+servlet-error.log
+servlet-debug.log
 error.log
 debug.log
 build
