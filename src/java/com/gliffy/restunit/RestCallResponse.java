@@ -19,6 +19,8 @@ public class RestCallResponse implements Serializable, Cloneable
     public static final String ETAG_HEADER = "ETag";
     /** HTTP Header for If-None-Match. */
     public static final String IF_NONE_MATCH_HEADER = "If-None-Match";
+    /** HTTP Header for Content-Type. */
+    public static final String CONTENT_TYPE_HEADER = "Content-Type";
 
     /** Status code for 304/Not Modified. */
     public static final int NOT_MODIFIED_STATUS = 304;

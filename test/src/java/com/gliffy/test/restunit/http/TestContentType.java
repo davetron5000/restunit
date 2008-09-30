@@ -15,7 +15,7 @@ public class TestContentType
     @Test(dataProvider = "simpleMimeTypes")
     public void testSimple(String simpleMimeType, String normalizedMimeType)
     {
-        ContentType type = new ContentType(simpleMimeType);
+        ContentType type = ContentType.getContentType(simpleMimeType);
         String expected = normalizedMimeType;
         if (expected == null)
             expected = simpleMimeType;
@@ -26,7 +26,7 @@ public class TestContentType
     @Test(dataProvider = "mimeTypesWithEncodings")
     public void testWithEncodings(String string, String expectedType, String expectedEncoding)
     {
-        ContentType type = new ContentType(string);
+        ContentType type = ContentType.getContentType(string);
 
         assert type.getMimeType().equals(expectedType) : "Expected '" + expectedType + "', but got '" + type.getMimeType() + "'";
         String encodingGot = type.getEncoding();
