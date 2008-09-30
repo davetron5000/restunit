@@ -153,6 +153,7 @@
             spawn="true" >
             <arg line="--warfile=${test.war} --logfile=winstone.log --httpPort=${winstone.httpPort} --controlPort=${winstone.controlPort} -ajp13Port=-1" />
         </java>
+        <sleep seconds="1" />
     </target>
 
     <!-- Stop the winstone servlet container -->
