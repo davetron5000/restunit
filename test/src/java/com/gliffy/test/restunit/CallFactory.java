@@ -126,7 +126,7 @@ public class CallFactory
         RestCall call = new RestCall();
         call.setURL(url);
         call.setMethod("DELETE");
-        call.setName("DELETE oof " + url);
+        call.setName("DELETE of " + url);
         call.setResponse(getOKResponse());
         return call;
     }

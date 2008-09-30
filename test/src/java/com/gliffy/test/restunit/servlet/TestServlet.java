@@ -62,12 +62,6 @@ public class TestServlet extends HttpServlet
         throws IOException
     {
         itsLogger.debug("DELETE of " + getPath(request));
-        if ("true".equals(request.getParameter("reset")) )
-        {
-            initializeData();
-            response.setStatus(HttpServletResponse.SC_OK);
-            return;
-        }
         String data = findData(request);
         if (data != null)
         {
@@ -285,6 +279,17 @@ public class TestServlet extends HttpServlet
     private void doGetHead(HttpServletRequest request, HttpServletResponse response, boolean head)
         throws IOException
     {
+        String reset = request.getParameter("reset");
+        if ("true".equals(reset))
+        {
+            initializeData();
+            response.setStatus(HttpServletResponse.SC_OK);
+            return;
+        }
+        else
+        {
+            itsLogger.debug("'reset' was " + reset);
+        }
         String data = getData(request);
         if (data != null)
         {

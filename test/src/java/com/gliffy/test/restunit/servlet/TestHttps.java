@@ -25,8 +25,9 @@ public class TestHttps
         return https;
     }
 
+
     @Test(dataProvider = "http")
-    public void testGets(Http http)
+    public void testBasic(Http http)
         throws Exception
     {
         RestUnit unit = new RestUnit();
@@ -39,6 +40,9 @@ public class TestHttps
 
         String data = "This is a random? bit of& <data> that I will be posting";
         String data2 = "!!!!!This is a random? bit of& <data> that I will be posting again";
+        RestCall reset = CallFactory.getGet(null,"",null);
+        reset.addParameter("reset","true");
+        test.addCall(reset);
         test.addCall(CallFactory.getPut(null,data));
         test.addCall(CallFactory.getGet(null,data,"text/plain"));
         test.addCall(CallFactory.getPost(null,data2));
@@ -50,4 +54,5 @@ public class TestHttps
 
         assert result.getSuccess() : "Expected success\n" + result.toString();
     }
+
 }
