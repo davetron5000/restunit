@@ -138,7 +138,37 @@ public class TestHttps
         request.setURL(new URL(unit.getExecutor().getBaseURL() + "/users/rudy?data=12334"));
         HttpResponse response = http.post(request);
 
-        assert response.getStatusCode() == 500 : "Got " + response.getStatusCode() + " instead of 200";
+        assert response.getStatusCode() == 500 : "Got " + response.getStatusCode() + " instead of 500";
+    }
+
+    @Test(dataProvider = "http")
+    public void testGetHead(Http http)
+        throws Exception
+    {
+        RestUnit unit = new RestUnit();
+        unit.getExecutor().setHttp(http);
+        unit.getExecutor().setBaseURL("http://localhost:9090/test");
+
+        RestTest test = new RestTest();
+        test.setName("Basic Test of a " + http.getClass().getName());
+        test.setDefaultURL("/users/rudy");
+
+        RestCall reset = CallFactory.getGet(null,"",null);
+        reset.addParameter("reset","true");
+        test.addCall(reset);
+
+        HttpRequest request = new HttpRequest();
+        request.setURL(new URL(unit.getExecutor().getBaseURL() + "/users/rudy"));
+        HttpResponse getResponse = http.get(request);
+        HttpResponse headResponse = http.head(request);
+
+        assert getResponse.getStatusCode() == 200 : "Got " + getResponse.getStatusCode() + " instead of 200";
+        assert headResponse.getStatusCode() == 200 : "Got " + headResponse.getStatusCode() + " instead of 200";
+
+        // TestServlet has an intentional bug in it related to this
+        getResponse.getHeaders().remove("ETag");
+
+        TestAssertions.assertMapsEqual(getResponse.getHeaders(),headResponse.getHeaders());
     }
 
 }
