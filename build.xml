@@ -37,6 +37,8 @@
         <testng
             sourcedir="${test.java.src.dir}"
             classpathref="test.classpath"
+            parallel="tests"
+            threadCount="10"
             outputdir="${test.output.dir}"
             >
             <jvmarg value="-Djava.util.logging.config.file=${conf.dir}/jdk.logging.properties" />
