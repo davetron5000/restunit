@@ -16,6 +16,7 @@ import com.gliffy.test.restunit.*;
 import org.testng.*;
 import org.testng.annotations.*;
 
+@Test (dependsOnGroups = { "restUnit" }, groups= {"http" } )
 public class TestHttps
 {
     @DataProvider(name = "http")

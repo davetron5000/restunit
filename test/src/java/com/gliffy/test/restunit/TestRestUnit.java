@@ -12,7 +12,7 @@ import org.testng.annotations.*;
 
 import static org.easymock.classextension.EasyMock.*;
 
-//@Test (dependsOnGroups = { "mockhttp", "deriver", "executor", "clone", "comparator", "runtest" })
+@Test (dependsOnGroups = { "mockhttp", "executor", "clone", "comparator" }, groups= { "restUnit" })
 public class TestRestUnit
 {
     private Map<String,String> itsService;
@@ -47,25 +47,22 @@ public class TestRestUnit
         itsRestUnit.getExecutor().setBaseURL("http://www.google.com");
     }
 
-    @Test
     public void testFunctionalSuccess()
     {
         testFunctional(false,false);
     }
 
-    @Test
     public void testFailure()
     {
         testFunctional(true,false);
     }
 
-    @Test
     public void testException()
     {
         testFunctional(true,true);
     }
 
-    public void testFunctional(boolean badGet, boolean exception)
+    private void testFunctional(boolean badGet, boolean exception)
     {
         String url = "/accounts/BurnsODyne/users/lisa";
         RestTest restTest = new RestTest();

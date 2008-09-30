@@ -90,15 +90,16 @@ public class StrictMatchComparator implements ResultComparator
         }
         else
         {
-            return new ComparisonResult(false,createDiffMessage(expectedBody,expectedContentType,receivedBody,receivedContentType));
+            String diffMessage = createDiffMessage(normalize(expectedBody),expectedContentType,normalize(receivedBody),receivedContentType);
+            return new ComparisonResult(false,diffMessage);
         }
     }
 
     /** Given two differing bytestreams, and the content types attached to each, returns a string-based diff message that can help the
      * tester understand why the comparison failed.
-     * @param expectedBody the body expected, may be null
+     * @param expectedBody the body expected, will not be null (nulls from server get converted to empty arrays)
      * @param expectedContentType the content type expected by the test, or null if it wasn't specified
-     * @param receivedBody the body received, may be null
+     * @param receivedBody the body received, will not be null (nulls from server get converted to empty arrays)
      * @param receivedContentType the content type received in the response, or null if it wasn't specified
      * @return a human-readable message explaining why the comparison failed.  This version checks to see if the expected content type is a text-based type.
      * If so, it attempts to convert the bytestreams to strings using the encodings specified in their content types.  If the expectedContentType has no encoding
