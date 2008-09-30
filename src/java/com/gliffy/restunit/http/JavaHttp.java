@@ -102,10 +102,14 @@ public class JavaHttp implements Http
     private HttpURLConnection getConnection(HttpRequest request)
         throws IOException
     {
+        itsLogger.debug("Opening connection to " + request.getURL().toString());
         HttpURLConnection connection = (HttpURLConnection)request.getURL().openConnection();
         for (String header: request.getHeaders().keySet())
         {
-            connection.setRequestProperty(header,request.getHeaders().get(header));
+            String headerValue = request.getHeaders().get(header);
+            if (itsLogger.isDebugEnabled())
+                itsLogger.debug("Setting header '" + header + "' to '" + headerValue + "'");
+            connection.setRequestProperty(header,headerValue);
         }
         return connection;
     }

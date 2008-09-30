@@ -146,10 +146,15 @@ public class CallFactory
 
     public static RestCall get404(String url)
     {
+        return get404(url,null);
+    }
+    public static RestCall get404(String url, String mimeType)
+    {
         GetCall call = new GetCall();
         call.setURL(url);
         call.setMethod("GET");
         call.setName("GET of " + url + " that we expcect to return a 404");
+        call.getHeaders().put("Accept",mimeType);
         call.setResponse(get404Response());
         return call;
     }

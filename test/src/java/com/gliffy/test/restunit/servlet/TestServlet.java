@@ -91,10 +91,16 @@ public class TestServlet extends HttpServlet
 
     private boolean clientCacheIsUsable(HttpServletRequest request)
     {
+        Enumeration e = request.getHeaderNames();
+        while (e.hasMoreElements())
+        {
+            String header = (String)e.nextElement();
+            itsLogger.debug("'" + header + "' == '" + request.getHeader(header) + "'");
+        }
         long clientLastModTime = request.getDateHeader("If-Modified-Since") / 1000;
         long dataLastModTime = getLastModifiedDate(request) == null ? 0 : getLastModifiedDate(request).getTime() / 1000;
 
-        if (clientLastModTime != -1)
+        if (clientLastModTime != 0)
         {
             itsLogger.debug("Client's last mod time : " + clientLastModTime);
             itsLogger.debug("Data's last mod time : " + dataLastModTime);
@@ -107,7 +113,14 @@ public class TestServlet extends HttpServlet
         String dataETag = getETag(request);
 
         if ( (clientETag != null) && (dataETag != null) )
+        {
+            itsLogger.debug("Comparing '" + clientETag + "'  to our '" + dataETag + "'");
             return clientETag.equals(dataETag);
+        }
+        else
+        {
+            itsLogger.debug("one of the etags was null " + (clientETag == null ? "client's" : "our's"));
+        }
 
         return false;
     }
@@ -298,6 +311,7 @@ public class TestServlet extends HttpServlet
             {
                 itsLogger.debug("Client data is good");
                 response.setStatus(HttpServletResponse.SC_NOT_MODIFIED);
+                return;
             }
             else
             {
