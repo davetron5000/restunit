@@ -118,4 +118,27 @@ public class TestHttps
         assert notModified.getStatusCode() == 304 : "Got " + response.getStatusCode() + " instead of 304 for If-None-Match of " + request.getHeaders().get("If-None-Match");
     }
 
+    @Test(dataProvider = "http")
+    public void testServerError(Http http)
+        throws Exception
+    {
+        RestUnit unit = new RestUnit();
+        unit.getExecutor().setHttp(http);
+        unit.getExecutor().setBaseURL("http://localhost:9090/test");
+
+        RestTest test = new RestTest();
+        test.setName("Basic Test of a " + http.getClass().getName());
+        test.setDefaultURL("/users/rudy");
+
+        RestCall reset = CallFactory.getGet(null,"",null);
+        reset.addParameter("reset","true");
+        test.addCall(reset);
+
+        HttpRequest request = new HttpRequest();
+        request.setURL(new URL(unit.getExecutor().getBaseURL() + "/users/rudy?data=12334"));
+        HttpResponse response = http.post(request);
+
+        assert response.getStatusCode() == 500 : "Got " + response.getStatusCode() + " instead of 200";
+    }
+
 }
