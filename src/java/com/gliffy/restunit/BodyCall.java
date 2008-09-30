@@ -8,6 +8,8 @@ package com.gliffy.restunit;
 import java.io.*;
 import java.util.*;
 
+import com.gliffy.restunit.http.*;
+
 /** A call of a request that has a body. */
 public class BodyCall extends RestCall
 {
@@ -24,6 +26,14 @@ public class BodyCall extends RestCall
     public void setContentType(String i) 
     {
         itsContentType = i; 
+    }
+
+    /** Sets the content type via a ContentType object, with optional character encoding.
+     * @param type the ContentType
+     */
+    public void setContentType(ContentType type)
+    {
+        setContentType(type.toString());
     }
 
     public byte[] getBody() 

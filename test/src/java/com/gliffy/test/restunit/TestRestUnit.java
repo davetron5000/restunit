@@ -211,9 +211,9 @@ public class TestRestUnit
         {
             BodyResponse response = new BodyResponse();
             if (body.startsWith("<"))
-                response.setContentType("text/xml");
+                response.setContentType(new ContentType("text/xml","UTF-8"));
             else
-                response.setContentType("text/plain");
+                response.setContentType(new ContentType("text/plain","UTF-8"));
             response.setBody(body.getBytes());
             response.setStatusCode(status);
             test.setResponse(response);
@@ -227,7 +227,7 @@ public class TestRestUnit
         if (test instanceof BodyCall)
         {
             ((BodyCall)test).setBody(new byte[0]);
-            ((BodyCall)test).setContentType("text/plain");
+            ((BodyCall)test).setContentType(new ContentType("text/plain","UTF-8"));
         }
 
         restTest.addCall(test);

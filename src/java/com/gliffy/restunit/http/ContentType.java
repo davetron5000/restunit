@@ -22,14 +22,26 @@ public class ContentType
     /** Create the ContentType based upon the string received from an HTTP header or other location.
      * @param mimeType the mime type, should not be null
      * @param encoding the character encoding, or null if it wasn't provided
+     * @throws IllegalArgumentException if mimeType is null
      */
-    private ContentType(String mimeType, String encoding)
+    public ContentType(String mimeType, String encoding)
     {
         if (mimeType == null)
             throw new IllegalArgumentException("mimeType may not be null to ContentType(String,String)");
         itsMimeType = mimeType;
         itsEncoding = encoding;
     } 
+
+    /** Create a ContentType with no character encoding.
+     * Useful for binary types.
+     * @param mimeType the mime type
+     */
+    public ContentType(String mimeType)
+    {
+        this(mimeType,null);
+    }
+
+
 
     /** Returns a content type based on the "Content-Type" header passed in.
      * @param string the result of getting the "Content-Type" header; may be null
@@ -76,5 +88,16 @@ public class ContentType
     public String getEncoding()
     {
         return itsEncoding;
+    }
+
+    /** Returns the string form of this ContentType.
+     * @return a string that should match the HTTP spec and be usable in the <tt>Content-Type</tt> header
+     */
+    public String toString()
+    {
+        if (getEncoding() != null)
+            return getMimeType() + ";" + CHARSET + "=" + getEncoding();
+        else
+            return getMimeType();
     }
 }

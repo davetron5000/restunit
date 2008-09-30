@@ -309,19 +309,19 @@ public class TestServlet extends HttpServlet
                 String acceptHeader = request.getHeader("Accept");
                 if (acceptHeader.indexOf("text/html") != -1)
                 {
-                    response.setContentType("text/xml");
+                    response.setContentType("text/xml;charset=UTF-8");
                 }
                 else if (acceptHeader.indexOf("text/xml") != -1)
                 {
-                    response.setContentType("text/xml");
+                    response.setContentType("text/xml;charset=UTF-8");
                 }
                 else if (acceptHeader.indexOf("text/plain") != -1)
                 {
-                    response.setContentType("text/plain");
+                    response.setContentType("text/plain;charset=UTF-8");
                 }
                 else if (acceptHeader.indexOf("*/*") != -1)
                 {
-                    response.setContentType("text/plain");
+                    response.setContentType("text/plain;charset=UTF-8");
                 }
                 else
                 {

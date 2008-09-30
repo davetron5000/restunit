@@ -8,6 +8,8 @@ package com.gliffy.restunit;
 import java.io.*;
 import java.util.*;
 
+import com.gliffy.restunit.http.*;
+
 /** A response that has a body. */
 public class BodyResponse extends RestCallResponse
 {
@@ -21,6 +23,15 @@ public class BodyResponse extends RestCallResponse
     {
         return itsContentType; 
     }
+
+    /** Sets the content type ensuring that the specified encoding is includes.
+     * @param contentType a ContentType describing the content type and optional character encoding
+     */
+    public void setContentType(ContentType contentType)
+    {
+        setContentType(contentType.toString());
+    }
+
     public void setContentType(String i) 
     {
         itsContentType = i; 

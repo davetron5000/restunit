@@ -20,13 +20,13 @@ public class CallFactory
         "garlic",
     };
 
-    private static final String CONTENT_TYPES[] = 
+    private static final ContentType CONTENT_TYPES[] = 
     {
-        "text/xml",
-        "text/plain",
-        "text/html",
-        "image/png",
-        "image/jpeg",
+        new ContentType("text/xml","UTF-8"),
+        new ContentType("text/plain","latin1"),
+        new ContentType("text/html","latin1"),
+        new ContentType("image/png"),
+        new ContentType("image/jpeg"),
     };
 
     private static final String BASIC_METHODS[] = 
@@ -115,6 +115,11 @@ public class CallFactory
         return array[RANDOM.nextInt(array.length)];
     }
 
+    private static ContentType random(ContentType []array)
+    {
+        return array[RANDOM.nextInt(array.length)];
+    }
+
     public static RestCall getDelete(String url)
         throws Exception
     {
@@ -133,7 +138,7 @@ public class CallFactory
         call.setURL(url);
         call.setMethod("PUT");
         call.setBody(data.getBytes("UTF-8"));
-        call.setContentType("text/plain");
+        call.setContentType(new ContentType("text/plain","UTF-8"));
         call.setName("PUT to " + url);
         call.setResponse(getCreatedResponse());
         return call;
