@@ -5,41 +5,49 @@
 
 package com.gliffy.restunit;
 
+import java.util.*;
+
+import org.testng.annotations.*;
+
 /** Allows using RESTUnit inside TestNG.
- * The method {@link #runTest(RestTest)} can be called from TestNG; it will examine the results of
- * the test execution and use assert to fail the test.  You could write a TestNG test like so:
+ * To use this, subclass and implement {@link #getTests()} (you will also need to ensure
+ * that {@link #setRestUnit(RestUnit)} is called).  Each will be called by 
+ * TestNG at runtime, assuming your class is available to TestNG.
+ * {@link #getTests()} is used by {@link #getTestsDataProvider()} to tell
+ * TestNG which tests to run.  These tests are run via {@link #runTest(RestTest)}.
+ *
+ * For example:
  * <pre>
- * public class TestMyService
+ * public class MyTests etends TestNGRestUnit
  * {
- *    private TestNGRestUnit unit;
+ *     public MyTests()
+ *     {
+ *         super();
+ *         setRestUnit(new RestUnit());
+ *         getRestUnit().getExecutor().setHttp(new JavaHttp());
+ *     }
  *
- *    @BeforeTest
- *    public void setUp()
- *    {
- *      unit = new TestNGRestUnit();
- *      unit.setRestUnit(new RestUnit());
- *    }
- *    
- *    public void testSomeGetMethod()
- *    {
- *       RestTest test = new RestTest();
- *       test.setName("Test GET /");
- *       test.setDefaultURL("http://www.google.com");
- *
- *       RestCall call = new RestCall();
- *       call.setMethod("HEAD");
- *
- *       test.addCall(call);
- *
- *       unit.runTest(test);
- *    }
+ *     public Set&lt;RestTest&gt;getTests()
+ *     {
+ *         Set&lt;RestTest&gt; tests = new HashSet&lt;RestTest&gt;();
+ *         tests.add(createSomeTest());
+ *         tests.add(createSomeOtherTest());
+ *         tests.add(createYetAnotherTest());
+ *         return tests;
+ *     }
  * }
  * </pre>
+ * This will result in three tests being run, one for each of the tests created in <tt>getTests</tt>.
  */
-public class TestNGRestUnit
+public abstract class TestNGRestUnit
 {
     private RestUnit itsRestUnit;
     private ResultFormatter itsFormatter = new ResultFormatter();
+
+    /** Returns the tests you want run.
+     * @return a set of RestTest objects that will be run via RestUnit by way of TestNG
+     */
+    protected abstract Set<RestTest> getTests();
 
     /** sets the RestUnit instance to use for this test.  Typically, you would 
      * call this in your set up method.
@@ -71,9 +79,27 @@ public class TestNGRestUnit
      * You can also override this method in a subclass and attach a data provider to it
      * @param test the test to run
      */
+    @Test(dataProvider="tests")
     public void runTest(RestTest test)
     {
         RestTestResult result = getRestUnit().runTest(test);
         assert result.getSuccess() : "Test " + test.getName() + " failed:\n" + getResultFormatter().format(result);
+    }
+
+    /** DataProvider for translating the tests returned by {@link #getTests()} into something
+     * TestNG can use.
+     * @return TestNG's parameter list of tests.  Only one column with one row for each test.
+     */
+    @DataProvider(name="tests")
+    public final Object[][] getTestsDataProvider()
+    {
+        Object[][] tests = new Object[getTests().size()][1];
+        int i = 0;
+        for (RestTest test: getTests())
+        {
+            tests[i][0] = test;
+            i++;
+        }
+        return tests;
     }
 }

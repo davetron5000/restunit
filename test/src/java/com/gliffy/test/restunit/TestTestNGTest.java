@@ -13,17 +13,15 @@ import org.testng.annotations.*;
 import static org.easymock.classextension.EasyMock.*;
 
 @Test (dependsOnGroups = { "mockhttp", "executor", "clone", "comparator" }, groups= { "restUnit" })
-public class TestRestUnit
+public class TestTestNGTest extends TestNGRestUnit
 {
     private Map<String,String> itsService;
-    private MockHttp itsHttp;
     protected RestUnit itsRestUnit;
 
-    @BeforeTest
+    @BeforeSuite
     public void setUp()
     {
         itsService = new HashMap<String,String>();
-
         itsService.put("/accounts/Initech","Stuff about Initech");
         itsService.put("/accounts/BurnsODyne","Stuff about BurnsODyne");
         itsService.put("/accounts/PlanetExpress",null);
@@ -36,31 +34,17 @@ public class TestRestUnit
         itsService.put("/accounts/BurnsODyne/users/homer","This is homer's info");
         itsService.put("/accounts/BurnsODyne/users/moe",null);
         itsService.put("/accounts/BurnsODyne/users/lisa",null);
-
-        itsHttp = new MockHttp(itsService);
-
-        itsRestUnit = new RestUnit();
-        itsRestUnit.getExecutor().setHttp(itsHttp);
-        itsRestUnit.getExecutor().setBaseURL("http://www.google.com");
+        Http http = new MockHttp(itsService);
+        RestUnit restUnit = new RestUnit();
+        restUnit.getExecutor().setHttp(http);
+        restUnit.getExecutor().setBaseURL("http://www.google.com");
+        super.setRestUnit(restUnit);
     }
 
-    public void testFunctionalSuccess()
+    protected Set<RestTest> getTests()
     {
-        testFunctional(false,false);
-    }
+        Set<RestTest> testsToReturn = new HashSet<RestTest>();
 
-    public void testFailure()
-    {
-        testFunctional(true,false);
-    }
-
-    public void testException()
-    {
-        testFunctional(true,true);
-    }
-
-    private void testFunctional(boolean badGet, boolean exception)
-    {
         String url = "/accounts/BurnsODyne/users/lisa";
         RestTest restTest = new RestTest();
         restTest.setName("Basic Functional Test");
@@ -80,13 +64,6 @@ public class TestRestUnit
 
         GetCall getCall = new GetCall();
         getCall.setMethod("GET");
-        if (badGet)
-        {
-            if (exception)
-                getCall.setURL(MockHttp.EXCEPTION_PATH);
-            else
-                getCall.setURL("/asdf/asdf/asdf/asdf/asdf");
-        }
         BodyResponse getResponse = new BodyResponse();
         getResponse.setStatusCode(200);
         getResponse.setContentType(contentType);
@@ -111,82 +88,33 @@ public class TestRestUnit
 
         restTest.addCall(getCall);
 
-        if (badGet)
-        {
-            RestTestResult result = itsRestUnit.runTest(restTest);
+        testsToReturn.add(restTest);
+        testsToReturn.addAll(getTestsForEntireDataSet());
 
-            assert result.getSuccess() == false : "Expected our test to fail, but all succeeded!";
-
-            int counter = 0;
-            for (RestCallResult callResult: result.getDetailedResults())
-            {
-                if (counter > 1)
-                {
-                    assert callResult.getResult() == Result.SKIP : "Got " + callResult.getResult() + " but expected a SKIP (" + callResult.toString() + ")";
-                }
-                else if (counter == 0)
-                {
-                    assert callResult.getResult() == Result.PASS : "Got " + callResult.getResult() + " but expected a PASS (" + callResult.toString() + ")";
-                }
-                else
-                {
-                    if (exception)
-                        assert callResult.getResult() == Result.EXCEPTION : "Got " + callResult.getResult() + " but expected a EXCEPTION (" + callResult.toString() + ")";
-                    else
-                        assert callResult.getResult() == Result.FAIL : "Got " + callResult.getResult() + " but expected a FAIL (" + callResult.toString() + ")";
-                }
-                counter++;
-            }
-        }
-        else
-        {
-            assertTestsPass(restTest);
-        }
+        return testsToReturn;
     }
 
-    @DataProvider(name = "getData")
-    public Object[][] getTestsForEntireDataSet() 
+    public Set<RestTest> getTestsForEntireDataSet() 
     {
-        List<Object[]> testData = new ArrayList<Object[]>();
+        Set<RestTest> testData = new HashSet<RestTest>();
         for (String url: itsService.keySet())
         {
-            Object oneTest[] = new Object[4];
             String data = itsService.get(url);
-            oneTest[0] = url;
-            oneTest[1] = data;
             if (data == null)
             {
-                oneTest[2] = "PUT";
-                oneTest[3] = 201;
-                testData.add(oneTest);
-
-                oneTest = new Object[4];
-                oneTest[0] = url;
-                oneTest[1] = data;
-                oneTest[2] = "POST";
-                oneTest[3] = 201;
-                testData.add(oneTest);
-
-                oneTest = new Object[4];
-                oneTest[0] = url;
-                oneTest[1] = data;
-                oneTest[2] = "DELETE";
-                oneTest[3] = 200;
-                testData.add(oneTest);
+                testData.add(getSimple(url,data,"PUT",201));
+                testData.add(getSimple(url,data,"POST",201));
+                testData.add(getSimple(url,data,"DELETE",200));
             }
             else
             {
-                oneTest[2] = "GET";
-                oneTest[3] = 200;
-                testData.add(oneTest);
+                testData.add(getSimple(url,data,"GET",200));
             }
         }
-        return testData.toArray(new Object[0][0]);
+        return testData;
     }
 
-    /** This simply access the URL from our fake service and sees if a test will pass */
-    @Test (dataProvider = "getData")
-    public void testSimple(String url, String body, String method, int status)
+    private RestTest getSimple(String url, String body, String method, int status)
     {
         RestTest restTest = new RestTest();
         restTest.setDefaultURL(url);
@@ -217,18 +145,6 @@ public class TestRestUnit
         }
 
         restTest.addCall(test);
-        assertTestsPass(restTest);
+        return restTest;
     }
-
-    protected void assertTestsPass(RestTest restTest)
-    {
-        RestTestResult result = itsRestUnit.runTest(restTest);
-
-        for (RestCallResult callResult: result.getDetailedResults())
-        {
-            assert callResult.getResult() == Result.PASS : "Got " + callResult.getResult() + " but expected a PASS (" + callResult.toString() + ")";
-        }
-        assert result.getSuccess() == true : "Expected our test to be marked successful";
-    }
-
 }
