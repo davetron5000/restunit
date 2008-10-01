@@ -10,11 +10,84 @@ Main features:
 * Ability to derive tests based on the conventions of REST as well as tester-supplied custom derivations
 * Ability to customize result comparison with minimal custom code
 
-# Details 
+# Usage
+
+Currently, RESTUnit can be used as a TestNG test, with tests created programmatically.
+
+You simply extend `TestNGRestUnit`, set up the `RestUnit` instance and implement `getTests()` to return your programmatically created tests.  Suppose you wanted to test that your REST service returns a particular XML document when you request `/rest/pictures` and that it sends a 401 when you try to PUT there:
+
+    public class PicturesTests extends TestNGRestUnit
+    {
+        public PicturesTests()
+        {
+            super();
+            setRestUnit(new RestUnit());
+            getRestUnit().getExecutor().setHttp(new JavaHttp());
+            getRestUnit().getExecutor().setBaseURL("http://your.domain.com/rest");
+        }
+
+        public Set<RestTest> getTests()
+        {
+            Set<RestTest> tests = new HashSet<RestTest>();
+
+            tests.add(createGetTest());
+            tests.add(createPutTest());
+
+            return tests.
+        }
+
+        private RestTest createGetTest()
+        {
+            RestTest test = new RestTest();
+            test.setURL("/pictures");
+            GetCall get = new GetCall();
+            get.setMethod("GET");
+            get.setName("GET to /pictures, which is allowed");
+            BodyResponse response = new BodyResponse();
+            response.setContentType(new ContentType("text/xml","UTF-8"));
+            response.setStatusCode(200);
+            response.getRequiredHeaders().put("Last-Modified");
+            response.getRequiredHeaders().put("ETag");
+            String data = "<pictures>" +
+                "<picture><name>foo</name><location>/pictures/foo.jpg</location></picture>" +
+                "<picture><name>bar</name><location>/pictures/bar.jpg</location></picture>" +
+                "<picture><name>The Great Foo</name><location>/pictures/great_foo.jpg</location></picture>" +
+                "</pictures>";
+            response.setBody(data.getBytes("UTF-8"));
+            get.setResponse(response);
+            test.addTest(get);
+            return test;
+        }
+
+        private RestTest createPutTest()
+        {
+            RestTest test = new RestTest();
+            test.setURL("/pictures");
+            RestCall put = new RestCall();
+            put.setMethod("PUT");
+            put.setName("PUT to /pictures, which isn't allowed");
+            RestCallResponse response = new RestCallResponse();
+            response.setStatusCode(401);
+            put.setResponse(response);
+            test.addTest(put);
+            return test;
+        }
+    }
+
+This will run two seprate tests.
+
+Granted, this seems actually slightly more work than just using an HTTP client.  The intention of RESTUnit is that you should not normally have to create tests programmatically, nor should you have to configure your test environment programmatically.  Further, RESTUnit will provide a means of deriving tests.  Taking the above example, and assuming our service supports the standard features of HTTP and REST, we could derive several tests:
+
+* A version of the GET test that takes the returned `ETag` and does a conditional GET
+* A version of the GET test that takes the returned `Last-Modified` and does a conditional GET
+* A version of the GET test that does the same request via HEAD and verifies that the headers are the same but that there is no body.
+* A version of the PUT test that tunnels the request over POST via the `X-HTTP-Override` header.
+
+# Details/Discussion
 
 ## Test Form 
 
-A REST test is much simpler than an arbitrary unit test.  It is a matter of a HTTP requests and responses.
+A REST test is much simpler than an arbitrary unit test.  It is a matter of HTTP requests and responses.
 
 A test of a REST service endpoint (which would be a resource, identified by a URL) is a series of REST calls.  This could be simply one call (a GET to a resource that should return known data), or a more complex interaction of PUTing a new resource to the server, GETing that resource to see if it was received and DELETEing it to leave the remote data store in a known state.
 
