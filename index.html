@@ -152,10 +152,13 @@ Calls could override the URL as needed (as for a POST that would create a new UR
 </code></pre>
 
 <p>So far, this just looks like a simplistic way to test any HTTP endpoint.  However, we can use this tests to derive new ones, based upon the conventions of REST (or conventions your REST service provides), such as:
-* URLs responding to GET should respond to HEAD in the same way, save for the body
-* URLs responding to GET should send <code>ETag</code> and <code>Last-Modified</code> headers to allow for conditional gets
-* URLs responding to GET should send a 304 if <code>If-None-Match</code> or <code>If-Modified-Since</code> headers are set to indicate the client has up-to-date data.
-* PUT and DELETE methods may be tunneled over POST for clients/configurations that don't support it</p>
+<ul>
+    <li>URLs responding to GET should respond to HEAD in the same way, save for the body</li>
+    <li>URLs responding to GET should send <code>ETag</code> and <code>Last-Modified</code> headers to allow for conditional gets</li>
+    <li>URLs responding to GET should send a 304 if <code>If-None-Match</code> or <code>If-Modified-Since</code> headers are set to indicate the client has up-to-date data.</li>
+    <li>PUT and DELETE methods may be tunneled over POST for clients/configurations that don't support it</li>
+</ul>
+</p>
 
 <p>Such derived tests would be virtually identical to their base counterparts, so why copy them?  Consider the URL <code>/accounts/Initech/users/bob/profile.xml</code> and supposed your REST service only sends ETags for JPEGs.  You could test this via:</p>
 
